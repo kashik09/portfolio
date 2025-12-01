@@ -215,11 +215,7 @@ export function ThemeProvider({
     isDarkMode,
   }
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return <>{children}</>
-  }
-
+  // Always provide the context, even before mounting to prevent "useTheme must be used within ThemeProvider" error
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
