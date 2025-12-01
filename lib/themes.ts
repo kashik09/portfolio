@@ -414,12 +414,9 @@ export function applyTheme(themeName: ThemeName, mode: ThemeMode): void {
   if (typeof document === 'undefined') return
 
   const root = document.documentElement
-  const cssVars = themeToCSSVariables(themeName, mode)
 
-  // Apply CSS variables
-  Object.entries(cssVars).forEach(([key, value]) => {
-    root.style.setProperty(key, value)
-  })
+  // Set data-theme attribute
+  root.setAttribute('data-theme', themeName)
 
   // Apply dark class
   if (mode === 'dark') {
