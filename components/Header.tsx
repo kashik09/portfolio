@@ -30,8 +30,8 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-1.5 sm:gap-2 text-lg sm:text-xl md:text-2xl font-bold text-accent hover:opacity-80 transition flex-shrink-0">
             <Code2 size={24} className="sm:w-7 sm:h-7" />
-            <span className="hidden xs:inline">Kashi Kweyu</span>
-            <span className="xs:hidden">KK</span>
+            <span className="hidden sm:inline">Kashi Kweyu</span>
+            <span className="sm:hidden">KK</span>
           </Link>
 
           {/* Desktop Navigation */}
