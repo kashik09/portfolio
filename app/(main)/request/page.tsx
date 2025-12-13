@@ -46,18 +46,41 @@ export default function RequestPage() {
     setError('')
 
     try {
+      // 1. Save request to database
       const response = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       })
 
-      if (response.ok) {
-        alert('Request submitted successfully!')
-        router.push('/services')
-      } else {
+      if (!response.ok) {
         setError('Failed to submit request. Please try again.')
+        return
       }
+
+      // 2. Send email/WhatsApp notifications
+      try {
+        const notifResponse = await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        })
+
+        const notifData = await notifResponse.json()
+
+        // If WhatsApp URL is returned, you could open it in a new tab
+        // This would send the notification to your WhatsApp
+        if (notifData.whatsappUrl) {
+          // Optionally open WhatsApp in a new tab to notify you
+          // window.open(notifData.whatsappUrl, '_blank')
+        }
+      } catch (notifError) {
+        console.error('Notification failed:', notifError)
+        // Don't fail the whole request if notification fails
+      }
+
+      alert('Request submitted successfully! I\'ll get back to you within 24 hours.')
+      router.push('/services')
     } catch (err) {
       setError('Something went wrong. Please try again.')
     } finally {
