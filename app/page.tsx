@@ -14,7 +14,7 @@ export default function HomePage() {
           Hi, I'm <span className="text-blue-600">Kashi</span>
         </h1>
         <p className="text-2xl md:text-3xl text-gray-600 max-w-3xl mx-auto">
-          A developer building innovative solutions with modern web technologies
+          A Junior Developer building innovative solutions with modern web technologies
         </p>
         <div className="flex gap-4 justify-center mt-8">
           <Link href="/projects">
