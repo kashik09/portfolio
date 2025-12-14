@@ -11,7 +11,7 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold text-accent mb-3">Kashi Kweyu</h3>
             <p className="text-foreground-muted text-sm">
-              Junior Developer from Kampala, Uganda
+              Junior Developer
             </p>
           </div>
 
