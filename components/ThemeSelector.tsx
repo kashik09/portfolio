@@ -27,13 +27,15 @@ export function ThemeSelector() {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-full hover:bg-card-hover transition shadow-sm"
+        className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-full hover:bg-card-hover transition shadow-sm min-w-[180px] justify-between"
       >
-        <Icon size={18} className="text-foreground" />
-        <span className="hidden md:inline text-sm font-medium text-foreground">
-          {currentTheme.name}
-        </span>
-        <ChevronDown size={16} className="text-foreground-muted" />
+        <div className="flex items-center gap-2">
+          <Icon size={18} className="text-foreground" />
+          <span className="hidden md:inline text-sm font-medium text-foreground truncate max-w-[120px]">
+            {currentTheme.name}
+          </span>
+        </div>
+        <ChevronDown size={16} className="text-foreground-muted flex-shrink-0" />
       </button>
 
       {isOpen && (

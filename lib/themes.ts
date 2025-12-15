@@ -1,9 +1,9 @@
-import { Cloud, Moon, Droplets, Sun, CircleDot, FileText, Gem, Waves, LucideIcon } from 'lucide-react'
+import { Sparkles, Moon, Waves, Sun, CircleDot, SunMoon, BookOpen, Gem, LucideIcon } from 'lucide-react'
 
-export type ThemeName = 
-  | 'dracula' 
-  | 'tokyonight' 
-  | 'ayumirage' 
+export type ThemeName =
+  | 'dracula'
+  | 'tokyonight'
+  | 'ayumirage'
   | 'ayulight'
   | 'abyss'
   | 'solarized'
@@ -20,7 +20,7 @@ export const themes: Record<ThemeName, Theme> = {
   dracula: {
     name: 'Purple Rain',
     value: 'dracula',
-    icon: Cloud,
+    icon: Sparkles,
   },
   tokyonight: {
     name: 'Tokyo Night',
@@ -30,7 +30,7 @@ export const themes: Record<ThemeName, Theme> = {
   ayumirage: {
     name: 'Ayu Mirage',
     value: 'ayumirage',
-    icon: Droplets,
+    icon: Waves,
   },
   ayulight: {
     name: 'Ayu Light',
@@ -45,12 +45,12 @@ export const themes: Record<ThemeName, Theme> = {
   solarized: {
     name: 'Solarized Light',
     value: 'solarized',
-    icon: FileText,
+    icon: SunMoon,
   },
   quietlight: {
     name: 'Quiet Light',
     value: 'quietlight',
-    icon: FileText,
+    icon: BookOpen,
   },
   material: {
     name: 'Material Theme',

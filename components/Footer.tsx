@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
-            <h3 className="text-xl font-bold text-accent mb-3">Kashi Kweyu</h3>
+            <h3 className="text-xl font-bold text-primary mb-3">Kashi Kweyu</h3>
             <p className="text-foreground-muted text-sm">
               Junior Developer
             </p>
@@ -20,22 +20,22 @@ export default function Footer() {
             <h4 className="font-semibold text-foreground mb-3">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/projects" className="text-foreground-muted hover:text-accent transition text-sm">
+                <Link href="/projects" className="text-foreground-muted hover:text-primary transition text-sm">
                   Projects
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="text-foreground-muted hover:text-accent transition text-sm">
+                <Link href="/services" className="text-foreground-muted hover:text-primary transition text-sm">
                   Services
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-foreground-muted hover:text-accent transition text-sm">
+                <Link href="/about" className="text-foreground-muted hover:text-primary transition text-sm">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/request" className="text-foreground-muted hover:text-accent transition text-sm">
+                <Link href="/request" className="text-foreground-muted hover:text-primary transition text-sm">
                   Request Service
                 </Link>
               </li>
@@ -50,7 +50,7 @@ export default function Footer() {
                 href="https://github.com/kashik09"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-border hover:border-accent transition"
+                className="p-2 bg-primary rounded-lg border border-border hover:border-primary hover:bg-primary/90 transition"
                 aria-label="GitHub"
               >
                 <svg className="w-5 h-5 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@ export default function Footer() {
                 href="https://linkedin.com/in/kashi-kweyu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-border hover:border-accent transition"
+                className="p-2 bg-primary rounded-lg border border-border hover:border-primary hover:bg-primary/90 transition"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@ export default function Footer() {
                 href="https://instagram.com/kashi_kweyu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-border hover:border-accent transition"
+                className="p-2 bg-primary rounded-lg border border-border hover:border-primary hover:bg-primary/90 transition"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@ export default function Footer() {
                 href="https://wa.me/256760637783"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-border hover:border-accent transition"
+                className="p-2 bg-primary rounded-lg border border-border hover:border-primary hover:bg-primary/90 transition"
                 aria-label="WhatsApp"
               >
                 <svg className="w-5 h-5 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">

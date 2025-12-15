@@ -20,17 +20,18 @@ export default function Header() {
       <nav className="container mx-auto px-6 md:px-8 lg:px-12 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-accent hover:opacity-80 transition">
-            <Code2 size={28} className="text-accent" />
-            <span className="text-accent">Kashi Kweyu</span>
+          <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-primary hover:opacity-80 transition">
+            <Code2 size={28} className="text-primary" />
+            <span className="text-primary">Kashi Kweyu</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
+                key={link.href}
                 href={link.href}
-                className="text-text hover:text-accent transition font-medium"
+                className="text-foreground hover:text-primary transition font-medium"
               >
                 {link.label}
               </Link>
@@ -60,7 +61,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-2 text-text hover:text-accent hover:bg-card rounded-lg transition font-medium"
+                  className="px-4 py-2 text-foreground hover:text-primary hover:bg-card rounded-lg transition font-medium"
                 >
                   {link.label}
                 </Link>
