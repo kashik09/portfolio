@@ -4,7 +4,7 @@
 
 @layer base {
   /* ============================================
-     DRACULA (Purple Rain)
+     MIDNIGHT PURPLE (Default)
      ============================================ */
   :root,
   [data-theme='dracula'] {
@@ -34,65 +34,7 @@
   }
 
   /* ============================================
-     TOKYO NIGHT
-     ============================================ */
-  [data-theme='tokyonight'] {
-    --color-primary: 122 162 247;
-    --color-primary-foreground: 255 255 255;
-    --color-secondary: 187 154 247;
-    --color-secondary-foreground: 255 255 255;
-    --color-accent: 158 206 106;
-    --color-accent-secondary: 255 158 100;
-    --color-accent-foreground: 26 27 38;
-
-    --color-background: 26 27 38;
-    --color-background-secondary: 22 22 30;
-    --color-foreground: 169 177 214;
-    --color-foreground-muted: 86 95 137;
-
-    --color-border: 41 46 73;
-    --color-border-light: 52 59 88;
-    --color-card: 22 22 30;
-    --color-card-hover: 32 34 49;
-    --color-muted: 41 46 73;
-
-    --color-destructive: 247 118 142;
-    --color-success: 158 206 106;
-    --color-warning: 224 175 104;
-    --color-info: 125 207 255;
-  }
-
-  /* ============================================
-     AYU MIRAGE
-     ============================================ */
-  [data-theme='ayumirage'] {
-    --color-primary: 95 181 255;         /* Blue */
-    --color-primary-foreground: 255 255 255;
-    --color-secondary: 242 151 102;      /* Orange */
-    --color-secondary-foreground: 255 255 255;
-    --color-accent: 186 230 126;         /* Green */
-    --color-accent-secondary: 255 204 102; /* Yellow */
-    --color-accent-foreground: 31 33 41;
-
-    --color-background: 31 33 41;        /* #1F2129 */
-    --color-background-secondary: 26 27 33;
-    --color-foreground: 203 204 198;
-    --color-foreground-muted: 112 122 140;
-
-    --color-border: 51 54 66;
-    --color-border-light: 71 76 91;
-    --color-card: 26 27 33;
-    --color-card-hover: 51 54 66;
-    --color-muted: 51 54 66;
-
-    --color-destructive: 242 151 102;
-    --color-success: 186 230 126;
-    --color-warning: 255 204 102;
-    --color-info: 95 181 255;
-  }
-
-  /* ============================================
-     AYU LIGHT
+     DESERT DAWN
      ============================================ */
   [data-theme='ayulight'] {
     --color-primary: 65 137 223;         /* Blue */
@@ -121,65 +63,7 @@
   }
 
   /* ============================================
-     ABYSS
-     ============================================ */
-  [data-theme='abyss'] {
-    --color-primary: 34 136 255;         /* Bright Blue */
-    --color-primary-foreground: 255 255 255;
-    --color-secondary: 99 119 255;       /* Purple */
-    --color-secondary-foreground: 255 255 255;
-    --color-accent: 34 221 170;          /* Cyan */
-    --color-accent-secondary: 87 255 153; /* Green */
-    --color-accent-foreground: 0 9 26;
-
-    --color-background: 0 9 26;          /* #00091A - Ultra dark */
-    --color-background-secondary: 0 13 33;
-    --color-foreground: 106 177 255;
-    --color-foreground-muted: 80 98 130;
-
-    --color-border: 18 39 61;
-    --color-border-light: 34 61 94;
-    --color-card: 0 13 33;
-    --color-card-hover: 18 39 61;
-    --color-muted: 18 39 61;
-
-    --color-destructive: 255 85 115;
-    --color-success: 87 255 153;
-    --color-warning: 255 204 102;
-    --color-info: 34 221 170;
-  }
-
-  /* ============================================
-     SOLARIZED LIGHT
-     ============================================ */
-  [data-theme='solarized'] {
-    --color-primary: 38 139 210;         /* Blue */
-    --color-primary-foreground: 255 255 255;
-    --color-secondary: 211 54 130;       /* Magenta */
-    --color-secondary-foreground: 255 255 255;
-    --color-accent: 133 153 0;           /* Green */
-    --color-accent-secondary: 181 137 0;  /* Yellow */
-    --color-accent-foreground: 255 255 255;
-
-    --color-background: 253 246 227;     /* #FDF6E3 - Warm cream */
-    --color-background-secondary: 238 232 213;
-    --color-foreground: 101 123 131;
-    --color-foreground-muted: 147 161 161;
-
-    --color-border: 218 208 189;
-    --color-border-light: 238 232 213;
-    --color-card: 238 232 213;
-    --color-card-hover: 218 208 189;
-    --color-muted: 218 208 189;
-
-    --color-destructive: 220 50 47;
-    --color-success: 133 153 0;
-    --color-warning: 181 137 0;
-    --color-info: 42 161 152;
-  }
-
-  /* ============================================
-     QUIET LIGHT
+     CLEAN SLATE
      ============================================ */
   [data-theme='quietlight'] {
     --color-primary: 0 119 170;          /* Blue */
@@ -208,7 +92,7 @@
   }
 
   /* ============================================
-     MATERIAL THEME
+     OCEAN DEEP
      ============================================ */
   [data-theme='material'] {
     --color-primary: 130 170 255;        /* Blue */
