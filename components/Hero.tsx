@@ -121,7 +121,7 @@ export function Hero({ title, subtitle, ctaText, ctaLink }: HeroProps) {
         <motion.div variants={itemVariants}>
           <Link href={ctaLink}>
             <motion.button
-              className="group relative overflow-hidden rounded-lg bg-white px-8 py-4 text-lg font-semibold text-primary shadow-xl transition-shadow hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 sm:px-12 sm:py-5 sm:text-xl"
+              className="group relative overflow-hidden rounded-lg bg-card px-8 py-4 text-lg font-semibold text-primary shadow-xl transition-shadow hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 sm:px-12 sm:py-5 sm:text-xl"
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
