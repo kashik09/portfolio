@@ -71,7 +71,7 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/admin/content/services"
-            className="px-6 py-4 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition text-center font-medium shadow-sm"
+            className="px-6 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition text-center font-medium shadow-sm"
           >
             Edit Services Page
           </Link>
@@ -83,7 +83,7 @@ export default function AdminPage() {
           </Link>
           <Link
             href="/admin/content/about"
-            className="px-6 py-4 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition text-center font-medium shadow-sm"
+            className="px-6 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition text-center font-medium shadow-sm"
           >
             Edit About Page
           </Link>
