@@ -2,10 +2,12 @@
 
 import { useState } from 'react'
 import { Save, User, Bell, Shield, Globe, Palette } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
 
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
   const [saving, setSaving] = useState(false)
+  const { showToast } = useToast()
 
   const [settings, setSettings] = useState({
     name: 'Ashanti Kweyu',
@@ -31,7 +33,7 @@ export default function AdminSettingsPage() {
     // TODO: Save to database
     await new Promise(resolve => setTimeout(resolve, 1000))
     setSaving(false)
-    alert('Settings saved successfully!')
+    showToast('Settings saved successfully!', 'success')
   }
 
   const tabs = [
