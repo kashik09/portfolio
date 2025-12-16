@@ -28,12 +28,47 @@ export default function AdminProjectsPage() {
       id: 1,
       title: 'JS Calculator',
       slug: 'js-calculator',
-      category: 'CLASS',
+      category: 'Web App',
       status: 'Published',
       views: 234,
       createdAt: '2024-01-15'
     },
-    // Add more mock projects
+    {
+      id: 2,
+      title: 'E-Commerce Dashboard',
+      slug: 'ecommerce-dashboard',
+      category: 'Web App',
+      status: 'Published',
+      views: 456,
+      createdAt: '2024-02-20'
+    },
+    {
+      id: 3,
+      title: 'Weather App',
+      slug: 'weather-app',
+      category: 'Mobile',
+      status: 'Draft',
+      views: 89,
+      createdAt: '2024-03-10'
+    },
+    {
+      id: 4,
+      title: 'Portfolio Website',
+      slug: 'portfolio-website',
+      category: 'Web Design',
+      status: 'Published',
+      views: 567,
+      createdAt: '2024-04-05'
+    },
+    {
+      id: 5,
+      title: 'Task Manager API',
+      slug: 'task-manager-api',
+      category: 'Backend',
+      status: 'Published',
+      views: 123,
+      createdAt: '2024-05-12'
+    }
   ])
 
   const handleDelete = (project: Project) => {
@@ -63,7 +98,7 @@ export default function AdminProjectsPage() {
         </div>
         <Link
           href="/admin/projects/new"
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition shadow-sm font-medium"
+          className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition shadow-sm font-medium"
         >
           <Plus size={20} />
           <span>Add Project</span>
@@ -113,7 +148,7 @@ export default function AdminProjectsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-blue-500/20 text-blue-700 dark:text-blue-300 text-sm rounded-full font-medium">
+                      <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium">
                         {project.status}
                       </span>
                     </td>
