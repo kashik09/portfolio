@@ -15,7 +15,7 @@ export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <Loader2
-        className="animate-spin text-accent"
+        className="animate-spin text-primary"
         size={sizes[size]}
         aria-label="Loading"
       />
