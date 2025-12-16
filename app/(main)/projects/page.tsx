@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
+import { usePageTracking, useAnalytics } from '@/lib/useAnalytics'
 
 // Define the Project type to match API response
 interface Project {
@@ -22,6 +23,10 @@ interface Project {
 }
 
 export default function ProjectsPage() {
+  // Track page view automatically
+  usePageTracking('Projects Page')
+  const { trackClick, trackProjectView, trackEvent } = useAnalytics()
+
   const [filter, setFilter] = useState<'ALL' | 'PERSONAL' | 'CLASS'>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
   const [projects, setProjects] = useState<Project[]>([])
@@ -50,12 +55,47 @@ export default function ProjectsPage() {
 
       const data = await response.json()
       setProjects(data.data || [])
+
+      // Track filter usage
+      if (filter !== 'ALL') {
+        trackEvent({
+          action: 'filter_used',
+          category: 'projects',
+          label: filter
+        })
+      }
+
+      // Track search usage
+      if (searchQuery) {
+        trackEvent({
+          action: 'search_used',
+          category: 'projects',
+          label: searchQuery
+        })
+      }
     } catch (err) {
       console.error('Error fetching projects:', err)
       setError('Failed to load projects. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleFilterChange = (newFilter: 'ALL' | 'PERSONAL' | 'CLASS') => {
+    setFilter(newFilter)
+    trackClick(`Filter: ${newFilter}`, 'Projects Page')
+  }
+
+  const handleProjectClick = (project: Project) => {
+    trackProjectView(project.id, project.title)
+  }
+
+  const handleLiveDemoClick = (project: Project) => {
+    trackClick(`Live Demo: ${project.title}`, 'Projects Page')
+  }
+
+  const handleGithubClick = (project: Project) => {
+    trackClick(`GitHub: ${project.title}`, 'Projects Page')
   }
 
   return (
@@ -73,19 +113,19 @@ export default function ProjectsPage() {
         <div className="flex gap-2">
           <Button
             variant={filter === 'ALL' ? 'primary' : 'outline'}
-            onClick={() => setFilter('ALL')}
+            onClick={() => handleFilterChange('ALL')}
           >
             All Projects
           </Button>
           <Button
             variant={filter === 'PERSONAL' ? 'primary' : 'outline'}
-            onClick={() => setFilter('PERSONAL')}
+            onClick={() => handleFilterChange('PERSONAL')}
           >
             Personal
           </Button>
           <Button
             variant={filter === 'CLASS' ? 'primary' : 'outline'}
-            onClick={() => setFilter('CLASS')}
+            onClick={() => handleFilterChange('CLASS')}
           >
             Class Projects
           </Button>
@@ -124,7 +164,8 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary transition-all hover:shadow-xl"
+              onClick={() => handleProjectClick(project)}
+              className="group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary transition-all hover:shadow-xl cursor-pointer"
             >
               <div className="aspect-video overflow-hidden bg-primary/10">
                 <img
@@ -154,20 +195,28 @@ export default function ProjectsPage() {
                 </div>
                 <div className="flex gap-3">
                   {project.liveUrl && (
-                    <a
+                    
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleLiveDemoClick(project)
+                      }}
                       className="text-sm text-primary hover:underline font-medium"
                     >
                       Live Demo →
                     </a>
                   )}
                   {project.githubUrl && (
-                    <a
+                    
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleGithubClick(project)
+                      }}
                       className="text-sm text-foreground-muted hover:text-foreground font-medium"
                     >
                       GitHub
