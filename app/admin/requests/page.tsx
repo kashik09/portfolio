@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Search, Eye, Trash2, Mail, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
+import { useState } from 'react'
+import { Search, Eye, Trash2, Mail, Clock, CheckCircle, XCircle } from 'lucide-react'
+import Toast, { ToastType } from '@/components/ui/Toast'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 
 type RequestStatus = 'pending' | 'contacted' | 'completed' | 'rejected'
 
@@ -24,10 +26,18 @@ export default function AdminRequestsPage() {
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [requestToDelete, setRequestToDelete] = useState<Request | null>(null)
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
+  const [deletedRequest, setDeletedRequest] = useState<Request | null>(null)
+  const [undoTimerId, setUndoTimerId] = useState<NodeJS.Timeout | null>(null)
+  const [toast, setToast] = useState<{ 
+    show: boolean
+    message: string
+    type: ToastType
+    showUndo: boolean
+  }>({
     show: false,
     message: '',
-    type: 'success'
+    type: 'success',
+    showUndo: false
   })
 
   // TODO: Fetch from database
@@ -75,11 +85,43 @@ export default function AdminRequestsPage() {
     total: requests.length
   }
 
-  const handleDelete = (id: number) => {
-    setRequests(requests.filter(r => r.id !== id))
+  const handleDelete = (request: Request) => {
+    // Store the deleted request for undo
+    setDeletedRequest(request)
+    
+    // Remove from list
+    setRequests(requests.filter(r => r.id !== request.id))
     setShowDeleteModal(false)
     setRequestToDelete(null)
-    showToast('Request deleted successfully', 'success')
+    if (showModal) setShowModal(false)
+    
+    // Show toast with undo option
+    showToast('Request deleted successfully', 'success', true)
+    
+    // Set timer to permanently delete after 5 seconds
+    const timerId = setTimeout(() => {
+      setDeletedRequest(null)
+      setToast(prev => ({ ...prev, showUndo: false }))
+    }, 5000)
+    
+    setUndoTimerId(timerId)
+  }
+
+  const handleUndo = () => {
+    if (deletedRequest && undoTimerId) {
+      // Clear the deletion timer
+      clearTimeout(undoTimerId)
+      
+      // Restore the request
+      setRequests([...requests, deletedRequest])
+      
+      // Clear states
+      setDeletedRequest(null)
+      setUndoTimerId(null)
+      
+      // Show success message
+      showToast('Request restored', 'info', false)
+    }
   }
 
   const confirmDelete = (request: Request) => {
@@ -87,11 +129,17 @@ export default function AdminRequestsPage() {
     setShowDeleteModal(true)
   }
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ show: true, message, type })
-    setTimeout(() => {
-      setToast({ show: false, message: '', type: 'success' })
-    }, 3000)
+  const showToast = (message: string, type: ToastType, showUndo = false) => {
+    setToast({ show: true, message, type, showUndo })
+  }
+
+  const closeToast = () => {
+    setToast({ show: false, message: '', type: 'success', showUndo: false })
+    if (undoTimerId) {
+      clearTimeout(undoTimerId)
+      setUndoTimerId(null)
+    }
+    setDeletedRequest(null)
   }
 
   const handleView = (request: Request) => {
@@ -321,10 +369,7 @@ export default function AdminRequestsPage() {
                 Close
               </button>
               <button 
-                onClick={() => {
-                  handleDelete(selectedRequest.id)
-                  setShowModal(false)
-                }}
+                onClick={() => handleDelete(selectedRequest)}
                 className="px-6 py-3 bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-500/20 transition font-medium"
               >
                 Delete Request
@@ -335,81 +380,30 @@ export default function AdminRequestsPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && requestToDelete && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-2xl border border-border max-w-md w-full">
-            <div className="p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="text-red-600 dark:text-red-400" size={24} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">Delete Request</h2>
-                  <p className="text-sm text-foreground-muted">This action cannot be undone</p>
-                </div>
-              </div>
-              
-              <p className="text-foreground mb-6">
-                Are you sure you want to delete the request from <span className="font-semibold">{requestToDelete.name}</span>?
-              </p>
-
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => {
-                    setShowDeleteModal(false)
-                    setRequestToDelete(null)
-                  }}
-                  className="flex-1 px-6 py-3 bg-card-hover border border-border text-foreground rounded-lg hover:bg-card transition font-medium"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={() => handleDelete(requestToDelete.id)}
-                  className="flex-1 px-6 py-3 bg-red-600 dark:bg-red-500 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition font-medium"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setRequestToDelete(null)
+        }}
+        onConfirm={() => requestToDelete && handleDelete(requestToDelete)}
+        title="Delete Request"
+        message={`Are you sure you want to delete the request from ${requestToDelete?.name}?`}
+        confirmText="Delete"
+        type="danger"
+      />
 
       {/* Toast Notification */}
       {toast.show && (
-        <div className="fixed bottom-6 right-6 z-50 animate-slideIn">
-          <div className={`px-6 py-4 rounded-lg shadow-lg border ${
-            toast.type === 'success' 
-              ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400' 
-              : 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
-          }`}>
-            <div className="flex items-center gap-3">
-              {toast.type === 'success' ? (
-                <CheckCircle size={20} />
-              ) : (
-                <XCircle size={20} />
-              )}
-              <p className="font-medium">{toast.message}</p>
-            </div>
-          </div>
-        </div>
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          duration={toast.showUndo ? 5000 : 3000}
+          onClose={closeToast}
+          showUndo={toast.showUndo}
+          onUndo={handleUndo}
+        />
       )}
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        .animate-slideIn {
-          animation: slideIn 0.3s ease-out;
-        }
-      `}</style>
     </div>
   )
 }
