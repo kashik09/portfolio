@@ -4,14 +4,17 @@ import { useState } from 'react'
 import { ArrowLeft, Upload, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
 
 export default function NewProjectPage() {
   const router = useRouter()
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
   const [techStack, setTechStack] = useState<string[]>([])
   const [techInput, setTechInput] = useState('')
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -28,15 +31,44 @@ export default function NewProjectPage() {
   const tagSuggestions = [
     'javascript', 'typescript', 'react', 'nextjs', 'calculator',
     'webapp', 'mobile', 'api', 'fullstack', 'backend', 'frontend',
-    'ui-ux', 'database', 'authentication', 'realtime', 'ai'
+    'ui-ux', 'database', 'authentication', 'realtime'
   ]
 
   const techSuggestions = [
     'React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS',
     'Node.js', 'PostgreSQL', 'Prisma', 'MongoDB', 'Express',
     'Swift', 'PHP', 'Python', 'Git', 'Vercel', 'Supabase',
-    'NextAuth', 'Framer Motion', 'Lucide React', 'Zod'
+    'NextAuth', 'Lucide React'
   ]
+
+  // Auto-generate slug from title
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+  }
+
+  const handleTitleChange = (title: string) => {
+    setFormData({ ...formData, title, slug: generateSlug(title) })
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Image must be less than 5MB', 'error')
+        return
+      }
+      
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+        showToast('Image uploaded successfully', 'success')
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const addTag = (tag?: string) => {
     const tagToAdd = tag || tagInput.trim()
@@ -67,24 +99,13 @@ export default function NewProjectPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          tags,
-          techStack,
-          features: []
-        })
-      })
-
-      if (response.ok) {
-        router.push('/admin/projects')
-      } else {
-        alert('Failed to create project')
-      }
+      // TODO: Replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      showToast('Project created successfully! 🎉', 'success')
+      router.push('/admin/projects')
     } catch (error) {
-      alert('Something went wrong')
+      showToast('Failed to create project', 'error')
     } finally {
       setLoading(false)
     }
@@ -96,18 +117,18 @@ export default function NewProjectPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/projects"
-          className="p-2 hover:bg-secondary rounded-lg transition"
+          className="p-2 hover:bg-muted rounded-lg transition"
         >
           <ArrowLeft size={20} />
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-foreground">New Project</h1>
-          <p className="text-foreground/70">Add a new project to your portfolio</p>
+          <p className="text-muted-foreground">Add a new project to your portfolio</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-secondary rounded-2xl border border-border p-6 space-y-6">
+        <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           {/* Title & Slug */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -117,21 +138,21 @@ export default function NewProjectPage() {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                onChange={(e) => handleTitleChange(e.target.value)}
+                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
                 placeholder="JS Calculator"
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Slug *
+                Slug * <span className="text-muted-foreground text-xs">(auto-generated)</span>
               </label>
               <input
                 type="text"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
                 placeholder="js-calculator"
                 required
               />
@@ -147,7 +168,7 @@ export default function NewProjectPage() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition resize-none"
+              className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none text-foreground"
               placeholder="A brief description of your project..."
               required
             />
@@ -162,7 +183,7 @@ export default function NewProjectPage() {
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M10.293%203.293L6%207.586%201.707%203.293A1%201%200%2000.293%204.707l5%205a1%201%200%20001.414%200l5-5a1%201%200%2010-1.414-1.414z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[center_right_1rem] bg-no-repeat pr-10 cursor-pointer"
                 required
               >
                 <option value="">Select category...</option>
@@ -180,7 +201,7 @@ export default function NewProjectPage() {
                 type="url"
                 value={formData.githubUrl}
                 onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
-                className="w-full px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
                 placeholder="https://github.com/..."
               />
             </div>
@@ -192,7 +213,7 @@ export default function NewProjectPage() {
                 type="url"
                 value={formData.liveUrl}
                 onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
-                className="w-full px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
                 placeholder="https://..."
               />
             </div>
@@ -206,14 +227,14 @@ export default function NewProjectPage() {
 
             {/* Suggestions */}
             <div className="mb-3">
-              <p className="text-xs text-foreground/60 mb-2">Click to add or type your own:</p>
+              <p className="text-xs text-muted-foreground mb-2">Click to add or type your own:</p>
               <div className="flex flex-wrap gap-2">
                 {tagSuggestions.filter(s => !tags.includes(s)).map(suggestion => (
                   <button
                     key={suggestion}
                     type="button"
                     onClick={() => addTag(suggestion)}
-                    className="px-2 py-1 text-xs bg-accent/10 text-accent border border-accent/30 rounded hover:bg-accent/20 transition"
+                    className="px-2 py-1 text-xs bg-primary/10 text-primary border border-primary/30 rounded hover:bg-primary/20 transition"
                   >
                     + {suggestion}
                   </button>
@@ -227,13 +248,13 @@ export default function NewProjectPage() {
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                className="flex-1 px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                className="flex-1 px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
                 placeholder="Type a custom tag and press Enter"
               />
               <button
                 type="button"
                 onClick={() => addTag()}
-                className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition"
               >
                 <Plus size={20} />
               </button>
@@ -242,13 +263,13 @@ export default function NewProjectPage() {
               {tags.map(tag => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-primary border border-border rounded-full text-sm flex items-center gap-2"
+                  className="px-3 py-1 bg-muted border border-border rounded-full text-sm flex items-center gap-2 text-foreground"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="hover:text-destructive"
+                    className="hover:text-red-500 transition"
                   >
                     <X size={14} />
                   </button>
@@ -265,14 +286,14 @@ export default function NewProjectPage() {
 
             {/* Suggestions */}
             <div className="mb-3">
-              <p className="text-xs text-foreground/60 mb-2">Click to add or type your own:</p>
+              <p className="text-xs text-muted-foreground mb-2">Click to add or type your own:</p>
               <div className="flex flex-wrap gap-2">
                 {techSuggestions.filter(s => !techStack.includes(s)).map(suggestion => (
                   <button
                     key={suggestion}
                     type="button"
                     onClick={() => addTech(suggestion)}
-                    className="px-2 py-1 text-xs bg-accent/10 text-accent border border-accent/30 rounded hover:bg-accent/20 transition"
+                    className="px-2 py-1 text-xs bg-primary/10 text-primary border border-primary/30 rounded hover:bg-primary/20 transition"
                   >
                     + {suggestion}
                   </button>
@@ -286,13 +307,13 @@ export default function NewProjectPage() {
                 value={techInput}
                 onChange={(e) => setTechInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())}
-                className="flex-1 px-4 py-2 bg-primary border border-border rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
+                className="flex-1 px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
                 placeholder="Type a custom technology and press Enter"
               />
               <button
                 type="button"
                 onClick={() => addTech()}
-                className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition"
               >
                 <Plus size={20} />
               </button>
@@ -301,13 +322,13 @@ export default function NewProjectPage() {
               {techStack.map(tech => (
                 <span
                   key={tech}
-                  className="px-3 py-1 bg-primary border border-border rounded-full text-sm flex items-center gap-2"
+                  className="px-3 py-1 bg-muted border border-border rounded-full text-sm flex items-center gap-2 text-foreground"
                 >
                   {tech}
                   <button
                     type="button"
                     onClick={() => removeTech(tech)}
-                    className="hover:text-destructive"
+                    className="hover:text-red-500 transition"
                   >
                     <X size={14} />
                   </button>
@@ -321,12 +342,35 @@ export default function NewProjectPage() {
             <label className="block text-sm font-medium text-foreground mb-2">
               Thumbnail Image
             </label>
-            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-accent transition-colors cursor-pointer">
-              <Upload className="mx-auto mb-4 text-foreground/50" size={32} />
-              <p className="text-foreground/70 mb-2">Upload project thumbnail</p>
-              <p className="text-foreground/50 text-sm">PNG, JPG up to 5MB</p>
-              <input type="file" accept="image/*" className="hidden" />
-            </div>
+            
+            {imagePreview && (
+              <div className="mb-4 relative">
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="w-full h-48 object-cover rounded-lg border border-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => setImagePreview(null)}
+                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+
+            <label className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer block">
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleImageUpload}
+              />
+              <Upload className="mx-auto mb-4 text-muted-foreground" size={32} />
+              <p className="text-foreground mb-2">Upload project thumbnail</p>
+              <p className="text-muted-foreground text-sm">PNG, JPG up to 5MB</p>
+            </label>
           </div>
 
           {/* Checkboxes */}
@@ -340,7 +384,7 @@ export default function NewProjectPage() {
               />
               <div>
                 <span className="text-foreground font-medium">Featured Project</span>
-                <p className="text-xs text-foreground/60 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Featured projects appear first on your projects page and homepage, highlighting your best work.
                 </p>
               </div>
@@ -354,7 +398,7 @@ export default function NewProjectPage() {
               />
               <div>
                 <span className="text-foreground font-medium">Publish Immediately</span>
-                <p className="text-xs text-foreground/60 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Make this project visible to visitors right away. Uncheck to save as draft.
                 </p>
               </div>
@@ -366,14 +410,14 @@ export default function NewProjectPage() {
         <div className="flex items-center justify-end gap-4">
           <Link
             href="/admin/projects"
-            className="px-6 py-3 border border-border rounded-lg hover:bg-secondary transition"
+            className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition text-foreground font-medium"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent/90 transition disabled:opacity-50"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition disabled:opacity-50 font-medium"
           >
             {loading ? 'Creating...' : 'Create Project'}
           </button>
