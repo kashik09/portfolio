@@ -1,13 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ProjectCard, ProjectCardData } from '@/components/ProjectCard'
+import { PortfolioCard } from '@/components/PortfolioCard'
+import { PortfolioItem } from '@/lib/portfolio/types'
 import { Spinner } from '@/components/ui/Spinner'
 
 interface ProjectGridData {
   title?: string
   filter?: 'ALL' | 'WEB' | 'MOBILE' | 'DESIGN'
   limit?: number
+  includeDigitalProducts?: boolean
 }
 
 interface ProjectGridProps {
@@ -15,34 +17,38 @@ interface ProjectGridProps {
 }
 
 export function ProjectGrid({ data }: ProjectGridProps) {
-  const [projects, setProjects] = useState<ProjectCardData[]>([])
+  const [items, setItems] = useState<PortfolioItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchProjects()
-  }, [data.filter, data.limit])
+    fetchPortfolioItems()
+  }, [data.filter, data.limit, data.includeDigitalProducts])
 
-  const fetchProjects = async () => {
+  const fetchPortfolioItems = async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams()
+
       if (data.filter && data.filter !== 'ALL') {
         params.append('category', data.filter)
       }
-      params.append('status', 'published')
 
-      const response = await fetch(`/api/projects?${params}`)
+      if (data.limit) {
+        params.append('limit', data.limit.toString())
+      }
+
+      if (data.includeDigitalProducts) {
+        params.append('includeDigitalProducts', 'true')
+      }
+
+      const response = await fetch(`/api/portfolio?${params}`)
       const result = await response.json()
 
       if (result.success) {
-        let projectsData = result.data
-        if (data.limit) {
-          projectsData = projectsData.slice(0, data.limit)
-        }
-        setProjects(projectsData)
+        setItems(result.data)
       }
     } catch (error) {
-      console.error('Error fetching projects:', error)
+      console.error('Error fetching portfolio items:', error)
     } finally {
       setLoading(false)
     }
@@ -61,14 +67,14 @@ export function ProjectGrid({ data }: ProjectGridProps) {
           <div className="flex justify-center py-12">
             <Spinner size="lg" />
           </div>
-        ) : projects.length === 0 ? (
+        ) : items.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">
-            No projects found
+            No items found
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} variant="public" />
+            {items.map((item) => (
+              <PortfolioCard key={item.slug} item={item} variant="public" />
             ))}
           </div>
         )}
