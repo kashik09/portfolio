@@ -19,8 +19,6 @@ interface ProductDownload {
   description: string
   category: string
   thumbnailUrl?: string
-  downloadLimit: number
-  downloadsUsed: number
   purchasedAt: string
   expiresAt?: string
   fileSize: number
@@ -34,6 +32,7 @@ interface ProductDownload {
   licenseStatus: 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'SUSPENDED' | 'RESTRICTED'
   downloadWindowDays: number
 }
+
 
 interface DownloadDetailPageProps {
   params: {
