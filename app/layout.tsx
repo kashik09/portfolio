@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/lib/ThemeContext'
 import { ToastProvider } from '@/components/ui/Toast'
+import { CookieNotice } from '@/components/CookieNotice'
 import './globals.css'
 import { Analytics } from "@vercel/analytics/next"
 
@@ -26,6 +27,7 @@ export default function RootLayout({
           </ToastProvider>
         </ThemeProvider>
         <Analytics />
+        <CookieNotice />
       </body>
     </html>
   )
