@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileText, Plus, Search, Trash2, Edit2, Eye } from 'lucide-react'
+import { FileText, Plus, Search, Trash2, Edit2, Eye, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { StyledSelect } from '@/components/ui/StyledSelect'
@@ -124,17 +124,27 @@ export default function PagesAdminPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Pages</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your site pages and content
-          </p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            onClick={() => router.push('/admin')}
+            size="sm"
+          >
+            <ArrowLeft size={20} />
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Pages</h1>
+            <p className="text-muted-foreground mt-1">
+              Manage your site pages and content
+            </p>
+          </div>
         </div>
         <Button
           onClick={() => router.push('/admin/pages/new')}
           className="flex items-center gap-2"
+          size="sm"
         >
-          <Plus size={20} />
+          <Plus size={18} />
           <span>Create Page</span>
         </Button>
       </div>
