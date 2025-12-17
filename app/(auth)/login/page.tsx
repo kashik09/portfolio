@@ -36,12 +36,15 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError('Invalid email or password')
-      } else {
-        router.push(callbackUrl)
+        setLoading(false)
+      } else if (result?.ok) {
+        // Wait a bit for session to be established
+        await new Promise(resolve => setTimeout(resolve, 500))
+        // Force a full page reload to ensure session is picked up
+        window.location.href = callbackUrl
       }
     } catch (err) {
       setError('Something went wrong. Please try again.')
-    } finally {
       setLoading(false)
     }
   }

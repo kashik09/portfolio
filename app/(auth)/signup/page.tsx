@@ -78,8 +78,11 @@ export default function SignupPage() {
       if (result?.error) {
         setError('Account created, but sign in failed. Please try logging in.')
         setTimeout(() => router.push('/login'), 2000)
-      } else {
-        router.push('/dashboard')
+      } else if (result?.ok) {
+        // Wait for session to be established
+        await new Promise(resolve => setTimeout(resolve, 500))
+        // Force full page reload to pick up session
+        window.location.href = '/dashboard'
       }
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
