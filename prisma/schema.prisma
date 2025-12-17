@@ -58,6 +58,7 @@ model User {
   serviceProjects         ServiceProject[]
   creditTransactions      CreditTransaction[]
   auditLogs               AuditLog[]
+  adConsent               UserAdConsent?
 
   @@index([email])
   @@index([accountStatus])
@@ -682,6 +683,21 @@ model ContentPage {
 // SYSTEM CONFIGURATION MODELS
 // ============================================
 
+model SiteSettings {
+  id String @id @default("site_settings_singleton")
+
+  maintenanceMode     Boolean @default(false)
+  availableForBusiness Boolean @default(true)
+  adsEnabled          Boolean @default(false)
+  adsProvider         String  @default("")
+  adsClientId         String?
+  adsPlacements       Json?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
 model FeatureFlag {
   id String @id @default(cuid())
 
@@ -728,6 +744,19 @@ model SystemBackup {
   @@index([status])
   @@index([createdAt])
   @@map("system_backups")
+}
+
+model UserAdConsent {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  personalizedAds Boolean  @default(false)
+  consentedAt     DateTime?
+  updatedAt       DateTime @updatedAt
+
+  @@map("user_ad_consents")
 }
 
 // ============================================
