@@ -34,7 +34,22 @@ export default function AdminLayout({
           {/* Sidebar */}
           <aside className="w-64 min-h-[calc(100vh-73px)] bg-card border-r border-border">
             <div className="p-6">
-              <h2 className="text-lg font-bold text-foreground mb-6">Navigation</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">Navigation</h2>
+
+              {/* Progress Bar */}
+              <div className="mb-6 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-foreground">Site Setup</span>
+                  <span className="text-xs font-bold text-primary">75%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-primary h-full rounded-full transition-all duration-500"
+                    style={{ width: '75%' }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">3 of 4 steps complete</p>
+              </div>
 
               <nav className="space-y-2">
                 {navItems.map((item) => (
