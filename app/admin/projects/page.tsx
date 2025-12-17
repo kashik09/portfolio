@@ -1,191 +1,172 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, Search, Package } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
+import { ProjectCard, ProjectCardData } from '@/components/ProjectCard'
+import { StyledSelect } from '@/components/ui/StyledSelect'
+import { Spinner } from '@/components/ui/Spinner'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 
-interface Project {
-  id: number
-  title: string
-  slug: string
-  category: string
-  status: string
-  views: number
-  createdAt: string
-}
-
 export default function AdminProjectsPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all')
+  const [projects, setProjects] = useState<ProjectCardData[]>([])
+  const [loading, setLoading] = useState(true)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
+  const [projectToDelete, setProjectToDelete] = useState<ProjectCardData | null>(null)
   const { showToast } = useToast()
 
-  // TODO: Fetch from database
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: 1,
-      title: 'JS Calculator',
-      slug: 'js-calculator',
-      category: 'Web App',
-      status: 'Published',
-      views: 234,
-      createdAt: '2024-01-15'
-    },
-    {
-      id: 2,
-      title: 'E-Commerce Dashboard',
-      slug: 'ecommerce-dashboard',
-      category: 'Web App',
-      status: 'Published',
-      views: 456,
-      createdAt: '2024-02-20'
-    },
-    {
-      id: 3,
-      title: 'Weather App',
-      slug: 'weather-app',
-      category: 'Mobile',
-      status: 'Draft',
-      views: 89,
-      createdAt: '2024-03-10'
-    },
-    {
-      id: 4,
-      title: 'Portfolio Website',
-      slug: 'portfolio-website',
-      category: 'Web Design',
-      status: 'Published',
-      views: 567,
-      createdAt: '2024-04-05'
-    },
-    {
-      id: 5,
-      title: 'Task Manager API',
-      slug: 'task-manager-api',
-      category: 'Backend',
-      status: 'Published',
-      views: 123,
-      createdAt: '2024-05-12'
-    }
-  ])
+  useEffect(() => {
+    fetchProjects()
+  }, [statusFilter, searchQuery])
 
-  const handleDelete = (project: Project) => {
-    setProjects(projects.filter(p => p.id !== project.id))
-    setShowDeleteModal(false)
-    setProjectToDelete(null)
-    showToast('Project deleted successfully', 'success')
+  const fetchProjects = async () => {
+    setLoading(true)
+
+    try {
+      const params = new URLSearchParams()
+      params.append('status', statusFilter)
+      if (searchQuery) params.append('search', searchQuery)
+
+      const response = await fetch(`/api/projects?${params}`)
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects')
+      }
+
+      const data = await response.json()
+      setProjects(data.data || [])
+    } catch (error) {
+      console.error('Error fetching projects:', error)
+      showToast('Failed to load projects', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const confirmDelete = (project: Project) => {
+  const handleEdit = (slug: string) => {
+    router.push(`/admin/projects/${slug}/edit`)
+  }
+
+  const confirmDelete = (project: ProjectCardData) => {
     setProjectToDelete(project)
     setShowDeleteModal(true)
   }
 
-  const filteredProjects = projects.filter(project =>
-    project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.category.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const handleDelete = async () => {
+    if (!projectToDelete) return
+
+    try {
+      const response = await fetch(`/api/projects/${projectToDelete.slug}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete project')
+      }
+
+      showToast('Project deleted successfully', 'success')
+      setShowDeleteModal(false)
+      setProjectToDelete(null)
+      fetchProjects() // Refresh the list
+    } catch (error) {
+      console.error('Error deleting project:', error)
+      showToast('Failed to delete project', 'error')
+    }
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Projects</h1>
           <p className="text-muted-foreground">Manage your portfolio projects</p>
         </div>
         <Link
           href="/admin/projects/new"
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition shadow-sm font-medium"
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition shadow-sm font-medium"
         >
           <Plus size={20} />
           <span>Add Project</span>
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-        <input
-          type="text"
-          placeholder="Search projects..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-card text-foreground border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
-        />
-      </div>
+      {/* Filters */}
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Search */}
+        <div className="flex-1 relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-card text-foreground border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+          />
+        </div>
 
-      {/* Projects Table */}
-      <div className="bg-card rounded-2xl border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted border-b border-border">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Title</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Category</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Views</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Created</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredProjects.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    No projects found
-                  </td>
-                </tr>
-              ) : (
-                filteredProjects.map((project) => (
-                  <tr key={project.id} className="hover:bg-muted/50 transition">
-                    <td className="px-6 py-4 text-foreground font-medium">{project.title}</td>
-                    <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium">
-                        {project.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium">
-                        {project.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground">{project.views}</td>
-                    <td className="px-6 py-4 text-muted-foreground">{project.createdAt}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/admin/projects/${project.slug}`}
-                          className="p-2 hover:bg-primary/10 text-primary rounded-lg transition"
-                          title="View project"
-                        >
-                          <Eye size={18} />
-                        </Link>
-                        <Link
-                          href={`/admin/projects/${project.slug}/edit`}
-                          className="p-2 hover:bg-primary/10 text-primary rounded-lg transition"
-                          title="Edit project"
-                        >
-                          <Edit size={18} />
-                        </Link>
-                        <button
-                          onClick={() => confirmDelete(project)}
-                          className="p-2 hover:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg transition"
-                          title="Delete project"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        {/* Status Filter */}
+        <div className="w-full md:w-48">
+          <StyledSelect
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'published' | 'draft')}
+          >
+            <option value="all">All Projects</option>
+            <option value="published">Published</option>
+            <option value="draft">Drafts</option>
+          </StyledSelect>
         </div>
       </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      )}
+
+      {/* Projects Grid */}
+      {!loading && projects.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              variant="admin"
+              onEdit={() => handleEdit(project.slug)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && projects.length === 0 && (
+        <div className="bg-card rounded-2xl border border-border p-12 text-center">
+          <div className="mb-4 text-muted-foreground">
+            <Package className="mx-auto mb-4" size={64} />
+          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-2">No projects found</h2>
+          <p className="text-muted-foreground mb-6">
+            {searchQuery || statusFilter !== 'all'
+              ? 'Try adjusting your filters or search query'
+              : 'Get started by creating your first project'}
+          </p>
+          {!searchQuery && statusFilter === 'all' && (
+            <Link
+              href="/admin/projects/new"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-medium"
+            >
+              <Plus size={20} />
+              Create First Project
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
@@ -194,9 +175,14 @@ export default function AdminProjectsPage() {
           setShowDeleteModal(false)
           setProjectToDelete(null)
         }}
-        onConfirm={() => projectToDelete && handleDelete(projectToDelete)}
+        onConfirm={handleDelete}
         title="Delete Project"
-        message={`Are you sure you want to delete "${projectToDelete?.title}"? This action cannot be undone.`}
+        message={
+          <div className="space-y-2">
+            <p>Are you sure you want to delete <strong>{projectToDelete?.title}</strong>?</p>
+            <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+          </div>
+        }
         confirmText="Delete"
         type="danger"
       />

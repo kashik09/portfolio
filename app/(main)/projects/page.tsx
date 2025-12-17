@@ -4,23 +4,8 @@ import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
+import { ProjectCard, ProjectCardData } from '@/components/ProjectCard'
 import { usePageTracking, useAnalytics } from '@/lib/useAnalytics'
-
-// Define the Project type to match API response
-interface Project {
-  id: string
-  slug: string
-  title: string
-  description: string
-  category: 'PERSONAL' | 'CLASS'
-  tags: string[]
-  techStack: string[]
-  thumbnail: string
-  liveUrl?: string
-  githubUrl?: string
-  featured: boolean
-  publishedAt: string | null
-}
 
 export default function ProjectsPage() {
   // Track page view automatically
@@ -29,7 +14,7 @@ export default function ProjectsPage() {
 
   const [filter, setFilter] = useState<'ALL' | 'PERSONAL' | 'CLASS'>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<ProjectCardData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -41,7 +26,7 @@ export default function ProjectsPage() {
   const fetchProjects = async () => {
     setLoading(true)
     setError('')
-    
+
     try {
       const params = new URLSearchParams()
       if (filter !== 'ALL') params.append('category', filter)
@@ -86,16 +71,8 @@ export default function ProjectsPage() {
     trackClick(`Filter: ${newFilter}`, 'Projects Page')
   }
 
-  const handleProjectClick = (project: Project) => {
+  const handleProjectClick = (project: ProjectCardData) => {
     trackProjectView(project.id, project.title)
-  }
-
-  const handleLiveDemoClick = (project: Project) => {
-    trackClick(`Live Demo: ${project.title}`, 'Projects Page')
-  }
-
-  const handleGithubClick = (project: Project) => {
-    trackClick(`GitHub: ${project.title}`, 'Projects Page')
   }
 
   return (
@@ -110,27 +87,35 @@ export default function ProjectsPage() {
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="flex gap-2">
+        {/* Filter Buttons - Mobile Responsive */}
+        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
           <Button
             variant={filter === 'ALL' ? 'primary' : 'outline'}
             onClick={() => handleFilterChange('ALL')}
+            size="sm"
+            className="text-sm md:text-base px-3 py-1.5 md:px-4 md:py-2"
           >
             All Projects
           </Button>
           <Button
             variant={filter === 'PERSONAL' ? 'primary' : 'outline'}
             onClick={() => handleFilterChange('PERSONAL')}
+            size="sm"
+            className="text-sm md:text-base px-3 py-1.5 md:px-4 md:py-2"
           >
             Personal
           </Button>
           <Button
             variant={filter === 'CLASS' ? 'primary' : 'outline'}
             onClick={() => handleFilterChange('CLASS')}
+            size="sm"
+            className="text-sm md:text-base px-3 py-1.5 md:px-4 md:py-2"
           >
             Class Projects
           </Button>
         </div>
 
+        {/* Search */}
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
           <input
@@ -158,72 +143,12 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* Projects Grid */}
+      {/* Projects Grid - Using Shared ProjectCard */}
       {!loading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <div
-              key={project.id}
-              onClick={() => handleProjectClick(project)}
-              className="group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary transition-all hover:shadow-xl cursor-pointer"
-            >
-              <div className="aspect-video overflow-hidden bg-primary/10">
-                <img
-                  src={project.thumbnail}
-                  alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-6">
-                <div className="mb-2">
-                  <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full">
-                    {project.category}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition">
-                  {project.title}
-                </h3>
-                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.techStack.map((tech) => (
-                    <span key={tech} className="text-xs px-2 py-1 bg-primary rounded text-primary-foreground">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-3">
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleLiveDemoClick(project)
-                      }}
-                      className="text-sm text-primary hover:underline font-medium"
-                    >
-                      Live Demo →
-                    </a>
-                  )}
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleGithubClick(project)
-                      }}
-                      className="text-sm text-muted-foreground hover:text-foreground font-medium"
-                    >
-                      GitHub
-                    </a>
-                  )}
-                </div>
-              </div>
+            <div key={project.id} onClick={() => handleProjectClick(project)}>
+              <ProjectCard project={project} variant="public" />
             </div>
           ))}
         </div>
