@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Info, HelpCircle } from 'lucide-react'
 
-export type ModalType = 'danger' | 'warning' | 'info' | 'question'
+export type ModalType = 'danger' | 'warning' | 'info' | 'question' | 'primary'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -51,6 +51,12 @@ export default function ConfirmModal({
       iconBg: 'bg-primary/10',
       iconColor: 'text-primary',
       icon: <HelpCircle size={24} />,
+      button: 'bg-primary text-primary-foreground hover:bg-primary/90'
+    },
+    primary: {
+      iconBg: 'bg-primary/10',
+      iconColor: 'text-primary',
+      icon: <Info size={24} />,
       button: 'bg-primary text-primary-foreground hover:bg-primary/90'
     }
   }
