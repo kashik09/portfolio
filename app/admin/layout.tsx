@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { LayoutDashboard, FolderKanban, FileText, Users, Settings, LogOut, Tags, FileEdit, Layout } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, FileText, Users, Settings, LogOut, Tags, FileEdit, Layout, Shield, Megaphone } from 'lucide-react'
 import AdminHeader from '@/components/AdminHeader'
 import { ToastProvider } from '@/components/ui/Toast'
 import { SessionProvider } from 'next-auth/react'
@@ -19,6 +19,8 @@ export default function AdminLayout({
     { href: '/admin/requests', icon: FileText, label: 'Requests' },
     { href: '/admin/users', icon: Users, label: 'Users' },
     { href: '/admin/legal', icon: FileEdit, label: 'Legal Content' },
+    { href: '/admin/ads', icon: Megaphone, label: 'Ads' },
+    { href: '/admin/security', icon: Shield, label: 'Security' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ]
 

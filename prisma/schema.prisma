@@ -39,6 +39,8 @@ model User {
   password         String? // For credentials-based auth
   twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
+  twoFactorVerified Boolean @default(false)
+  backupCodes      Json?
 
   // Membership
   membershipId String?
