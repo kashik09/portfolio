@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User } from 'lucide-react'
+import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { ThemeSelector } from '@/components/ThemeSelector'
 import { ToastProvider } from '@/components/ui/Toast'
@@ -17,6 +17,7 @@ export default function DashboardLayout({
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [maintenanceMode, setMaintenanceMode] = useState(false)
 
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
@@ -30,6 +31,29 @@ export default function DashboardLayout({
       router.push('/login?callbackUrl=/dashboard')
     }
   }, [status, router])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadSiteStatus() {
+      try {
+        const res = await fetch('/api/site/status')
+        if (!res.ok) return
+        const json = await res.json()
+        if (!cancelled && json.success && json.data) {
+          setMaintenanceMode(Boolean(json.data.maintenanceMode))
+        }
+      } catch {
+        // Ignore errors – dashboard should remain usable
+      }
+    }
+
+    loadSiteStatus()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   if (status === 'loading') {
     return (
@@ -168,6 +192,15 @@ export default function DashboardLayout({
 
           {/* Main Content */}
           <main className="flex-1 p-4 md:p-8 bg-background">
+            {maintenanceMode && (
+              <div className="mb-4 flex items-start gap-2 rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+                <AlertTriangle className="mt-0.5 text-primary" size={16} />
+                <p>
+                  The site is currently in maintenance mode. Your dashboard
+                  remains available, but some public features may be limited.
+                </p>
+              </div>
+            )}
             {children}
           </main>
         </div>
