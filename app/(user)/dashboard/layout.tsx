@@ -1,0 +1,177 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ThemeSelector } from '@/components/ThemeSelector'
+import { ToastProvider } from '@/components/ui/Toast'
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const navItems = [
+    { href: '/dashboard', icon: Home, label: 'Dashboard' },
+    { href: '/dashboard/downloads', icon: Download, label: 'My Downloads' },
+    { href: '/dashboard/requests', icon: FileText, label: 'My Requests' },
+    { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+  ]
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login?callbackUrl=/dashboard')
+    }
+  }, [status, router])
+
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (!session) {
+    return null
+  }
+
+  return (
+    <ToastProvider>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-card border-b border-border backdrop-blur-sm">
+          <div className="px-4 md:px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Logo/Title */}
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard" className="flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <span className="text-xl font-bold text-primary">D</span>
+                  </div>
+                  <div className="hidden md:block">
+                    <h1 className="text-lg font-bold text-foreground">My Dashboard</h1>
+                    <p className="text-xs text-muted-foreground">Personal Account</p>
+                  </div>
+                </Link>
+              </div>
+
+              {/* Right Actions */}
+              <div className="flex items-center gap-3">
+                <ThemeSelector />
+
+                {/* User Info */}
+                <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
+                  <User size={16} className="text-primary" />
+                  <span className="text-sm font-medium text-primary">
+                    {session.user.name || session.user.email}
+                  </span>
+                </div>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="md:hidden p-2 rounded-lg bg-muted border border-border hover:bg-muted/70 transition"
+                  aria-label="Toggle menu"
+                >
+                  {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="flex">
+          {/* Sidebar - Desktop */}
+          <aside className="hidden md:block w-64 min-h-[calc(100vh-73px)] bg-card border-r border-border">
+            <div className="p-6">
+              <nav className="space-y-2">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                        isActive
+                          ? 'bg-primary text-primary-foreground font-medium'
+                          : 'text-foreground hover:bg-primary/10 hover:text-primary'
+                      }`}
+                    >
+                      <item.icon size={20} />
+                      <span>{item.label}</span>
+                    </Link>
+                  )
+                })}
+              </nav>
+
+              <div className="mt-8 pt-8 border-t border-border">
+                <Link
+                  href="/"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                >
+                  <ArrowLeft size={20} />
+                  <span>Back to Site</span>
+                </Link>
+              </div>
+            </div>
+          </aside>
+
+          {/* Mobile Sidebar */}
+          {sidebarOpen && (
+            <div className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)}>
+              <aside
+                className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border p-6"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <nav className="space-y-2">
+                  {navItems.map((item) => {
+                    const isActive = pathname === item.href
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                          isActive
+                            ? 'bg-primary text-primary-foreground font-medium'
+                            : 'text-foreground hover:bg-primary/10 hover:text-primary'
+                        }`}
+                      >
+                        <item.icon size={20} />
+                        <span>{item.label}</span>
+                      </Link>
+                    )
+                  })}
+                </nav>
+
+                <div className="mt-8 pt-8 border-t border-border">
+                  <Link
+                    href="/"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                  >
+                    <ArrowLeft size={20} />
+                    <span>Back to Site</span>
+                  </Link>
+                </div>
+              </aside>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <main className="flex-1 p-4 md:p-8 bg-background">
+            {children}
+          </main>
+        </div>
+      </div>
+    </ToastProvider>
+  )
+}
