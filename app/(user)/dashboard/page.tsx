@@ -21,15 +21,46 @@ interface RecentDownload {
 
 interface RecentRequest {
   id: string
-  serviceType: string
+  projectType: string
   status: string
   createdAt: string
+}
+
+interface MembershipSummary {
+  tier: string
+  status: string
+  totalCredits: number
+  usedCredits: number
+  remainingCredits: number
+  startDate: string
+  endDate: string
+  renewalDate?: string | null
+}
+
+interface MeSummaryResponse {
+  success: boolean
+  data?: {
+    user: {
+      id: string
+      name: string | null
+      email: string
+    }
+    stats: {
+      licensesCount: number
+      requestsCount: number
+      pendingRequestsCount: number
+    }
+    membership: MembershipSummary | null
+    recentDownloads: RecentDownload[]
+    recentRequests: RecentRequest[]
+  }
 }
 
 export default function DashboardPage() {
   const { data: session } = useSession()
   const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [stats, setStats] = useState<DashboardStats>({
     totalDownloads: 0,
     totalRequests: 0,
@@ -37,6 +68,7 @@ export default function DashboardPage() {
   })
   const [recentDownloads, setRecentDownloads] = useState<RecentDownload[]>([])
   const [recentRequests, setRecentRequests] = useState<RecentRequest[]>([])
+  const [membership, setMembership] = useState<MembershipSummary | null>(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -45,67 +77,35 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
+      setError(null)
 
-      // TODO: Replace with actual API calls
-      // const [statsRes, downloadsRes, requestsRes] = await Promise.all([
-      //   fetch('/api/user/stats'),
-      //   fetch('/api/user/downloads/recent'),
-      //   fetch('/api/user/requests/recent')
-      // ])
-
-      // Mock data for development
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      setStats({
-        totalDownloads: 3,
-        totalRequests: 5,
-        pendingRequests: 2
+      const response = await fetch('/api/me/summary', {
+        method: 'GET',
       })
 
-      setRecentDownloads([
-        {
-          slug: 'ui-kit-pro',
-          name: 'UI Kit Pro',
-          category: 'UI_KIT',
-          downloadedAt: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          slug: 'dashboard-template',
-          name: 'Dashboard Template',
-          category: 'TEMPLATE',
-          downloadedAt: new Date(Date.now() - 172800000).toISOString()
-        },
-        {
-          slug: 'icon-pack',
-          name: 'Icon Pack',
-          category: 'ASSET',
-          downloadedAt: new Date(Date.now() - 259200000).toISOString()
-        }
-      ])
+      if (!response.ok) {
+        throw new Error('Failed to load dashboard summary')
+      }
 
-      setRecentRequests([
-        {
-          id: '1',
-          serviceType: 'Web Development',
-          status: 'IN_PROGRESS',
-          createdAt: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          id: '2',
-          serviceType: 'UI/UX Design',
-          status: 'PENDING',
-          createdAt: new Date(Date.now() - 172800000).toISOString()
-        },
-        {
-          id: '3',
-          serviceType: 'Mobile App',
-          status: 'COMPLETED',
-          createdAt: new Date(Date.now() - 604800000).toISOString()
-        }
-      ])
+      const json = (await response.json()) as MeSummaryResponse
+
+      if (!json.success || !json.data) {
+        throw new Error('Failed to load dashboard summary')
+      }
+
+      setStats({
+        totalDownloads: json.data.stats.licensesCount,
+        totalRequests: json.data.stats.requestsCount,
+        pendingRequests: json.data.stats.pendingRequestsCount,
+      })
+
+      setMembership(json.data.membership)
+      setRecentDownloads(json.data.recentDownloads || [])
+      setRecentRequests(json.data.recentRequests || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
       showToast('Failed to load dashboard data', 'error')
+      setError('Failed to load dashboard data')
     } finally {
       setLoading(false)
     }
@@ -140,6 +140,19 @@ export default function DashboardPage() {
     return date.toLocaleDateString()
   }
 
+  const formatResetsIn = (endDate?: string | null) => {
+    if (!endDate) return 'Unknown'
+    const end = new Date(endDate)
+    const now = new Date()
+    const diffTime = end.getTime() - now.getTime()
+    if (diffTime <= 0) return 'Now'
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    if (diffDays === 1) return '1 day'
+    if (diffDays < 30) return `${diffDays} days`
+    const diffMonths = Math.round(diffDays / 30)
+    return `${diffMonths} month${diffMonths !== 1 ? 's' : ''}`
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -156,8 +169,13 @@ export default function DashboardPage() {
           Welcome back, {session?.user?.name?.split(' ')[0] || 'there'}!
         </h1>
         <p className="text-muted-foreground">
-          Here's an overview of your account activity
+          Here&apos;s an overview of your account activity
         </p>
+        {error && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {error}
+          </p>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -168,7 +186,7 @@ export default function DashboardPage() {
               <Download className="text-primary" size={24} />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Downloads</p>
+              <p className="text-sm text-muted-foreground">Downloads Owned</p>
               <p className="text-3xl font-bold text-foreground">{stats.totalDownloads}</p>
             </div>
           </div>
@@ -180,7 +198,7 @@ export default function DashboardPage() {
               <FileText className="text-blue-600 dark:text-blue-400" size={24} />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Requests</p>
+              <p className="text-sm text-muted-foreground">Requests Submitted</p>
               <p className="text-3xl font-bold text-foreground">{stats.totalRequests}</p>
             </div>
           </div>
@@ -197,6 +215,76 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Usage Limits */}
+      <div className="bg-card rounded-2xl border border-border p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Usage Limits</h2>
+            <p className="text-sm text-muted-foreground">
+              Current period credit usage for your membership
+            </p>
+          </div>
+          {membership && (
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Membership</p>
+              <p className="font-medium text-foreground">
+                {membership.tier} · {membership.status}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {membership ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Credits used this period</span>
+              <span className="font-medium text-foreground">
+                {membership.usedCredits} / {membership.totalCredits}
+              </span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all"
+                style={{
+                  width: `${
+                    membership.totalCredits > 0
+                      ? Math.min(
+                          100,
+                          (membership.usedCredits / membership.totalCredits) * 100
+                        )
+                      : 0
+                  }%`,
+                }}
+              />
+            </div>
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
+              <span>
+                Credits remaining:{' '}
+                <span className="font-medium text-foreground">
+                  {membership.remainingCredits}
+                </span>
+              </span>
+              <span>
+                Resets in{' '}
+                <span className="font-medium text-foreground">
+                  {formatResetsIn(membership.endDate)}
+                </span>
+              </span>
+              <span className="text-muted-foreground">
+                Weekly limits:{' '}
+                <span className="font-medium text-foreground">
+                  Not enforced yet
+                </span>
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            You don&apos;t have an active membership yet. Credits and usage limits will appear here once a membership is assigned to your account.
+          </p>
+        )}
       </div>
 
       {/* Quick Actions */}
@@ -316,7 +404,7 @@ export default function DashboardPage() {
                   className="block p-4 bg-muted rounded-lg hover:bg-muted/70 transition"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-medium text-foreground">{request.serviceType}</h3>
+                    <h3 className="font-medium text-foreground">{request.projectType}</h3>
                     <span className={`px-2 py-1 text-xs rounded-full font-medium ${getStatusColor(request.status)}`}>
                       {request.status.replace('_', ' ')}
                     </span>

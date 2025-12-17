@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Download, Package, ArrowLeft, FileText, Calendar, Shield, Clock, CheckCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
-import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 
 interface DownloadHistory {
   id: string
   downloadedAt: string
-  ipHash: string
   successful: boolean
 }
 
@@ -30,12 +29,21 @@ interface ProductDownload {
   licenseType: string
   licenseKey?: string
   downloadHistory: DownloadHistory[]
+  downloadLimit: number
+  downloadsUsed: number
+  licenseStatus: 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'SUSPENDED' | 'RESTRICTED'
+  downloadWindowDays: number
 }
 
 interface DownloadDetailPageProps {
   params: {
     slug: string
   }
+}
+
+interface MeDownloadDetailResponse {
+  success: boolean
+  data?: ProductDownload
 }
 
 export default function DownloadDetailPage({ params }: DownloadDetailPageProps) {
@@ -54,91 +62,21 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
     try {
       setLoading(true)
 
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/user/downloads/${params.slug}`)
-      // const data = await response.json()
+      const response = await fetch(`/api/me/downloads/${params.slug}`, {
+        method: 'GET',
+      })
 
-      // Mock data for development
-      await new Promise(resolve => setTimeout(resolve, 800))
-
-      // Mock product data matching the slug
-      const mockProducts: Record<string, ProductDownload> = {
-        'ui-kit-pro': {
-          slug: 'ui-kit-pro',
-          name: 'UI Kit Pro',
-          description: 'Complete UI component library with 200+ components including buttons, forms, cards, modals, navigation elements, and more. Built with modern design principles and accessibility in mind. Includes both light and dark mode variants, fully customizable with CSS variables.',
-          category: 'UI_KIT',
-          thumbnailUrl: '/images/products/ui-kit.png',
-          downloadLimit: 3,
-          downloadsUsed: 1,
-          purchasedAt: new Date(Date.now() - 2592000000).toISOString(),
-          fileSize: 15728640,
-          fileType: 'ZIP',
-          version: '2.1.0',
-          licenseType: 'Personal License',
-          licenseKey: 'UIKIT-PRO-2024-XXXX-XXXX-XXXX',
-          downloadHistory: [
-            {
-              id: '1',
-              downloadedAt: new Date(Date.now() - 86400000).toISOString(),
-              ipHash: 'hash123',
-              successful: true
-            }
-          ]
-        },
-        'dashboard-template': {
-          slug: 'dashboard-template',
-          name: 'Dashboard Template',
-          description: 'Modern admin dashboard template with dark mode support. Includes complete layouts for analytics, user management, settings, and more. Built with Next.js 14 and TypeScript. Features responsive design, chart integrations, and customizable components.',
-          category: 'TEMPLATE',
-          thumbnailUrl: '/images/products/dashboard.png',
-          downloadLimit: 3,
-          downloadsUsed: 2,
-          purchasedAt: new Date(Date.now() - 5184000000).toISOString(),
-          fileSize: 8388608,
-          fileType: 'ZIP',
-          version: '1.5.2',
-          licenseType: 'Commercial License',
-          licenseKey: 'DASH-TEMP-2024-XXXX-XXXX-XXXX',
-          downloadHistory: [
-            {
-              id: '2',
-              downloadedAt: new Date(Date.now() - 172800000).toISOString(),
-              ipHash: 'hash456',
-              successful: true
-            },
-            {
-              id: '3',
-              downloadedAt: new Date(Date.now() - 259200000).toISOString(),
-              ipHash: 'hash789',
-              successful: true
-            }
-          ]
-        },
-        'icon-pack': {
-          slug: 'icon-pack',
-          name: 'Premium Icon Pack',
-          description: '500+ SVG icons for modern applications. Includes multiple styles (outline, filled, duotone) and categories (UI, social, business, etc). All icons are optimized for web use and available in multiple sizes. Fully customizable with CSS.',
-          category: 'ASSET',
-          downloadLimit: 3,
-          downloadsUsed: 0,
-          purchasedAt: new Date(Date.now() - 1296000000).toISOString(),
-          fileSize: 2097152,
-          fileType: 'ZIP',
-          version: '3.0.0',
-          licenseType: 'Extended License',
-          licenseKey: 'ICON-PACK-2024-XXXX-XXXX-XXXX',
-          downloadHistory: []
-        }
+      if (!response.ok) {
+        throw new Error('Failed to load product details')
       }
 
-      const productData = mockProducts[params.slug]
+      const json = (await response.json()) as MeDownloadDetailResponse
 
-      if (!productData) {
-        setProduct(null)
-      } else {
-        setProduct(productData)
+      if (!json.success || !json.data) {
+        throw new Error('Failed to load product details')
       }
+
+      setProduct(json.data)
     } catch (error) {
       console.error('Error fetching product details:', error)
       showToast('Failed to load product details', 'error')
@@ -152,7 +90,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
     if (!product) return
 
     if (product.downloadsUsed >= product.downloadLimit) {
-      showToast('Download limit reached', 'error')
+      showToast('Download limit reached for this period', 'error')
       return
     }
 
@@ -160,32 +98,43 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
     setDownloading(true)
 
     try {
-      // TODO: Replace with actual download API call
-      // const response = await fetch(`/api/user/downloads/${product.slug}/download`, {
-      //   method: 'POST'
-      // })
-      // const data = await response.json()
-      // window.location.href = data.downloadUrl
+      const tokenResponse = await fetch(
+        `/api/digital-products/${product.slug}/download`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
 
-      // Mock download
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      if (!tokenResponse.ok) {
+        const errorBody = await tokenResponse.json().catch(() => null)
+        const message =
+          (errorBody && errorBody.error) || 'Failed to start download'
+        showToast(message, 'error')
+        return
+      }
 
+      const tokenJson = await tokenResponse.json()
+      const downloadToken = tokenJson?.data?.downloadToken as
+        | string
+        | undefined
+
+      if (!downloadToken) {
+        showToast('Invalid download token received', 'error')
+        return
+      }
+
+      const fileUrl = `/api/digital-products/${product.slug}/file?token=${encodeURIComponent(
+        downloadToken
+      )}`
+
+      window.location.href = fileUrl
       showToast('Download started successfully', 'success')
 
-      // Update downloads used count
-      setProduct({
-        ...product,
-        downloadsUsed: product.downloadsUsed + 1,
-        downloadHistory: [
-          {
-            id: `new-${Date.now()}`,
-            downloadedAt: new Date().toISOString(),
-            ipHash: 'current-ip-hash',
-            successful: true
-          },
-          ...product.downloadHistory
-        ]
-      })
+      // Refresh details to update remaining downloads
+      fetchProductDetails()
     } catch (error) {
       console.error('Error downloading product:', error)
       showToast('Failed to download product', 'error')

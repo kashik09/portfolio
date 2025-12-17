@@ -16,6 +16,14 @@ interface UserDownload {
   purchasedAt: string
   expiresAt?: string
   fileSize: number
+  licenseStatus: 'ACTIVE' | 'EXPIRED' | 'RESTRICTED'
+}
+
+interface MeDownloadsResponse {
+  success: boolean
+  data?: {
+    downloads: UserDownload[]
+  }
 }
 
 export default function DownloadsPage() {
@@ -33,47 +41,21 @@ export default function DownloadsPage() {
     try {
       setLoading(true)
 
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/user/downloads')
-      // const data = await response.json()
+      const response = await fetch('/api/me/downloads', {
+        method: 'GET',
+      })
 
-      // Mock data for development
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      if (!response.ok) {
+        throw new Error('Failed to load downloads')
+      }
 
-      setDownloads([
-        {
-          slug: 'ui-kit-pro',
-          name: 'UI Kit Pro',
-          description: 'Complete UI component library with 200+ components',
-          category: 'UI_KIT',
-          thumbnailUrl: '/images/products/ui-kit.png',
-          downloadLimit: 3,
-          downloadsUsed: 1,
-          purchasedAt: new Date(Date.now() - 2592000000).toISOString(),
-          fileSize: 15728640
-        },
-        {
-          slug: 'dashboard-template',
-          name: 'Dashboard Template',
-          description: 'Modern admin dashboard template with dark mode',
-          category: 'TEMPLATE',
-          thumbnailUrl: '/images/products/dashboard.png',
-          downloadLimit: 3,
-          downloadsUsed: 2,
-          purchasedAt: new Date(Date.now() - 5184000000).toISOString(),
-          fileSize: 8388608
-        },
-        {
-          slug: 'icon-pack',
-          name: 'Premium Icon Pack',
-          description: '500+ SVG icons for modern applications',
-          category: 'ASSET',
-          downloadLimit: 3,
-          downloadsUsed: 0,
-          purchasedAt: new Date(Date.now() - 1296000000).toISOString(),
-          fileSize: 2097152
-        }
-      ])
+      const json = (await response.json()) as MeDownloadsResponse
+
+      if (!json.success || !json.data) {
+        throw new Error('Failed to load downloads')
+      }
+
+      setDownloads(json.data.downloads || [])
     } catch (error) {
       console.error('Error fetching downloads:', error)
       showToast('Failed to load downloads', 'error')
@@ -201,9 +183,14 @@ export default function DownloadsPage() {
                       <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
                         {download.name}
                       </h3>
-                      <span className="px-2 py-1 text-xs bg-primary/20 text-primary rounded-full font-medium whitespace-nowrap ml-2">
-                        {formatCategory(download.category)}
-                      </span>
+                      <div className="flex flex-col items-end gap-1 ml-2">
+                        <span className="px-2 py-1 text-xs bg-primary/20 text-primary rounded-full font-medium whitespace-nowrap">
+                          {formatCategory(download.category)}
+                        </span>
+                        <span className="px-2 py-1 text-[10px] bg-muted text-muted-foreground rounded-full font-medium whitespace-nowrap">
+                          {download.licenseStatus}
+                        </span>
+                      </div>
                     </div>
 
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
@@ -220,7 +207,7 @@ export default function DownloadsPage() {
                           ? 'text-red-600 dark:text-red-400'
                           : 'text-green-600 dark:text-green-400'
                       }`}>
-                        {download.downloadLimit - download.downloadsUsed} downloads left
+                        {download.downloadLimit - download.downloadsUsed} downloads left (3 per 14 days)
                       </span>
                     </div>
 
