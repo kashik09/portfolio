@@ -760,6 +760,44 @@ model UserAdConsent {
 }
 
 // ============================================
+// PAGES CMS MODELS
+// ============================================
+
+model Page {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  status      PageStatus @default(DRAFT)
+  seoTitle    String?
+  seoDescription String? @db.Text
+  sections    PageSection[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([status])
+  @@map("pages")
+}
+
+model PageSection {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  type      SectionType
+  data      Json
+  order     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([pageId])
+  @@index([order])
+  @@map("page_sections")
+}
+
+
+// ============================================
 // ENUMS
 // ============================================
 
@@ -999,4 +1037,19 @@ enum ContentPageType {
   PRIVACY_POLICY
   ABOUT
   OTHER
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum SectionType {
+  HERO
+  RICH_TEXT
+  CARDS
+  CTA
+  FAQ
+  CONTACT_BLOCK
+  PROJECT_GRID
 }
