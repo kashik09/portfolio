@@ -57,15 +57,18 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">3. Project Requests</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">3. Service Requests</h2>
           <p className="text-foreground leading-relaxed mb-4">
-            When you submit a project request through our platform:
+            Submitting a service request through our platform does not constitute a binding agreement. A formal agreement must be accepted in writing before any work begins or fees are charged.
+          </p>
+          <p className="text-foreground leading-relaxed mb-4">
+            When you submit a service request:
           </p>
           <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
             <li>You authorize us to contact you via email, phone, or other provided contact methods</li>
-            <li>Project requests do not constitute a binding agreement until both parties sign a formal contract</li>
+            <li>We will review your request and respond typically within 24-48 business hours</li>
             <li>We reserve the right to decline any project request for any reason</li>
-            <li>Response time is typically within 24-48 business hours</li>
+            <li>No charges or obligations arise from submitting a request form</li>
           </ul>
         </section>
 
@@ -85,18 +88,37 @@ export default function TermsPage() {
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">5. Payment Terms</h2>
           <p className="text-foreground leading-relaxed mb-4">
-            For services rendered:
+            Payment terms are governed by the specific project agreement or contract provided to you. Unless otherwise stated in writing:
           </p>
           <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
             <li>Payment terms will be specified in individual project agreements</li>
             <li>We typically require a deposit before commencing work</li>
-            <li>Late payments may incur additional fees</li>
-            <li>Refund policies will be outlined in project-specific agreements</li>
+            <li>Late payments may incur additional fees as specified in your agreement</li>
+            <li>No payment is due until a formal written agreement is executed</li>
           </ul>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">6. Intellectual Property</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">6. Refunds and Cancellations</h2>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Digital Products</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            All digital products are non-refundable once access or download has been provided, except where required by applicable law. This is standard for digital goods where immediate access is granted.
+          </p>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Services</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            Service fees and refund terms are governed by the specific project agreement or contract provided to you. Unless otherwise stated in writing, service fees are non-refundable. Each project may have unique terms based on scope and deliverables.
+          </p>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Service Requests</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            Submitting a service request through our platform does not constitute a binding agreement. A formal agreement must be accepted in writing before any work begins or fees are charged. No refund is necessary for service requests as no payment is collected at the request stage.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold text-foreground mb-4">7. Intellectual Property</h2>
           <p className="text-foreground leading-relaxed mb-4">
             Unless otherwise specified in a project agreement:
           </p>
@@ -109,19 +131,21 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">7. Confidentiality</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">8. Confidentiality</h2>
           <p className="text-foreground leading-relaxed mb-4">
             We respect the confidentiality of your project information. Any sensitive business information, trade secrets, or proprietary data shared with us will be kept confidential unless required by law to disclose.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">8. Limitation of Liability</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">9. Limitation of Liability</h2>
           <p className="text-foreground leading-relaxed mb-4">
-            To the fullest extent permitted by law:
+            To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.
+          </p>
+          <p className="text-foreground leading-relaxed mb-4">
+            Additionally:
           </p>
           <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
-            <li>We are not liable for any indirect, incidental, or consequential damages</li>
             <li>Our total liability shall not exceed the amount paid for the specific service</li>
             <li>We are not responsible for third-party services, tools, or platforms used in projects</li>
             <li>Clients are responsible for maintaining backups of their data</li>
@@ -129,35 +153,35 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">9. Warranty Disclaimer</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">10. Warranty Disclaimer</h2>
           <p className="text-foreground leading-relaxed mb-4">
             Services are provided "as is" without warranty of any kind. While we strive for excellence, we do not guarantee that our services will be error-free, uninterrupted, or meet specific performance requirements unless explicitly stated in a project agreement.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">10. Termination</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">11. Termination</h2>
           <p className="text-foreground leading-relaxed mb-4">
             Either party may terminate a project agreement according to the terms specified in that agreement. Termination does not relieve either party of obligations incurred prior to termination.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">11. Changes to Terms</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">12. Changes to Terms</h2>
           <p className="text-foreground leading-relaxed mb-4">
             We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to this page. Your continued use of our services after changes constitutes acceptance of the modified terms.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">12. Governing Law</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">13. Governing Law</h2>
           <p className="text-foreground leading-relaxed mb-4">
             These terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law provisions.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">13. Contact Information</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">14. Contact Information</h2>
           <p className="text-foreground leading-relaxed mb-4">
             If you have any questions about these Terms of Service, please contact us through the contact form on our website or via the contact information provided on our site.
           </p>
