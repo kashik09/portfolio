@@ -37,7 +37,7 @@ export interface CTAData {
   description?: string
   buttonText: string
   buttonLink: string
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'gradient'
 }
 
 export interface FAQItem {
