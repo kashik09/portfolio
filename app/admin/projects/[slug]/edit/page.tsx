@@ -377,23 +377,12 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
 
             <div className="flex gap-2 mb-2">
               <input
-                type="file"
-                accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    const formData = new FormData()
-                    formData.append('file', file)
-                    const res = await fetch('/api/upload', { method: 'POST', body: formData })
-                    const data = await res.json()
-                    if (data.url) {
-                      setThumbnailPath(data.url)
-                      setImagePreview(data.url)
-                      showToast('Image uploaded!', 'success')
-                    }
-                  }
-                }}
-                className="w-full px-4 py-2 bg-background border border-border rounded-lg"
+                type="text"
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())}
+                className="flex-1 px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
+                placeholder="Type a custom technology and press Enter"
               />
               <button
                 type="button"
@@ -425,26 +414,42 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Thumbnail Image Path
+              Thumbnail Image
             </label>
             
-            <p className="text-xs text-muted-foreground mb-3">
-              <FolderOpen size={14} className="inline mr-1" /> Upload your image to <code className="bg-muted px-2 py-1 rounded">public/uploads/projects/</code> then enter the path below
-            </p>
-
-            <input
-              type="text"
-              value={thumbnailPath}
-              onChange={(e) => {
-                setThumbnailPath(e.target.value)
-                setImagePreview(e.target.value)
-              }}
-              className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground mb-4"
-              placeholder="/uploads/projects/my-project.png"
-            />
+            <div className="mb-4">
+              <input
+                id="thumbnail-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    const fd = new FormData()
+                    fd.append('file', file)
+                    const res = await fetch('/api/upload', { method: 'POST', body: fd })
+                    const data = await res.json()
+                    if (data.url) {
+                      setThumbnailPath(data.url)
+                      setImagePreview(data.url)
+                      showToast('Uploaded!', 'success')
+                    }
+                  }
+                }}
+              />
+              <label
+                htmlFor="thumbnail-upload"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 cursor-pointer transition"
+              >
+                <Upload size={16} />
+                Choose File
+              </label>
+              {thumbnailPath && <span className="ml-3 text-sm text-muted-foreground">{thumbnailPath.split('/').pop()}</span>}
+            </div>
             
             {imagePreview && (
-              <div className="mb-4 relative">
+              <div className="relative">
                 <img 
                   src={imagePreview} 
                   alt="Preview" 
