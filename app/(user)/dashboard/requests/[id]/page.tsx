@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, FileText, Clock, ListChecks } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface RequestDetail {
   id: string
@@ -121,7 +122,7 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        <Spinner size="lg" />
       </div>
     )
   }

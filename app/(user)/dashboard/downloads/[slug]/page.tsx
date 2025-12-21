@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Download, Package, ArrowLeft, FileText, Calendar, Shield, Clock, CheckCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface DownloadHistory {
   id: string
@@ -176,7 +177,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     )
   }
@@ -306,7 +307,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           >
             {downloading ? (
               <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+                <Spinner size="sm" />
                 Downloading...
               </>
             ) : (

@@ -45,7 +45,20 @@ export async function sendEmail(config: EmailConfig, options: EmailOptions) {
   }
 }
 
-export function getEmailTemplate(type: 'test' | 'request-accepted' | 'request-rejected', data?: any) {
+type EmailTemplateType =
+  | 'test'
+  | 'request-accepted'
+  | 'request-rejected'
+  | 'license-issued'
+  | 'license-revoked'
+  | 'license-suspended'
+  | 'license-abuse-detected'
+  | 'license-seat-assigned'
+  | 'license-seat-revoked'
+  | 'download-reset-approved'
+  | 'download-reset-rejected'
+
+export function getEmailTemplate(type: EmailTemplateType, data?: any) {
   const templates = {
     test: {
       subject: 'Test Email from Your Portfolio',
@@ -79,6 +92,111 @@ export function getEmailTemplate(type: 'test' | 'request-accepted' | 'request-re
           <p>Thank you for your interest in working together. Unfortunately, I'm unable to take on your project at this time.</p>
           ${data?.reason ? `<p><strong>Reason:</strong> ${data.reason}</p>` : ''}
           <p>I appreciate you reaching out and wish you the best with your project.</p>
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'license-issued': {
+      subject: 'Your License Has Been Issued',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #10b981;">License Issued</h1>
+          <p>Your ${data?.licenseType} license for <strong>${data?.productName}</strong> has been issued.</p>
+          <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>License Key:</strong></p>
+            <code style="font-size: 16px; color: #1f2937;">${data?.licenseKey}</code>
+          </div>
+          <p>You can download your product and manage your license from your dashboard.</p>
+          ${data?.licenseType === 'TEAM' ? `<p><strong>Team License:</strong> You can assign up to ${data?.maxUsers} seats to team members.</p>` : ''}
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'license-revoked': {
+      subject: 'License Revoked',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ef4444;">License Revoked</h1>
+          <p>Your license for <strong>${data?.productName}</strong> has been revoked.</p>
+          ${data?.reason ? `<p><strong>Reason:</strong> ${data.reason}</p>` : ''}
+          <p>License Key: <code>${data?.licenseKey}</code></p>
+          <p>If you believe this is an error, contact support.</p>
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'license-suspended': {
+      subject: 'License Suspended',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #f59e0b;">License Suspended</h1>
+          <p>Your license for <strong>${data?.productName}</strong> has been suspended.</p>
+          ${data?.reason ? `<p><strong>Reason:</strong> ${data.reason}</p>` : ''}
+          <p>License Key: <code>${data?.licenseKey}</code></p>
+          <p>Downloads and usage are blocked until the issue is resolved.</p>
+          <p>Contact support for assistance.</p>
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'license-abuse-detected': {
+      subject: 'License Abuse Detected - Action Required',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ef4444;">Abuse Detected</h1>
+          <p>Suspicious activity has been detected on your license for <strong>${data?.productName}</strong>.</p>
+          <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #991b1b;"><strong>Detected Issue:</strong> ${data?.abuseReason}</p>
+          </div>
+          <p>License Key: <code>${data?.licenseKey}</code></p>
+          <p>Your license has been suspended pending review. If this is a false positive, contact support immediately.</p>
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'license-seat-assigned': {
+      subject: 'You Have Been Assigned a License Seat',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #10b981;">License Seat Assigned</h1>
+          <p>You have been assigned a seat on a team license for <strong>${data?.productName}</strong>.</p>
+          <p>License Key: <code>${data?.licenseKey}</code></p>
+          <p>You can now download and use this product. Access your license from your dashboard.</p>
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'license-seat-revoked': {
+      subject: 'License Seat Revoked',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ef4444;">License Seat Revoked</h1>
+          <p>Your seat on the team license for <strong>${data?.productName}</strong> has been revoked.</p>
+          <p>You no longer have access to this product.</p>
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'download-reset-approved': {
+      subject: 'Download Reset Request Approved',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #10b981;">Download Reset Approved</h1>
+          <p>Your download reset request for <strong>${data?.productName}</strong> has been approved.</p>
+          <p>Your download counter has been reset. You can now download the product again.</p>
+          ${data?.notes ? `<p><strong>Admin Notes:</strong> ${data.notes}</p>` : ''}
+          <p>Best regards,<br>Kashi Kweyu</p>
+        </div>
+      `
+    },
+    'download-reset-rejected': {
+      subject: 'Download Reset Request Rejected',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ef4444;">Download Reset Rejected</h1>
+          <p>Your download reset request for <strong>${data?.productName}</strong> has been rejected.</p>
+          ${data?.reason ? `<p><strong>Reason:</strong> ${data.reason}</p>` : ''}
+          <p>If you have questions, contact support.</p>
           <p>Best regards,<br>Kashi Kweyu</p>
         </div>
       `

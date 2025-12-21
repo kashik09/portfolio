@@ -7,6 +7,7 @@ import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTria
 import { useState, useEffect } from 'react'
 import { ThemeSelector } from '@/components/ThemeSelector'
 import { ToastProvider } from '@/components/ui/Toast'
+import { Spinner } from '@/components/ui/Spinner'
 
 export default function DashboardLayout({
   children,
@@ -58,7 +59,7 @@ export default function DashboardLayout({
   if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     )
   }

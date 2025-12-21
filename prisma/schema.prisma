@@ -370,23 +370,57 @@ model License {
   currentUsers Int @default(0)
 
   // Abuse tracking
-  abuseDetected Boolean   @default(false)
-  abuseReason   String?   @db.Text
-  revokedAt     DateTime?
-  revokedReason String?   @db.Text
+  abuseDetected   Boolean   @default(false)
+  abuseReason     String?   @db.Text
+  abuseFlagged Boolean   @default(false)
+  abuseFlaggedAt  DateTime?
+  abuseFlaggedBy  String?
+  revokedAt       DateTime?
+  revokedReason   String?   @db.Text
 
   // Timestamps
   issuedAt  DateTime  @default(now())
   expiresAt DateTime? // null = lifetime
 
   // Relations
-  downloads Download[]
+  downloads     Download[]
+  seatAssignments LicenseSeatAssignment[]
 
   @@index([userId])
   @@index([productId])
   @@index([licenseKey])
   @@index([status])
+  @@index([abuseFlagged])
   @@map("licenses")
+}
+
+model LicenseSeatAssignment {
+  id String @id @default(cuid())
+
+  // License
+  licenseId String
+  license   License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  // Assigned user
+  assignedUserId    String
+  assignedUserEmail String
+
+  // Assignment details
+  assignedBy String // Admin or license owner user ID
+  assignedAt DateTime @default(now())
+  revokedAt  DateTime?
+  revokedBy  String?
+  active     Boolean  @default(true)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([licenseId, assignedUserEmail])
+  @@index([licenseId])
+  @@index([assignedUserId])
+  @@index([active])
+  @@map("license_seat_assignments")
 }
 
 model Download {
@@ -1000,19 +1034,32 @@ enum AuditAction {
   USER_LOGOUT
   LICENSE_ISSUED
   LICENSE_REVOKED
+  LICENSE_SUSPENDED
+  LICENSE_REACTIVATED
+  LICENSE_SEAT_ASSIGNED
+  LICENSE_SEAT_REVOKED
+  LICENSE_ABUSE_FLAGGED
+  LICENSE_ABUSE_CLEARED
   DOWNLOAD_ATTEMPTED
   DOWNLOAD_SUCCEEDED
   DOWNLOAD_FAILED
+  DOWNLOAD_ABUSE_DETECTED
+  DOWNLOAD_RESET_REQUESTED
+  DOWNLOAD_RESET_APPROVED
+  DOWNLOAD_RESET_REJECTED
   ABUSE_DETECTED
   ACCOUNT_LOCKED
   ACCOUNT_UNLOCKED
   CREDIT_USED
+  CREDIT_ADJUSTED
   MEMBERSHIP_CREATED
   MEMBERSHIP_RENEWED
+  MEMBERSHIP_SUSPENDED
   PROJECT_CREATED
   PROJECT_PHASE_CHANGED
   ADD_ON_REQUESTED
   SETTINGS_CHANGED
+  FEATURE_FLAG_TOGGLED
 }
 
 enum Environment {

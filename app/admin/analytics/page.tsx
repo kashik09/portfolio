@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { BarChart3, TrendingUp, Users, Eye, MousePointer, Clock, Smartphone, Monitor, Tablet } from 'lucide-react'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface AnalyticsData {
   totalViews: number
@@ -68,7 +69,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     )
   }

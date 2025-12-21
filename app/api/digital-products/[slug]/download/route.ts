@@ -9,6 +9,8 @@ import {
   logDownloadEvent,
   createDownloadToken,
 } from '@/lib/downloads'
+import { detectDownloadAbuse, flagLicenseAbuse } from '@/lib/license'
+import { getEmailTemplate, sendEmail } from '@/lib/email'
 
 function getClientIp(req: NextRequest): string | null {
   const headerList = headers()
@@ -115,6 +117,69 @@ export async function POST(
 
       return NextResponse.json(
         { success: false, error: 'License is not in good standing' },
+        { status: 403 }
+      )
+    }
+
+    // Check for download abuse before allowing download
+    const abuseCheck = await detectDownloadAbuse(license.id)
+    if (abuseCheck.isAbuse) {
+      // Flag the license for abuse
+      await flagLicenseAbuse({
+        licenseId: license.id,
+        reason: abuseCheck.reason || 'Download abuse detected',
+        flaggedBy: 'system',
+        ipHash: ipHash ?? undefined,
+        userAgent: userAgent ?? undefined,
+        details: abuseCheck.details,
+      })
+
+      // Log audit event
+      await logDownloadEvent({
+        userId,
+        action: AuditAction.DOWNLOAD_ABUSE_DETECTED,
+        resourceId: product.id,
+        ipHash,
+        userAgent,
+        details: abuseCheck.details,
+      })
+
+      // Get user details
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true },
+      })
+
+      // Send abuse detection email
+      if (user && process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const emailTemplate = getEmailTemplate('license-abuse-detected', {
+          productName: product.name,
+          licenseKey: license.licenseKey,
+          abuseReason: abuseCheck.reason,
+        })
+
+        await sendEmail(
+          {
+            host: process.env.EMAIL_HOST,
+            port: parseInt(process.env.EMAIL_PORT || '587'),
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+          {
+            to: user.email,
+            subject: emailTemplate.subject,
+            html: emailTemplate.html,
+          }
+        ).catch((err) => {
+          console.error('Failed to send abuse detection email:', err)
+        })
+      }
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'License has been suspended due to suspected abuse. Please contact support.',
+        },
         { status: 403 }
       )
     }

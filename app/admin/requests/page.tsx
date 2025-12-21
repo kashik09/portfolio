@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface ProjectRequest {
   id: string
@@ -198,7 +199,7 @@ export default function AdminRequestsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     )
   }

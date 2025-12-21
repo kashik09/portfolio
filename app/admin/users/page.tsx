@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface UserType {
   id: string
@@ -143,7 +144,7 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     )
   }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTheme } from '@/lib/ThemeContext'
 import { defaultTheme, ThemeName } from '@/lib/themes'
 import { useToast } from '@/components/ui/Toast'
+import { Spinner } from '@/components/ui/Spinner'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import {
   ArrowLeft,
@@ -404,7 +405,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        <Spinner size="lg" />
       </div>
     )
   }

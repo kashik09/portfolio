@@ -29,18 +29,23 @@ export default function Setup2FAPage() {
         method: 'POST',
       })
 
+      if (!response.ok) {
+        throw new Error('Failed to setup 2FA')
+      }
+
       const data = await response.json()
 
-      if (data.success) {
-        setQrCode(data.qrCode)
-        setSecret(data.secret)
-        setBackupCodes(data.backupCodes)
+      if (data.success && data.data) {
+        setQrCode(data.data.qrCode)
+        setSecret(data.data.secret)
+        setBackupCodes(data.data.backupCodes)
         setStep('qr')
       } else {
         setError(data.error || 'Failed to generate 2FA setup')
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.')
+    } catch (err: any) {
+      console.error('2FA Setup Error:', err)
+      setError(err.message || 'An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -59,7 +64,7 @@ export default function Setup2FAPage() {
       const response = await fetch('/api/auth/2fa/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: verificationCode }),
+        body: JSON.stringify({ token: verificationCode }),
       })
 
       const data = await response.json()
@@ -85,8 +90,8 @@ export default function Setup2FAPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-card border border-border rounded-2xl p-8 shadow-lg">
+    <div className="min-h-screen bg-background py-8 px-4">
+      <div className="w-full max-w-2xl mx-auto bg-card border border-border rounded-2xl p-8 shadow-lg min-h-[600px]">
         <div className="flex items-center justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
             <Shield className="w-8 h-8 text-primary" />
@@ -175,7 +180,7 @@ export default function Setup2FAPage() {
                 Save these codes in a secure place. You can use them to access your account if you lose your device.
               </p>
               <div className="grid grid-cols-2 gap-2 font-mono text-sm">
-                {backupCodes.map((code, index) => (
+                {backupCodes?.map((code, index) => (
                   <div key={index} className="bg-background rounded px-3 py-1">
                     {code}
                   </div>
