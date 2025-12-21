@@ -5,6 +5,7 @@ import { ArrowLeft, Upload, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface Project {
   id: number
@@ -20,7 +21,7 @@ interface Project {
   published: boolean
 }
 
-export default function EditProjectPage({ params }: { params: { id: string } }) {
+export default function EditProjectPage({ params }: { params: { slug: string } }) {
   const router = useRouter()
   const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
@@ -56,35 +57,43 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
   ]
 
   useEffect(() => {
-    // TODO: Fetch project from API
-    // Mock data for now
-    const mockProject: Project = {
-      id: parseInt(params.id),
-      title: 'JS Calculator',
-      slug: 'js-calculator',
-      description: 'A modern calculator built with Next.js and Tailwind CSS',
-      category: 'CLASS',
-      githubUrl: 'https://github.com/yourusername/js-calculator',
-      liveUrl: 'https://calculator.example.com',
-      tags: ['javascript', 'calculator', 'webapp'],
-      techStack: ['Next.js', 'TypeScript', 'Tailwind CSS'],
-      featured: true,
-      published: true
-    }
+    fetchProject()
+  }, [params.slug])
 
-    setFormData({
-      title: mockProject.title,
-      slug: mockProject.slug,
-      description: mockProject.description,
-      category: mockProject.category,
-      githubUrl: mockProject.githubUrl,
-      liveUrl: mockProject.liveUrl,
-      featured: mockProject.featured,
-      published: mockProject.published
-    })
-    setTags(mockProject.tags)
-    setTechStack(mockProject.techStack)
-  }, [params.id])
+  const fetchProject = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/admin/projects/${params.slug}`)
+      const data = await response.json()
+
+      if (data.success && data.data) {
+        const project = data.data
+        setFormData({
+          title: project.title,
+          slug: project.slug,
+          description: project.description,
+          category: project.category,
+          githubUrl: project.githubUrl || '',
+          liveUrl: project.liveUrl || '',
+          featured: project.featured,
+          published: project.published
+        })
+        setTags(project.tags || [])
+        setTechStack(project.techStack || [])
+        if (project.thumbnail) {
+          setImagePreview(project.thumbnail)
+        }
+      } else {
+        showToast('Project not found', 'error')
+        router.push('/admin/projects')
+      }
+    } catch (error) {
+      console.error('Error fetching project:', error)
+      showToast('Failed to fetch project', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Auto-generate slug from title
   const generateSlug = (title: string) => {
@@ -139,16 +148,38 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     setLoading(true)
 
     try {
-      // TODO: Call update API
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      showToast('Project updated successfully', 'success')
-      router.push(`/admin/projects/${params.id}`)
+      const response = await fetch(`/api/admin/projects/${params.slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          tags,
+          techStack
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        showToast('Project updated successfully', 'success')
+        router.push(`/admin/projects/${params.slug}`)
+      } else {
+        showToast(data.error || 'Failed to update project', 'error')
+      }
     } catch (error) {
+      console.error('Error updating project:', error)
       showToast('Failed to update project', 'error')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (loading && !formData.title) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Spinner size="lg" />
+      </div>
+    )
   }
 
   return (
@@ -156,7 +187,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link
-          href={`/admin/projects/${params.id}`}
+          href={`/admin/projects/${params.slug}`}
           className="p-2 hover:bg-muted rounded-lg transition"
         >
           <ArrowLeft size={20} />
@@ -449,7 +480,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         {/* Actions */}
         <div className="flex items-center justify-end gap-4">
           <Link
-            href={`/admin/projects/${params.id}`}
+            href={`/admin/projects/${params.slug}`}
             className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition text-foreground font-medium"
           >
             Cancel
