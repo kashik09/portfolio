@@ -343,7 +343,7 @@ export default function AdminDigitalProductsPage() {
         title="Delete Product"
         message="Are you sure you want to delete this product? This action cannot be undone and will also delete all associated licenses."
         confirmText="Delete"
-        confirmVariant="destructive"
+        type="danger"
       />
     </div>
   )
