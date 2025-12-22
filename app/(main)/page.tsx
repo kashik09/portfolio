@@ -2,8 +2,48 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Code2, Palette, Zap, ArrowRight } from 'lucide-react'
 import { AdSlot } from '@/components/AdSlot'
+import { FeaturedProjects } from '@/components/FeaturedProjects'
+import { ProjectCardData } from '@/components/ProjectCard'
+import { prisma } from '@/lib/prisma'
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch featured projects
+  const featuredProjectsData = await prisma.project.findMany({
+    where: {
+      featured: true,
+      published: true
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 6,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      thumbnail: true,
+      techStack: true,
+      tags: true,
+      category: true,
+      githubUrl: true,
+      liveUrl: true,
+      featured: true
+    }
+  })
+
+  const featuredProjects: ProjectCardData[] = featuredProjectsData.map((project) => ({
+    id: project.id,
+    slug: project.slug,
+    title: project.title,
+    description: project.description,
+    image: project.thumbnail,
+    technologies: project.techStack,
+    githubUrl: project.githubUrl,
+    liveUrl: project.liveUrl,
+    featured: project.featured,
+    category: project.category
+  }))
   return (
     <div className="space-y-20 py-12">
       {/* Hero Section */}
@@ -36,6 +76,11 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-4">
         <AdSlot placement="homepage_hero" />
       </section>
+
+      {/* Featured Projects */}
+      {featuredProjects.length > 0 && (
+        <FeaturedProjects projects={featuredProjects} />
+      )}
 
       {/* Features */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">

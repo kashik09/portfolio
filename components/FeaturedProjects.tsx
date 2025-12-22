@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Star, ArrowRight } from 'lucide-react'
 import { ProjectCard, ProjectCardData } from './ProjectCard'
