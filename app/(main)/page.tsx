@@ -5,6 +5,7 @@ import { AdSlot } from '@/components/AdSlot'
 import { FeaturedProjects } from '@/components/FeaturedProjects'
 import { ProjectCardData } from '@/components/ProjectCard'
 import { prisma } from '@/lib/prisma'
+import { MemberHomeTop } from '@/components/home/MemberHomeTop'
 
 export default async function HomePage() {
   // Fetch featured projects
@@ -46,6 +47,9 @@ export default async function HomePage() {
   }))
   return (
     <div className="space-y-20 py-12">
+      {/* Member Dashboard Strip (only shows for logged-in users) */}
+      <MemberHomeTop />
+
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-4">
         <div className="text-center space-y-6 py-12">
