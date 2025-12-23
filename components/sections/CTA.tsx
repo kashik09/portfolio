@@ -17,7 +17,7 @@ export function CTA({ data }: CTAProps) {
   const isGradient = data.variant === 'gradient'
 
   return (
-    <section className={`relative py-20 md:py-32 overflow-hidden ${
+    <section className={`relative py-14 md:py-20 overflow-hidden ${
       isGradient
         ? 'bg-gradient-to-br from-primary via-primary/80 to-primary/60'
         : isPrimary

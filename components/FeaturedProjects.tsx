@@ -20,7 +20,7 @@ export function FeaturedProjects({
   }
 
   return (
-    <section className="py-16">
+    <section>
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
