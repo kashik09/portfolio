@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Cropper from 'react-easy-crop'
 import { Upload, Crop, X, Check } from 'lucide-react'
 import { Spinner } from './ui/Spinner'
@@ -66,6 +66,7 @@ export function ImageUploadCrop({
   aspectRatio = 1, // Default to square
   label = 'Upload Image'
 }: ImageUploadCropProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -73,6 +74,18 @@ export function ImageUploadCrop({
   const [uploading, setUploading] = useState(false)
   const [customAspect, setCustomAspect] = useState(aspectRatio)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   const onCropComplete = useCallback(
     (croppedArea: Area, croppedAreaPixels: Area) => {
@@ -92,9 +105,14 @@ export function ImageUploadCrop({
       const reader = new FileReader()
       reader.onload = () => {
         setImageSrc(reader.result as string)
+        setIsOpen(true)
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  const handleOpenModal = () => {
+    fileInputRef.current?.click()
   }
 
   const handleCropSave = async () => {
@@ -122,6 +140,7 @@ export function ImageUploadCrop({
         setImageSrc(null)
         setCrop({ x: 0, y: 0 })
         setZoom(1)
+        setIsOpen(false)
       } else {
         alert('Failed to upload image')
       }
@@ -137,126 +156,28 @@ export function ImageUploadCrop({
     setImageSrc(null)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
+    setIsOpen(false)
   }
 
   return (
-    <div className="space-y-4">
-      <label className="block text-sm font-medium text-foreground mb-2">
-        {label}
-      </label>
+    <>
+      <div className="space-y-4">
+        <label className="block text-sm font-medium text-foreground mb-2">
+          {label}
+        </label>
 
-      {/* Current Image Preview */}
-      {currentImage && !imageSrc && (
-        <div className="relative inline-block">
-          <img
-            src={currentImage}
-            alt="Current avatar"
-            className="w-32 h-32 rounded-full object-cover border-2 border-border"
-          />
-        </div>
-      )}
-
-      {/* Cropper Interface */}
-      {imageSrc ? (
-        <div className="space-y-4">
-          {/* Aspect Ratio Selector */}
-          <div className="flex gap-2 items-center">
-            <span className="text-sm text-muted-foreground">Aspect Ratio:</span>
-            <button
-              type="button"
-              onClick={() => setCustomAspect(1)}
-              className={`px-3 py-1 text-sm rounded transition ${
-                customAspect === 1
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/70'
-              }`}
-            >
-              Square (1:1)
-            </button>
-            <button
-              type="button"
-              onClick={() => setCustomAspect(4 / 3)}
-              className={`px-3 py-1 text-sm rounded transition ${
-                customAspect === 4 / 3
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/70'
-              }`}
-            >
-              4:3
-            </button>
-            <button
-              type="button"
-              onClick={() => setCustomAspect(16 / 9)}
-              className={`px-3 py-1 text-sm rounded transition ${
-                customAspect === 16 / 9
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/70'
-              }`}
-            >
-              16:9
-            </button>
-          </div>
-
-          {/* Cropper */}
-          <div className="relative w-full h-96 bg-muted rounded-lg overflow-hidden">
-            <Cropper
-              image={imageSrc}
-              crop={crop}
-              zoom={zoom}
-              aspect={customAspect}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-              cropShape={customAspect === 1 ? 'round' : 'rect'}
+        {/* Current Image Preview */}
+        {currentImage && (
+          <div className="relative inline-block">
+            <img
+              src={currentImage}
+              alt="Current avatar"
+              className="w-32 h-32 rounded-full object-cover border-2 border-border"
             />
           </div>
+        )}
 
-          {/* Zoom Slider */}
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Zoom</label>
-            <input
-              type="range"
-              min={1}
-              max={3}
-              step={0.1}
-              value={zoom}
-              onChange={(e) => setZoom(Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={handleCropSave}
-              disabled={uploading}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
-            >
-              {uploading ? (
-                <>
-                  <Spinner size="sm" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Check size={18} />
-                  Save Cropped Image
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/70 transition"
-            >
-              <X size={18} />
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        /* Upload Button */
+        {/* Upload Button */}
         <div>
           <input
             ref={fileInputRef}
@@ -267,7 +188,7 @@ export function ImageUploadCrop({
           />
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={handleOpenModal}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition"
           >
             <Upload size={18} />
@@ -277,7 +198,130 @@ export function ImageUploadCrop({
             Max size: 10MB. Supported formats: JPG, PNG, GIF
           </p>
         </div>
+      </div>
+
+      {/* Modal */}
+      {isOpen && imageSrc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-card rounded-2xl border border-border shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Crop Image</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Adjust the crop area and zoom to get the perfect image
+                </p>
+              </div>
+              <button
+                onClick={handleCancel}
+                className="p-2 hover:bg-muted rounded-lg transition"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[calc(90vh-180px)] overflow-y-auto">
+              {/* Aspect Ratio Selector */}
+              <div className="flex gap-2 items-center">
+                <span className="text-sm font-medium text-foreground">Aspect Ratio:</span>
+                <button
+                  type="button"
+                  onClick={() => setCustomAspect(1)}
+                  className={`px-3 py-1.5 text-sm rounded-lg transition font-medium ${
+                    customAspect === 1
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/70'
+                  }`}
+                >
+                  Square (1:1)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomAspect(4 / 3)}
+                  className={`px-3 py-1.5 text-sm rounded-lg transition font-medium ${
+                    customAspect === 4 / 3
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/70'
+                  }`}
+                >
+                  4:3
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomAspect(16 / 9)}
+                  className={`px-3 py-1.5 text-sm rounded-lg transition font-medium ${
+                    customAspect === 16 / 9
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/70'
+                  }`}
+                >
+                  16:9
+                </button>
+              </div>
+
+              {/* Cropper */}
+              <div className="relative w-full h-[500px] bg-background rounded-lg overflow-hidden border border-border">
+                <Cropper
+                  image={imageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={customAspect}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                  cropShape={customAspect === 1 ? 'round' : 'rect'}
+                />
+              </div>
+
+              {/* Zoom Slider */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Zoom: {zoom.toFixed(1)}x</label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex gap-3 p-6 border-t border-border bg-muted/30">
+              <button
+                type="button"
+                onClick={handleCropSave}
+                disabled={uploading}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition disabled:opacity-50 font-medium"
+              >
+                {uploading ? (
+                  <>
+                    <Spinner size="sm" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Check size={20} />
+                    Save Cropped Image
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={uploading}
+                className="flex items-center gap-2 px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/70 transition disabled:opacity-50 font-medium"
+              >
+                <X size={20} />
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   )
 }
