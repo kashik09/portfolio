@@ -36,11 +36,11 @@ model User {
   isMinor       Boolean   @default(false)
 
   // Security
-  password         String? // For credentials-based auth
-  twoFactorEnabled Boolean @default(false)
-  twoFactorSecret  String?
+  password          String? // For credentials-based auth
+  twoFactorEnabled  Boolean @default(false)
+  twoFactorSecret   String?
   twoFactorVerified Boolean @default(false)
-  backupCodes      Json?
+  backupCodes       Json?
 
   // Membership
   membershipId String?
@@ -370,20 +370,20 @@ model License {
   currentUsers Int @default(0)
 
   // Abuse tracking
-  abuseDetected   Boolean   @default(false)
-  abuseReason     String?   @db.Text
-  abuseFlagged Boolean   @default(false)
-  abuseFlaggedAt  DateTime?
-  abuseFlaggedBy  String?
-  revokedAt       DateTime?
-  revokedReason   String?   @db.Text
+  abuseDetected  Boolean   @default(false)
+  abuseReason    String?   @db.Text
+  abuseFlagged   Boolean   @default(false)
+  abuseFlaggedAt DateTime?
+  abuseFlaggedBy String?
+  revokedAt      DateTime?
+  revokedReason  String?   @db.Text
 
   // Timestamps
   issuedAt  DateTime  @default(now())
   expiresAt DateTime? // null = lifetime
 
   // Relations
-  downloads     Download[]
+  downloads       Download[]
   seatAssignments LicenseSeatAssignment[]
 
   @@index([userId])
@@ -407,10 +407,10 @@ model LicenseSeatAssignment {
 
   // Assignment details
   assignedBy String // Admin or license owner user ID
-  assignedAt DateTime @default(now())
+  assignedAt DateTime  @default(now())
   revokedAt  DateTime?
   revokedBy  String?
-  active     Boolean  @default(true)
+  active     Boolean   @default(true)
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -696,7 +696,7 @@ model ContentPage {
   id String @id @default(cuid())
 
   // Page identification
-  slug  String @unique
+  slug  String          @unique
   title String
   type  ContentPageType
 
@@ -722,12 +722,12 @@ model ContentPage {
 model SiteSettings {
   id String @id @default("site_settings_singleton")
 
-  maintenanceMode     Boolean @default(false)
+  maintenanceMode      Boolean @default(false)
   availableForBusiness Boolean @default(true)
-  adsEnabled          Boolean @default(false)
-  adsProvider         String  @default("")
-  adsClientId         String?
-  adsPlacements       Json?
+  adsEnabled           Boolean @default(false)
+  adsProvider          String  @default("")
+  adsClientId          String?
+  adsPlacements        Json?
 
   updatedAt DateTime @updatedAt
 
@@ -788,51 +788,15 @@ model UserAdConsent {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
-  personalizedAds Boolean  @default(false)
+  personalizedAds Boolean   @default(false)
   consentedAt     DateTime?
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime  @updatedAt
 
   @@map("user_ad_consents")
 }
 
 // ============================================
 // PAGES CMS MODELS
-// ============================================
-
-model Page {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  status      PageStatus @default(DRAFT)
-  seoTitle    String?
-  seoDescription String? @db.Text
-  sections    PageSection[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@index([slug])
-  @@index([status])
-  @@map("pages")
-}
-
-model PageSection {
-  id        String   @id @default(cuid())
-  pageId    String
-  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  type      SectionType
-  data      Json
-  order     Int      @default(0)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@index([pageId])
-  @@index([order])
-  @@map("page_sections")
-}
-
-
 // ============================================
 // ENUMS
 // ============================================
@@ -1086,19 +1050,4 @@ enum ContentPageType {
   PRIVACY_POLICY
   ABOUT
   OTHER
-}
-
-enum PageStatus {
-  DRAFT
-  PUBLISHED
-}
-
-enum SectionType {
-  HERO
-  RICH_TEXT
-  CARDS
-  CTA
-  FAQ
-  CONTACT_BLOCK
-  PROJECT_GRID
 }
