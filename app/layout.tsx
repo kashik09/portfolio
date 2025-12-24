@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ThemeProvider } from '@/lib/ThemeContext'
-import { ToastProvider } from '@/components/ui/Toast'
 import { CookieNotice } from '@/components/CookieNotice'
 import './globals.css'
 import { Analytics } from "@vercel/analytics/next"
+import { Providers } from './Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,13 +18,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning data-theme="dracula">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-theme="light"
+      data-mode="formal"
+      data-legacy-theme="dracula"
+    >
       <body className={inter.className}>
-        <ThemeProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
         <Analytics />
         <CookieNotice />
       </body>

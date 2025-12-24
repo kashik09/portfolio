@@ -30,15 +30,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     const root = document.documentElement
     
-    // Set data-theme attribute
-    root.setAttribute('data-theme', theme)
+    // Set legacy theme attribute to avoid clobbering preferences theme.
+    root.setAttribute('data-legacy-theme', theme)
     
     // Save to localStorage
     localStorage.setItem('kashikweyu-theme', theme)
     
     // Debug logs
     console.log('🎨 Theme set to:', theme)
-    console.log('📍 data-theme attr:', root.getAttribute('data-theme'))
+    console.log('📍 data-legacy-theme attr:', root.getAttribute('data-legacy-theme'))
   }, [theme, mounted])
 
   const setTheme = (newTheme: ThemeName) => {
