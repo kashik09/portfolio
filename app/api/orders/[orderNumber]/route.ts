@@ -79,7 +79,7 @@ export async function GET(
 
     // Check authorization
     const isOwner = order.userId === session.user.id
-    const isAdmin = hasRole(session.user.role, 'ADMIN')
+    const isAdmin = session.user.role === 'ADMIN'
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
