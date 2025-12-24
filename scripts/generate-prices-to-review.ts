@@ -242,7 +242,7 @@ async function generateMarkdown(items: PricingItem[]): Promise<string> {
 
   md += `**Currencies Detected:**\n`
   if (currencies.size > 0) {
-    for (const currency of currencies) {
+    for (const currency of Array.from(currencies)) {
       md += `- ${currency}\n`
     }
   } else {
