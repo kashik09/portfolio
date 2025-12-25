@@ -81,4 +81,9 @@ export default function AboutPage() {
   )
 }
 
-/* TODO: Optionally fetch CMS content for dynamic about page sections */
+/*
+ * Note: About page is intentionally hardcoded for now.
+ * Content is philosophical and rarely changes.
+ * If dynamic content needed, consider creating a simple CMS
+ * for philosophy sections only (not full résumé structure).
+ */

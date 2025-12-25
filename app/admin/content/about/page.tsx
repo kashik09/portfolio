@@ -1,13 +1,12 @@
 /*
- * TODO: About page CMS needs restructuring
+ * DEPRECATED: This CMS is no longer actively used
  *
- * The /about page has been rewritten to be mindset-focused and hardcoded.
- * This CMS still manages the old structure (hero, skills, timeline).
+ * The /about page has been rewritten as a hardcoded, mindset-focused page.
+ * For editing landing page content (hero, proof snapshot, philosophy),
+ * use /admin/content/landing instead.
  *
- * Options for future work:
- * 1. Remove this CMS entirely if about stays hardcoded
- * 2. Simplify to just manage philosophy sections
- * 3. Create separate CMS for landing page (hero + proof snapshot)
+ * This page is kept for backward compatibility with existing about content API.
+ * Consider removing if the API endpoint is no longer needed.
  */
 
 'use client'
