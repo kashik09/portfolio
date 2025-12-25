@@ -72,16 +72,16 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="py-12 max-w-2xl mx-auto">
-      <div className="space-y-8">
-        <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-foreground">get in touch</h1>
-          <p className="text-muted-foreground">
+    <div style={{ paddingTop: 'var(--space-block)', paddingBottom: 'var(--space-section)' }}>
+      <div className="container-sm" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-block)' }}>
+        <div className="space-y-3">
+          <h1 className="text-h1 font-bold text-foreground">get in touch</h1>
+          <p className="text-body text-muted-foreground/90">
             working on something interesting? need help building a product? let's talk.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-item)' }}>
           {error && (
             <div className="p-4 bg-destructive/10 border border-destructive rounded-lg text-destructive text-sm">
               {error}
@@ -89,7 +89,7 @@ export default function ContactPage() {
           )}
 
           {!isAuthed ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="name"
                 type="text"
@@ -109,7 +109,7 @@ export default function ContactPage() {
               />
             </div>
           ) : (
-            <div className="rounded-lg border border-border bg-muted px-4 py-3 text-sm text-foreground">
+            <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3 text-sm text-foreground">
               sending as{' '}
               <span className="font-medium">
                 {session?.user?.name || session?.user?.email}
@@ -122,7 +122,7 @@ export default function ContactPage() {
             <select
               value={formData.serviceType}
               onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
-              className="w-full px-4 py-2 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              className="w-full px-3 py-2 text-sm bg-muted/40 border border-border/60 rounded-lg focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
             >
               <option value="">select one (optional)</option>
               <option value="WEB_DEVELOPMENT">web development</option>
@@ -133,13 +133,13 @@ export default function ContactPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">budget (optional)</label>
               <select
                 value={formData.budget}
                 onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                className="w-full px-4 py-2 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                className="w-full px-3 py-2 text-sm bg-muted/40 border border-border/60 rounded-lg focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
               >
                 <option value="">not sure yet</option>
                 <option value="SMALL">small ($500-$2k)</option>
@@ -153,7 +153,7 @@ export default function ContactPage() {
               <select
                 value={formData.timeline}
                 onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
-                className="w-full px-4 py-2 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                className="w-full px-3 py-2 text-sm bg-muted/40 border border-border/60 rounded-lg focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
               >
                 <option value="">not sure yet</option>
                 <option value="ASAP">asap</option>
@@ -170,7 +170,7 @@ export default function ContactPage() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={6}
-              className="w-full px-4 py-2 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none"
+              className="w-full px-3 py-2 text-sm bg-muted/40 border border-border/60 rounded-lg focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all resize-none text-foreground placeholder:text-muted-foreground/50"
               placeholder="what are you building? what problem are you solving?"
               required
             />
@@ -186,7 +186,7 @@ export default function ContactPage() {
             {loading ? 'sending...' : 'send message'}
           </Button>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-muted-foreground/80">
             i'll get back to you within 24 hours
           </p>
         </form>

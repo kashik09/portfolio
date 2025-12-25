@@ -75,75 +75,79 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="py-12 space-y-12">
-      {/* Header */}
-      <div className="space-y-4">
-        <h1 className="text-4xl font-bold text-foreground">products</h1>
-        <p className="text-muted-foreground max-w-2xl">
-          templates, themes, and tools i've built and packaged for reuse. these exist because i needed them first.
-        </p>
-      </div>
+    <div style={{ paddingTop: 'var(--space-block)', paddingBottom: 'var(--space-section)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-section)' }}>
+        {/* Header */}
+        <div className="container-lg space-y-3">
+          <h1 className="text-h1 font-bold text-foreground">products</h1>
+          <p className="text-body text-muted-foreground/90 max-w-2xl">
+            templates, themes, and tools i've built and packaged. they exist because i needed them first, now you can use them too.
+          </p>
+        </div>
 
-      {/* Filters */}
-      <div className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+        {/* Filters */}
+        <div className="container-lg">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={16} />
+              <input
+                type="text"
+                placeholder="search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-sm bg-muted/40 border border-border/60 rounded-lg focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground placeholder:text-muted-foreground/50"
+              />
+            </div>
+
+            {/* Category */}
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="px-3 py-2 text-sm border border-border/60 rounded-lg bg-muted/40 text-foreground focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+            >
+              <option value="">all categories</option>
+              <option value="TEMPLATE">templates</option>
+              <option value="THEME">themes</option>
+              <option value="UI_KIT">ui kits</option>
+              <option value="CODE_SNIPPET">code snippets</option>
+              <option value="ASSET">assets</option>
+            </select>
+
+            {/* Sort */}
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="px-3 py-2 text-sm border border-border/60 rounded-lg bg-muted/40 text-foreground focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+            >
+              <option value="newest">newest</option>
+              <option value="oldest">oldest</option>
+              <option value="price-asc">price: low to high</option>
+              <option value="price-desc">price: high to low</option>
+              <option value="popular">popular</option>
+            </select>
+
+            {/* Currency */}
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="px-3 py-2 text-sm border border-border/60 rounded-lg bg-muted/40 text-foreground focus:border-primary/50 focus:bg-card focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+            >
+              <option value="USD">usd ($)</option>
+              <option value="UGX">ugx</option>
+            </select>
           </div>
+        </div>
 
-          {/* Category */}
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="">all categories</option>
-            <option value="TEMPLATE">templates</option>
-            <option value="THEME">themes</option>
-            <option value="UI_KIT">ui kits</option>
-            <option value="CODE_SNIPPET">code snippets</option>
-            <option value="ASSET">assets</option>
-          </select>
-
-          {/* Sort */}
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="newest">newest</option>
-            <option value="oldest">oldest</option>
-            <option value="price-asc">price: low to high</option>
-            <option value="price-desc">price: high to low</option>
-            <option value="popular">popular</option>
-          </select>
-
-          {/* Currency */}
-          <select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="USD">usd ($)</option>
-            <option value="UGX">ugx</option>
-          </select>
+        {/* Products Grid */}
+        <div className="container-lg">
+          <ProductGrid
+            products={products}
+            onAddToCart={handleAddToCart}
+            isLoading={isLoading}
+          />
         </div>
       </div>
-
-      {/* Products Grid */}
-      <ProductGrid
-        products={products}
-        onAddToCart={handleAddToCart}
-        isLoading={isLoading}
-      />
     </div>
   )
 }
