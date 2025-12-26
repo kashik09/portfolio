@@ -5,7 +5,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { ToastProvider } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
 
 export default function DashboardLayout({
@@ -68,8 +67,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <ToastProvider>
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-50 bg-card border-b border-border backdrop-blur-sm">
           <div className="px-4 md:px-6 py-4">
@@ -203,6 +201,5 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
-    </ToastProvider>
   )
 }

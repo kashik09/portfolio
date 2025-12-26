@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { LayoutDashboard, FolderKanban, FileText, Users, Settings, LogOut, Shield, Megaphone, ArrowUp, Package, ShoppingBag } from 'lucide-react'
 import AdminHeader from '@/components/AdminHeader'
-import { ToastProvider } from '@/components/ui/Toast'
-import { SessionProvider } from 'next-auth/react'
 
 export default function AdminLayout({
   children,
@@ -39,10 +37,8 @@ export default function AdminLayout({
   ]
 
   return (
-    <SessionProvider>
-      <ToastProvider>
-        <div className="min-h-screen bg-app text-app">
-        <AdminHeader />
+    <div className="min-h-screen bg-app text-app">
+      <AdminHeader />
 
         <div className="flex">
           {/* Sidebar */}
@@ -93,8 +89,6 @@ export default function AdminLayout({
             <ArrowUp size={20} />
           </button>
         )}
-      </div>
-    </ToastProvider>
-    </SessionProvider>
+    </div>
   )
 }
