@@ -7,11 +7,12 @@ import { ProjectCardData } from '@/components/ProjectCard'
 import { prisma } from '@/lib/prisma'
 import { MemberHomeTop } from '@/components/home/MemberHomeTop'
 import { ProofSnapshot } from '@/components/home/ProofSnapshot'
-import { FeaturedWorkFlow } from '@/components/home/FeaturedWorkFlow'
+import { FeaturedWorkStory } from '@/components/home/FeaturedWorkStory'
 import { HowIThink } from '@/components/home/HowIThink'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
 import { Button } from '@/components/ui/Button'
+import { truncate } from '@/lib/utils'
 
 async function getLandingContent() {
   try {
@@ -65,6 +66,24 @@ export default async function HomePage() {
     featured: project.featured,
     category: project.category
   }))
+
+  const featuredWorkStories = featuredProjects.map((project) => {
+    const focusLine =
+      project.category ||
+      (project.technologies?.length ? project.technologies.slice(0, 2).join(' + ') : undefined)
+    const provesLine =
+      project.technologies?.length ? project.technologies.slice(0, 3).join(' / ') : project.category
+
+    return {
+      id: project.id,
+      title: project.title,
+      href: `/projects/${project.slug}`,
+      what: project.description ? truncate(project.description, 140) : 'featured build',
+      focus: focusLine,
+      proves: provesLine || undefined,
+      thumbnailUrl: project.image
+    }
+  })
 
   // Fetch landing content from CMS
   const landingContent = await getLandingContent()
@@ -147,8 +166,8 @@ export default async function HomePage() {
       <ProofSnapshot />
 
       {/* 3. FEATURED PROJECTS */}
-      {featuredProjects.length > 0 && (
-        <FeaturedWorkFlow projects={featuredProjects} />
+      {featuredWorkStories.length > 0 && (
+        <FeaturedWorkStory projects={featuredWorkStories} />
       )}
 
       {/* 4. HOW I THINK */}
