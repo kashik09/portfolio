@@ -11,7 +11,7 @@ const proofItems = [
 
 export function ProofSnapshot() {
   return (
-    <Section id="proof">
+    <Section id="proof" className="py-6 md:py-8">
       <Container>
         <div className="flex flex-wrap gap-2">
           {proofItems.map((item) => (

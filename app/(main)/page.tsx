@@ -67,19 +67,21 @@ export default async function HomePage() {
   }))
 
   const featuredWorkStories = featuredProjects.map((project) => {
-    const focusLine =
+    const whyLine =
       project.category ||
-      (project.technologies?.length ? project.technologies.slice(0, 2).join(' + ') : undefined)
+      (project.technologies?.length ? project.technologies.slice(0, 1).join('') : 'featured work')
     const provesLine =
-      project.technologies?.length ? project.technologies.slice(0, 3).join(' / ') : project.category
+      project.technologies?.length
+        ? project.technologies.slice(0, 3).join(' / ')
+        : 'featured + published'
 
     return {
       id: project.id,
       title: project.title,
       href: `/projects/${project.slug}`,
       what: project.description ? truncate(project.description, 140) : 'featured build',
-      focus: focusLine,
-      proves: provesLine || undefined,
+      why: whyLine,
+      proves: provesLine,
       thumbnailUrl: project.image
     }
   })
@@ -116,9 +118,9 @@ export default async function HomePage() {
   return (
     <div style={{ paddingTop: 'var(--space-block)', paddingBottom: 'var(--space-section)' }}>
       {/* 1. HERO */}
-      <Section className="pt-16 md:pt-20">
+      <Section className="py-8 md:py-10">
         <Container>
-          <div className="relative overflow-hidden rounded-3xl border border-app bg-gradient-to-br from-primary/10 via-transparent to-primary/30 px-6 py-12 sm:px-10">
+          <div className="relative overflow-hidden rounded-3xl border border-app bg-gradient-to-br from-primary/10 via-transparent to-primary/30 px-5 py-8 sm:px-8 sm:py-10">
             <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
             <div className="absolute -bottom-24 left-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
 
