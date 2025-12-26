@@ -2,12 +2,23 @@ import { NextResponse } from 'next/server'
 import path from 'path'
 import fs from 'fs/promises'
 import { generateSmartFilename } from '@/lib/upload-utils'
+import { getServerSession } from '@/lib/auth'
 
 const MAX_BYTES = 5 * 1024 * 1024
 const ALLOWED = new Set(['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'])
 
 export async function POST(req: Request) {
   try {
+    const session = await getServerSession()
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const allowedRoles = new Set(['ADMIN', 'OWNER', 'EDITOR'])
+    if (!allowedRoles.has(session.user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const form = await req.formData()
     const file = form.get('file')
 

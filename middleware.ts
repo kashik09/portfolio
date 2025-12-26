@@ -14,13 +14,16 @@ export default withAuth(
         return NextResponse.redirect(loginUrl)
       }
 
-      const allowedRoles = ["ADMIN", "OWNER", "MODERATOR", "EDITOR"]
-      if (!allowedRoles.includes(token.role as string)) {
+      const isAllowedRole =
+        token.role === "ADMIN" ||
+        token.role === "OWNER" ||
+        token.role === "MODERATOR" ||
+        token.role === "EDITOR"
+      if (!isAllowedRole) {
         return NextResponse.redirect(new URL("/", req.url))
       }
 
       // Enforce 2FA for admin users
-      // @ts-ignore
       const has2FA = token.twoFactorEnabled === true && token.twoFactorVerified === true
       if (!has2FA && !path.startsWith("/admin/setup-2fa")) {
         return NextResponse.redirect(new URL("/admin/setup-2fa", req.url))
@@ -32,7 +35,7 @@ export default withAuth(
       }
 
       if (path.startsWith("/admin/users") || path.startsWith("/admin/settings")) {
-        if (!["ADMIN", "OWNER"].includes(token.role as string)) {
+        if (token.role !== "ADMIN" && token.role !== "OWNER") {
           return NextResponse.redirect(new URL("/admin", req.url))
         }
       }

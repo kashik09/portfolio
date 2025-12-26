@@ -4,10 +4,8 @@ import GitHubProvider from "next-auth/providers/github"
 import EmailProvider from "next-auth/providers/email"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
-
-const prisma = new PrismaClient()
 
 const ONE_DAY_SECONDS = 60 * 60 * 24
 const THIRTY_DAYS_SECONDS = 60 * 60 * 24 * 30

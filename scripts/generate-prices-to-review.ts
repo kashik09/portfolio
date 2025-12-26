@@ -12,11 +12,9 @@
  *   npx tsx scripts/generate-prices-to-review.ts
  */
 
-import { PrismaClient } from '@prisma/client'
 import fs from 'fs/promises'
 import path from 'path'
-
-const prisma = new PrismaClient()
+import { prisma } from '../lib/prisma'
 
 interface PricingItem {
   item: string

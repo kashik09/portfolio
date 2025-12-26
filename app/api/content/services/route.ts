@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import fs from 'fs/promises'
 import path from 'path'
+import { prisma } from '@/lib/prisma'
 
-const prisma = new PrismaClient()
 const FALLBACK_PATH = path.join(process.cwd(), 'public/content/services.json')
 
 export async function GET() {
@@ -95,7 +94,5 @@ export async function PUT(request: NextRequest) {
       },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

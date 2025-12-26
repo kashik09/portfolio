@@ -12,11 +12,9 @@
  *   npx tsx scripts/migrate-content-to-db.ts --dry-run
  */
 
-import { PrismaClient } from '@prisma/client'
 import fs from 'fs/promises'
 import path from 'path'
-
-const prisma = new PrismaClient()
+import { prisma } from '../lib/prisma'
 
 interface MigrationResult {
   success: boolean
