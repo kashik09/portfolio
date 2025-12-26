@@ -15,10 +15,10 @@ export function ProgressBar({ value, className = '', label }: ProgressBarProps) 
         aria-valuenow={clamped}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="h-2 w-full rounded-full bg-[color:rgb(var(--border)/1)] overflow-hidden"
+        className="h-2 w-full rounded-full bg-[color:hsl(var(--b3))] overflow-hidden"
       >
         <div
-          className="h-full bg-[color:rgb(var(--primary)/1)] transition-[width] duration-200 ease-out"
+          className="h-full bg-[color:hsl(var(--p))] transition-[width] duration-200 ease-out"
           style={{ width: `${clamped}%` }}
         />
       </div>

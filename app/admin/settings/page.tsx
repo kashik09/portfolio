@@ -601,8 +601,8 @@ export default function AdminSettingsPage() {
       {/* Email Settings */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-[color:rgb(var(--primary)/0.12)] rounded-lg">
-            <Mail className="text-[color:rgb(var(--primary))]" size={20} />
+          <div className="p-2 bg-[color:hsl(var(--p)/0.12)] rounded-lg">
+            <Mail className="text-[color:hsl(var(--p))]" size={20} />
           </div>
           <div>
             <h2 className="text-xl font-bold text-app">Email Settings</h2>
@@ -661,7 +661,7 @@ export default function AdminSettingsPage() {
               }}
               readOnly={isEmailLocked}
               aria-readonly={isEmailLocked}
-              className={`w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:rgb(var(--muted)/0.75)] focus:border-[color:rgb(var(--ring)/0.6)] focus:ring-2 focus:ring-[color:rgb(var(--ring)/0.35)] outline-none transition ${
+              className={`w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:hsl(var(--bc)/0.65)] focus:border-[color:hsl(var(--p)/0.6)] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)] outline-none transition ${
                 isEmailLocked ? 'opacity-60 cursor-not-allowed' : ''
               }`}
             />
@@ -686,7 +686,7 @@ export default function AdminSettingsPage() {
               }}
               readOnly={isEmailLocked}
               aria-readonly={isEmailLocked}
-              className={`w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:rgb(var(--muted)/0.75)] focus:border-[color:rgb(var(--ring)/0.6)] focus:ring-2 focus:ring-[color:rgb(var(--ring)/0.35)] outline-none transition ${
+              className={`w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:hsl(var(--bc)/0.65)] focus:border-[color:hsl(var(--p)/0.6)] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)] outline-none transition ${
                 isEmailLocked ? 'opacity-60 cursor-not-allowed' : ''
               }`}
             />
@@ -705,7 +705,7 @@ export default function AdminSettingsPage() {
                   smtpUsername: e.target.value,
                 })
               }
-              className="w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:rgb(var(--muted)/0.75)] focus:border-[color:rgb(var(--ring)/0.6)] focus:ring-2 focus:ring-[color:rgb(var(--ring)/0.35)] outline-none transition"
+              className="w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:hsl(var(--bc)/0.65)] focus:border-[color:hsl(var(--p)/0.6)] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)] outline-none transition"
             />
           </div>
 
@@ -723,7 +723,7 @@ export default function AdminSettingsPage() {
                 })
               }
               placeholder="••••••••"
-              className="w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:rgb(var(--muted)/0.75)] focus:border-[color:rgb(var(--ring)/0.6)] focus:ring-2 focus:ring-[color:rgb(var(--ring)/0.35)] outline-none transition"
+              className="w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:hsl(var(--bc)/0.65)] focus:border-[color:hsl(var(--p)/0.6)] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)] outline-none transition"
             />
           </div>
 
@@ -746,7 +746,7 @@ export default function AdminSettingsPage() {
                     smtpSecure: e.target.checked,
                   })
                 }
-                className="h-4 w-4 rounded border-app text-[color:rgb(var(--primary))] focus:ring-2 focus:ring-[color:rgb(var(--ring)/0.35)]"
+                className="h-4 w-4 rounded border-app text-[color:hsl(var(--p))] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)]"
               />
             </label>
           </div>

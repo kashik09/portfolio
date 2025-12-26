@@ -2,11 +2,30 @@
 
 import { useEffect, useState } from 'react'
 import { usePreferences } from '@/lib/preferences/PreferencesContext'
+import type { ThemeKey } from '@/lib/preferences/types'
 
 type ResolvedAppearance = 'light' | 'dark'
 
 const getSystemAppearance = (media: MediaQueryList): ResolvedAppearance =>
   media.matches ? 'dark' : 'light'
+
+const DARK_THEME_MAP: Record<ThemeKey, string> = {
+  forest: 'forest',
+  obsidian: 'black',
+  synthwave: 'synthwave',
+  night: 'night',
+  cyberpunk: 'cyberpunk',
+  black: 'black',
+}
+
+const LIGHT_THEME_MAP: Record<ThemeKey, string> = {
+  forest: 'moss',
+  obsidian: 'pearl',
+  synthwave: 'aurora',
+  night: 'skyline',
+  cyberpunk: 'prism',
+  black: 'white',
+}
 
 export function PreferencesGate() {
   const { preferences } = usePreferences()
@@ -35,9 +54,13 @@ export function PreferencesGate() {
     const root = document.documentElement
     const resolvedAppearance =
       preferences.appearance === 'system' ? systemAppearance : preferences.appearance
+    const resolvedTheme =
+      resolvedAppearance === 'dark'
+        ? DARK_THEME_MAP[preferences.theme]
+        : LIGHT_THEME_MAP[preferences.theme]
 
     root.setAttribute('data-appearance', resolvedAppearance)
-    root.setAttribute('data-theme', preferences.theme)
+    root.setAttribute('data-theme', resolvedTheme)
   }, [preferences.appearance, preferences.theme, systemAppearance])
 
   return null

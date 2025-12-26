@@ -14,8 +14,8 @@ export default function Footer() {
   const linkClass = (href: string) =>
     `transition text-sm ${
       isActive(href)
-        ? 'text-[color:rgb(var(--primary))] font-medium'
-        : 'text-muted hover:text-[color:rgb(var(--primary))]'
+        ? 'text-[color:hsl(var(--p))] font-medium'
+        : 'text-muted hover:text-[color:hsl(var(--p))]'
     }`
 
   return (

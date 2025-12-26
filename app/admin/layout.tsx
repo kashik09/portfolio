@@ -51,9 +51,9 @@ export default function AdminLayout({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-app opacity-80 hover:opacity-100 hover:bg-app hover:text-[color:rgb(var(--primary))] transition-all group"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-app opacity-80 hover:opacity-100 hover:bg-app hover:text-[color:hsl(var(--p))] transition-all group"
                   >
-                    <item.icon size={18} className="text-muted-app group-hover:text-[color:rgb(var(--primary))] transition-colors" />
+                    <item.icon size={18} className="text-muted-app group-hover:text-[color:hsl(var(--p))] transition-colors" />
                     <span>{item.label}</span>
                   </Link>
                 ))}
@@ -62,9 +62,9 @@ export default function AdminLayout({
               <div className="mt-6 pt-6 border-t border-app">
                 <Link
                   href="/"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-app opacity-80 hover:opacity-100 hover:bg-app hover:text-[color:rgb(var(--primary))] transition-all group"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-app opacity-80 hover:opacity-100 hover:bg-app hover:text-[color:hsl(var(--p))] transition-all group"
                 >
-                  <LogOut size={18} className="text-muted-app group-hover:text-[color:rgb(var(--primary))] transition-colors" />
+                  <LogOut size={18} className="text-muted-app group-hover:text-[color:hsl(var(--p))] transition-colors" />
                   <span>Back to Site</span>
                 </Link>
               </div>

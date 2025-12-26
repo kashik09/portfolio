@@ -25,7 +25,7 @@ export function Button({
   const variants = {
     primary: 'bg-accent text-white hover:opacity-90 shadow-sm hover:shadow-md',
     secondary: 'surface-app text-app border-2 border-app hover:bg-app shadow-sm',
-    outline: 'bg-transparent text-[color:rgb(var(--primary))] border-2 border-accent hover:bg-accent hover:text-white',
+    outline: 'bg-transparent text-[color:hsl(var(--p))] border-2 border-accent hover:bg-accent hover:text-white',
     ghost: 'bg-transparent text-muted hover:bg-app'
   }
   
