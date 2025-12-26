@@ -187,7 +187,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
               } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
               style={profileDelay}
             >
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg font-semibold">
+              <div className="relative flex size-12 sm:size-14 lg:size-16 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg font-semibold">
                 {hasAvatar ? (
                   <img
                     src={avatarSrc}
@@ -198,7 +198,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                 ) : (
                   <span className="text-white">K</span>
                 )}
-                <div className="absolute inset-0 rounded-full ring-2 ring-primary/50 ring-offset-2 ring-offset-black/30" />
+                <div className="absolute inset-0 rounded-full ring-2 ring-base-300/60 ring-offset-2 ring-offset-black/30" />
               </div>
               <p className="text-xs uppercase tracking-[0.4em]">hey, i&apos;m kashi</p>
             </div>
