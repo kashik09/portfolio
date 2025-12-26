@@ -240,11 +240,17 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-background-secondary;
+    background: hsl(var(--b2));
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-border hover:bg-primary;
+    background: hsl(var(--b3) / 0.7);
+    border-radius: 10px;
+    transition: background 180ms ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--p) / 0.8);
   }
 
   ::selection {
