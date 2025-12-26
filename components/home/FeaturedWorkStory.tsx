@@ -93,7 +93,7 @@ export function FeaturedWorkStory({ projects }: FeaturedWorkStoryProps) {
   const nextIndex = Math.min(activeIndex + 1, scenes.length - 1)
 
   return (
-    <section id="work" className="py-0">
+    <section id="work" className="py-0" data-cinema-story>
       <h2 className="sr-only">Featured work</h2>
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <div
