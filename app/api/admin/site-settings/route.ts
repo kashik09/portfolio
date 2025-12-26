@@ -12,6 +12,17 @@ async function requireAdminOrOwner() {
   return session
 }
 
+function isValidAvatarUrl(value: string) {
+  if (value.startsWith('/')) return true
+
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 // GET /api/admin/site-settings - Fetch singleton site settings
 export async function GET(request: NextRequest) {
   try {
@@ -77,8 +88,21 @@ export async function PATCH(request: NextRequest) {
       data.adsProvider = body.adsProvider
     }
 
-    if (body.avatarUrl === null || typeof body.avatarUrl === 'string') {
-      data.avatarUrl = body.avatarUrl
+    if (body.avatarUrl !== undefined) {
+      const avatarUrl =
+        typeof body.avatarUrl === 'string' ? body.avatarUrl.trim() : body.avatarUrl
+
+      if (avatarUrl === null || avatarUrl === '') {
+        data.avatarUrl = null
+      } else if (typeof avatarUrl === 'string') {
+        if (!isValidAvatarUrl(avatarUrl)) {
+          return NextResponse.json(
+            { success: false, error: 'Invalid avatar URL' },
+            { status: 400 }
+          )
+        }
+        data.avatarUrl = avatarUrl
+      }
     }
 
     if (body.adsClientId !== undefined) {
