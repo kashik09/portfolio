@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -7,7 +8,6 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Spinner } from '@/components/ui/Spinner'
 import { Shield, Copy, Check } from 'lucide-react'
-
 export default function Setup2FAPage() {
   const { update } = useSession()
   const router = useRouter()
@@ -19,22 +19,17 @@ export default function Setup2FAPage() {
   const [verificationCode, setVerificationCode] = useState('')
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
-
   const handleStart = async () => {
     try {
       setLoading(true)
       setError('')
-
       const response = await fetch('/api/auth/2fa/setup', {
         method: 'POST',
       })
-
       if (!response.ok) {
         throw new Error('Failed to setup 2FA')
       }
-
       const data = await response.json()
-
       if (data.success && data.data) {
         setQrCode(data.data.qrCode)
         setSecret(data.data.secret)
@@ -50,25 +45,20 @@ export default function Setup2FAPage() {
       setLoading(false)
     }
   }
-
   const handleVerify = async () => {
     if (!verificationCode || verificationCode.length !== 6) {
       setError('Please enter a valid 6-digit code')
       return
     }
-
     try {
       setLoading(true)
       setError('')
-
       const response = await fetch('/api/auth/2fa/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: verificationCode }),
       })
-
       const data = await response.json()
-
       if (data.success) {
         // Update session to refresh 2FA status
         await update()
@@ -82,13 +72,11 @@ export default function Setup2FAPage() {
       setLoading(false)
     }
   }
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
-
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="w-full max-w-2xl mx-auto bg-card border border-border rounded-2xl p-8 shadow-lg min-h-[600px]">
@@ -97,20 +85,17 @@ export default function Setup2FAPage() {
             <Shield className="w-8 h-8 text-primary" />
           </div>
         </div>
-
         <h1 className="text-3xl font-bold text-foreground text-center mb-2">
           Two-Factor Authentication Required
         </h1>
         <p className="text-muted-foreground text-center mb-8">
           Protect your admin account with an extra layer of security
         </p>
-
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 text-sm">
             {error}
           </div>
         )}
-
         {step === 'start' && (
           <div className="space-y-6">
             <div className="bg-muted/50 rounded-lg p-6 space-y-4">
@@ -130,7 +115,6 @@ export default function Setup2FAPage() {
                 </li>
               </ul>
             </div>
-
             <Button
               onClick={handleStart}
               disabled={loading}
@@ -141,7 +125,6 @@ export default function Setup2FAPage() {
             </Button>
           </div>
         )}
-
         {step === 'qr' && (
           <div className="space-y-6">
             <div className="text-center">
@@ -171,7 +154,6 @@ export default function Setup2FAPage() {
                 </Button>
               </div>
             </div>
-
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
               <h4 className="font-semibold text-yellow-600 dark:text-yellow-400 mb-2 text-sm">
                 Backup Codes
@@ -187,7 +169,6 @@ export default function Setup2FAPage() {
                 ))}
               </div>
             </div>
-
             <Button
               onClick={() => setStep('verify')}
               className="w-full"
@@ -197,7 +178,6 @@ export default function Setup2FAPage() {
             </Button>
           </div>
         )}
-
         {step === 'verify' && (
           <div className="space-y-6">
             <div className="text-center">
@@ -206,7 +186,6 @@ export default function Setup2FAPage() {
                 Enter the 6-digit code from your authenticator app
               </p>
             </div>
-
             <Input
               label="Verification Code"
               type="text"
@@ -218,7 +197,6 @@ export default function Setup2FAPage() {
               className="text-center text-2xl font-mono tracking-widest"
               autoFocus
             />
-
             <Button
               onClick={handleVerify}
               disabled={loading || verificationCode.length !== 6}
@@ -227,7 +205,6 @@ export default function Setup2FAPage() {
             >
               {loading ? <Spinner size="sm" /> : 'Verify & Enable 2FA'}
             </Button>
-
             <button
               onClick={() => setStep('qr')}
               className="w-full text-sm text-muted-foreground hover:text-foreground transition"

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getEmailConfig, sendEmail, getEmailTemplate } from '@/lib/email'
 import { getServerSession } from '@/lib/auth'

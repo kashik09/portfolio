@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useEffect, useMemo, useState } from 'react'
 import {
   BarChart3,
@@ -13,7 +14,6 @@ import {
   Users,
 } from 'lucide-react'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface AnalyticsData {
   totalViews: number
   uniqueVisitors: number
@@ -23,9 +23,7 @@ interface AnalyticsData {
   popularProjects: { title: string; views: number }[]
   recentEvents: { action: string; timestamp: string; data: any }[]
 }
-
 type Range = '24h' | '7d' | '30d' | 'all'
-
 function StatCard({
   icon,
   label,
@@ -52,7 +50,6 @@ function StatCard({
     </div>
   )
 }
-
 function PillButton({
   active,
   children,
@@ -78,13 +75,11 @@ function PillButton({
     </button>
   )
 }
-
 function formatTime(seconds: number) {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   return `${mins}m ${secs}s`
 }
-
 function deviceIcon(type: string) {
   switch (type) {
     case 'desktop':
@@ -97,32 +92,25 @@ function deviceIcon(type: string) {
       return <Monitor size={18} />
   }
 }
-
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<Range>('7d')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
-
   useEffect(() => {
     let cancelled = false
-
     async function fetchAnalytics() {
       try {
         setLoading(true)
         setError(null)
-
         const res = await fetch(`/api/admin/analytics?range=${timeRange}`, { cache: 'no-store' })
         const json = await res.json().catch(() => null)
-
         if (!res.ok) {
           throw new Error((json && (json.error || json.message)) || 'Failed to fetch analytics data')
         }
-
         if (!json?.success || !json?.data) {
           throw new Error((json && json.error) || 'Failed to load analytics')
         }
-
         if (!cancelled) setAnalytics(json.data as AnalyticsData)
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Failed to load analytics'
@@ -131,13 +119,11 @@ export default function AnalyticsPage() {
         if (!cancelled) setLoading(false)
       }
     }
-
     fetchAnalytics()
     return () => {
       cancelled = true
     }
   }, [timeRange])
-
   const rangeLabel = useMemo(() => {
     switch (timeRange) {
       case '24h':
@@ -150,7 +136,6 @@ export default function AnalyticsPage() {
         return 'All Time'
     }
   }, [timeRange])
-
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -158,7 +143,6 @@ export default function AnalyticsPage() {
       </div>
     )
   }
-
   if (error) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-4 rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-6">
@@ -174,7 +158,6 @@ export default function AnalyticsPage() {
       </div>
     )
   }
-
   if (!analytics) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -182,7 +165,6 @@ export default function AnalyticsPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -190,7 +172,6 @@ export default function AnalyticsPage() {
           <h1 className="text-3xl font-bold text-[color:hsl(var(--bc))]">Analytics</h1>
           <p className="text-sm text-[color:hsl(var(--bc)/0.7)]">Range: {rangeLabel}</p>
         </div>
-
         <div className="flex flex-wrap gap-2">
           {(['24h', '7d', '30d', 'all'] as const).map((r) => (
             <PillButton key={r} active={timeRange === r} onClick={() => setTimeRange(r)}>
@@ -199,21 +180,18 @@ export default function AnalyticsPage() {
           ))}
         </div>
       </div>
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={<Eye size={20} />} label="Total views" value={String(analytics.totalViews)} />
         <StatCard icon={<Users size={20} />} label="Unique visitors" value={String(analytics.uniqueVisitors)} />
         <StatCard icon={<Clock size={20} />} label="Avg time on site" value={formatTime(analytics.avgTimeOnSite)} />
         <StatCard icon={<TrendingUp size={20} />} label="Signal" value="OK" sub="Basic telemetry" />
       </div>
-
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
           <div className="mb-3 flex items-center gap-2 text-[color:hsl(var(--bc))]">
             <BarChart3 size={18} className="text-[color:hsl(var(--p))]" />
             <h2 className="text-lg font-semibold">Top pages</h2>
           </div>
-
           <div className="space-y-2">
             {(analytics.topPages || []).slice(0, 8).map((p) => (
               <div
@@ -229,13 +207,11 @@ export default function AnalyticsPage() {
             ) : null}
           </div>
         </div>
-
         <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
           <div className="mb-3 flex items-center gap-2 text-[color:hsl(var(--bc))]">
             <MousePointer size={18} className="text-[color:hsl(var(--p))]" />
             <h2 className="text-lg font-semibold">Devices</h2>
           </div>
-
           <div className="space-y-2">
             {(analytics.devices || []).slice(0, 8).map((d) => (
               <div
@@ -255,7 +231,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
           <h2 className="mb-3 text-lg font-semibold text-[color:hsl(var(--bc))]">Popular projects</h2>
@@ -274,7 +249,6 @@ export default function AnalyticsPage() {
             ) : null}
           </div>
         </div>
-
         <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
           <h2 className="mb-3 text-lg font-semibold text-[color:hsl(var(--bc))]">Recent events</h2>
           <div className="space-y-2">

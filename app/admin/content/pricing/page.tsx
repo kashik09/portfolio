@@ -1,10 +1,10 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Save, AlertCircle, DollarSign, TrendingUp } from 'lucide-react'
-
 interface PricingItem {
   id: string
   name: string
@@ -17,7 +17,6 @@ interface PricingItem {
   active: boolean
   metadata?: Record<string, any>
 }
-
 interface PricingData {
   version: string
   lastUpdated: string
@@ -25,18 +24,15 @@ interface PricingData {
   items: Record<string, PricingItem>
   notes?: string[]
 }
-
 export default function PricingEditorPage() {
   const [data, setData] = useState<PricingData | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
   useEffect(() => {
     fetchData()
   }, [])
-
   const fetchData = async () => {
     try {
       const res = await fetch('/api/content/pricing')
@@ -49,22 +45,18 @@ export default function PricingEditorPage() {
       setLoading(false)
     }
   }
-
   const handleSave = async () => {
     if (!data) return
     setSaving(true)
     setError('')
     setSuccess(false)
-
     try {
       const res = await fetch('/api/content/pricing', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
-
       if (!res.ok) throw new Error('Failed to save')
-
       const result = await res.json()
       setData(result.data)
       setSuccess(true)
@@ -75,25 +67,19 @@ export default function PricingEditorPage() {
       setSaving(false)
     }
   }
-
   const updateItem = (id: string, field: keyof PricingItem, value: any) => {
     if (!data) return
-
     const item = data.items[id]
     const updatedItem = { ...item, [field]: value }
-
     // Auto-generate display format when value, prefix, or suffix changes
     if (field === 'value' || field === 'prefix' || field === 'suffix') {
       const prefix = field === 'prefix' ? value : updatedItem.prefix || ''
       const suffix = field === 'suffix' ? value : updatedItem.suffix || ''
       const numValue = field === 'value' ? value : updatedItem.value
-
       // Format number with commas
       const formattedValue = new Intl.NumberFormat('en-US').format(numValue)
-
       updatedItem.displayFormat = `${prefix ? prefix + ' ' : ''}$${formattedValue}${suffix || ''}`
     }
-
     setData({
       ...data,
       items: {
@@ -102,7 +88,6 @@ export default function PricingEditorPage() {
       }
     })
   }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -110,7 +95,6 @@ export default function PricingEditorPage() {
       </div>
     )
   }
-
   if (!data) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -118,13 +102,11 @@ export default function PricingEditorPage() {
       </div>
     )
   }
-
   const itemsByCategory = {
     service: Object.values(data.items).filter(item => item.category === 'service'),
     membership: Object.values(data.items).filter(item => item.category === 'membership'),
     'budget-range': Object.values(data.items).filter(item => item.category === 'budget-range')
   }
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -137,7 +119,6 @@ export default function PricingEditorPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
       {/* Success/Error Messages */}
       {success && (
         <div className="p-4 bg-success/10 border border-success rounded-lg text-success flex items-center gap-2">
@@ -151,7 +132,6 @@ export default function PricingEditorPage() {
           {error}
         </div>
       )}
-
       {/* Global Settings */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -179,7 +159,6 @@ export default function PricingEditorPage() {
           </p>
         </div>
       </div>
-
       {/* Service Pricing */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -201,7 +180,6 @@ export default function PricingEditorPage() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-3 gap-4">
                 <Input
                   label="Prefix (e.g., 'From', 'Starting at')"
@@ -222,7 +200,6 @@ export default function PricingEditorPage() {
                   placeholder="/hr"
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -242,7 +219,6 @@ export default function PricingEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Membership Pricing */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <h2 className="text-xl font-bold text-foreground">
@@ -263,7 +239,6 @@ export default function PricingEditorPage() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-3 gap-4">
                 <Input
                   label="Prefix"
@@ -282,7 +257,6 @@ export default function PricingEditorPage() {
                   onChange={(e) => updateItem(item.id, 'suffix', e.target.value)}
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -298,7 +272,6 @@ export default function PricingEditorPage() {
                   onChange={(e) => updateItem(item.id, 'description', e.target.value)}
                 />
               </div>
-
               {item.metadata && (
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-sm text-foreground-muted">
@@ -312,7 +285,6 @@ export default function PricingEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Budget Ranges */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <h2 className="text-xl font-bold text-foreground">
@@ -333,7 +305,6 @@ export default function PricingEditorPage() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -354,7 +325,6 @@ export default function PricingEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Notes */}
       {data.notes && data.notes.length > 0 && (
         <div className="bg-card rounded-2xl p-6 border border-border">
@@ -366,7 +336,6 @@ export default function PricingEditorPage() {
           </ul>
         </div>
       )}
-
       {/* Save Button at Bottom */}
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving} size="lg" icon={<Save size={20} />}>

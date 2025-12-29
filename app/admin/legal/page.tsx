@@ -1,10 +1,10 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Save, FileText } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface ContentPage {
   slug: string
   title: string
@@ -12,7 +12,6 @@ interface ContentPage {
   content: string
   updatedAt: string
 }
-
 export default function LegalContentEditorPage() {
   const [activeTab, setActiveTab] = useState<'terms' | 'privacy'>('terms')
   const [terms, setTerms] = useState<ContentPage | null>(null)
@@ -20,23 +19,19 @@ export default function LegalContentEditorPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const { showToast } = useToast()
-
   useEffect(() => {
     fetchContent()
   }, [])
-
   const fetchContent = async () => {
     try {
       const [termsRes, privacyRes] = await Promise.all([
         fetch('/api/content/terms'),
         fetch('/api/content/privacy-policy')
       ])
-
       const [termsData, privacyData] = await Promise.all([
         termsRes.json(),
         privacyRes.json()
       ])
-
       if (termsData.success) setTerms(termsData.data)
       if (privacyData.success) setPrivacy(privacyData.data)
     } catch (error) {
@@ -46,11 +41,9 @@ export default function LegalContentEditorPage() {
       setLoading(false)
     }
   }
-
   const saveContent = async (type: 'terms' | 'privacy') => {
     const content = type === 'terms' ? terms : privacy
     if (!content) return
-
     try {
       setSaving(true)
       const response = await fetch(`/api/admin/content/${content.slug}`, {
@@ -61,9 +54,7 @@ export default function LegalContentEditorPage() {
           content: content.content
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast(`${content.title} updated successfully`, 'success')
         if (type === 'terms') setTerms(data.data)
@@ -78,7 +69,6 @@ export default function LegalContentEditorPage() {
       setSaving(false)
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -86,9 +76,7 @@ export default function LegalContentEditorPage() {
       </div>
     )
   }
-
   const currentContent = activeTab === 'terms' ? terms : privacy
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -96,7 +84,6 @@ export default function LegalContentEditorPage() {
         <h1 className="text-3xl font-bold text-foreground">Legal Content Editor</h1>
         <p className="text-muted-foreground">Edit Terms of Service and Privacy Policy</p>
       </div>
-
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border">
         <button
@@ -132,7 +119,6 @@ export default function LegalContentEditorPage() {
           )}
         </button>
       </div>
-
       {currentContent ? (
         <div className="space-y-6">
           {/* Title */}
@@ -153,7 +139,6 @@ export default function LegalContentEditorPage() {
               className="w-full px-4 py-2 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition text-foreground"
             />
           </div>
-
           {/* Content */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -173,7 +158,6 @@ export default function LegalContentEditorPage() {
               placeholder="Enter content here..."
             />
           </div>
-
           {/* Last Updated */}
           <div className="text-sm text-muted-foreground">
             Last updated: {new Date(currentContent.updatedAt).toLocaleDateString('en-US', {
@@ -182,7 +166,6 @@ export default function LegalContentEditorPage() {
               day: 'numeric'
             })}
           </div>
-
           {/* Save Button */}
           <div className="flex justify-end">
             <button

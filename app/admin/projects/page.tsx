@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Plus, Search, Package, Star } from 'lucide-react'
 import Link from 'next/link'
@@ -10,7 +11,6 @@ import { StyledSelect } from '@/components/ui/StyledSelect'
 import { Spinner } from '@/components/ui/Spinner'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { FeaturedCheckbox } from '@/components/admin/FeaturedToggle'
-
 export default function AdminProjectsPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
@@ -22,37 +22,28 @@ export default function AdminProjectsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<ProjectCardData | null>(null)
   const { showToast } = useToast()
-
   useEffect(() => {
     fetchProjects()
   }, [statusFilter, featuredFilter, searchQuery])
-
   const fetchProjects = async () => {
     setLoading(true)
-
     try {
       const params = new URLSearchParams()
       params.append('status', statusFilter)
       if (searchQuery) params.append('search', searchQuery)
-
       const response = await fetch(`/api/projects?${params}`)
-
       if (!response.ok) {
         throw new Error('Failed to fetch projects')
       }
-
       const data = await response.json()
       let filteredProjects = data.data || []
-
       // Apply featured filter
       if (featuredFilter === 'featured') {
         filteredProjects = filteredProjects.filter((p: ProjectCardData) => p.featured)
       } else if (featuredFilter === 'not-featured') {
         filteredProjects = filteredProjects.filter((p: ProjectCardData) => !p.featured)
       }
-
       setProjects(filteredProjects)
-
       // Calculate stats
       const allProjects = data.data || []
       setStats({
@@ -68,28 +59,22 @@ export default function AdminProjectsPage() {
       setLoading(false)
     }
   }
-
   const handleEdit = (slug: string) => {
     router.push(`/admin/projects/${slug}/edit`)
   }
-
   const confirmDelete = (project: ProjectCardData) => {
     setProjectToDelete(project)
     setShowDeleteModal(true)
   }
-
   const handleDelete = async () => {
     if (!projectToDelete) return
-
     try {
       const response = await fetch(`/api/projects/${projectToDelete.slug}`, {
         method: 'DELETE',
       })
-
       if (!response.ok) {
         throw new Error('Failed to delete project')
       }
-
       showToast('Project deleted successfully', 'success')
       setShowDeleteModal(false)
       setProjectToDelete(null)
@@ -99,7 +84,6 @@ export default function AdminProjectsPage() {
       showToast('Failed to delete project', 'error')
     }
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -116,7 +100,6 @@ export default function AdminProjectsPage() {
           <span>Add Project</span>
         </Link>
       </div>
-
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
@@ -139,7 +122,6 @@ export default function AdminProjectsPage() {
           <div className="text-sm text-muted-foreground">Featured</div>
         </div>
       </div>
-
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         {/* Search */}
@@ -153,7 +135,6 @@ export default function AdminProjectsPage() {
             className="w-full pl-12 pr-4 py-3 bg-card text-foreground border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
           />
         </div>
-
         {/* Status Filter */}
         <div className="w-full md:w-48">
           <StyledSelect
@@ -165,7 +146,6 @@ export default function AdminProjectsPage() {
             <option value="draft">Drafts</option>
           </StyledSelect>
         </div>
-
         {/* Featured Filter */}
         <div className="w-full md:w-48">
           <StyledSelect
@@ -178,14 +158,12 @@ export default function AdminProjectsPage() {
           </StyledSelect>
         </div>
       </div>
-
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>
       )}
-
       {/* Projects Grid */}
       {!loading && projects.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -208,7 +186,6 @@ export default function AdminProjectsPage() {
           ))}
         </div>
       )}
-
       {/* Empty State */}
       {!loading && projects.length === 0 && (
         <div className="bg-card rounded-2xl border border-border p-12 text-center">
@@ -232,7 +209,6 @@ export default function AdminProjectsPage() {
           )}
         </div>
       )}
-
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteModal}

@@ -1,4 +1,6 @@
 /*
+
+export const dynamic = 'force-dynamic'
  * DEPRECATED: This CMS is no longer actively used
  *
  * The /about page has been rewritten as a hardcoded, mindset-focused page.
@@ -8,16 +10,13 @@
  * This page is kept for backward compatibility with existing about content API.
  * Consider removing if the API endpoint is no longer needed.
  */
-
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Plus, Trash2, Save, AlertCircle, Briefcase, GraduationCap } from 'lucide-react'
 import { ImageUploadCrop } from '@/components/ImageUploadCrop'
 import { YearPicker } from '@/components/ui/YearPicker'
-
 interface AboutData {
   hero: {
     name: string
@@ -53,18 +52,15 @@ interface AboutData {
     version: string
   }
 }
-
 export default function AboutEditorPage() {
   const [data, setData] = useState<AboutData | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
   useEffect(() => {
     fetchData()
   }, [])
-
   const fetchData = async () => {
     try {
       const res = await fetch('/api/content/about')
@@ -77,13 +73,11 @@ export default function AboutEditorPage() {
       setLoading(false)
     }
   }
-
   const handleSave = async () => {
     if (!data) return
     setSaving(true)
     setError('')
     setSuccess(false)
-
     try {
       const res = await fetch('/api/content/about', {
         method: 'PUT',
@@ -96,7 +90,6 @@ export default function AboutEditorPage() {
           }
         })
       })
-
       if (!res.ok) throw new Error('Failed to save')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
@@ -106,7 +99,6 @@ export default function AboutEditorPage() {
       setSaving(false)
     }
   }
-
   const addStoryParagraph = () => {
     if (!data) return
     setData({
@@ -114,7 +106,6 @@ export default function AboutEditorPage() {
       story: [...data.story, { id: `story-${Date.now()}`, content: '' }]
     })
   }
-
   const removeStoryParagraph = (id: string) => {
     if (!data) return
     setData({
@@ -122,7 +113,6 @@ export default function AboutEditorPage() {
       story: data.story.filter(s => s.id !== id)
     })
   }
-
   const updateStoryParagraph = (id: string, content: string) => {
     if (!data) return
     setData({
@@ -130,7 +120,6 @@ export default function AboutEditorPage() {
       story: data.story.map(s => s.id === id ? { ...s, content } : s)
     })
   }
-
   const addTimelineItem = () => {
     if (!data) return
     setData({
@@ -145,7 +134,6 @@ export default function AboutEditorPage() {
       }]
     })
   }
-
   const removeTimelineItem = (id: string) => {
     if (!data) return
     setData({
@@ -153,7 +141,6 @@ export default function AboutEditorPage() {
       timeline: data.timeline.filter(t => t.id !== id)
     })
   }
-
   const updateTimelineItem = (id: string, field: keyof AboutData['timeline'][0], value: string) => {
     if (!data) return
     setData({
@@ -161,7 +148,6 @@ export default function AboutEditorPage() {
       timeline: data.timeline.map(t => t.id === id ? { ...t, [field]: value } : t)
     })
   }
-
   const addSkillItem = (category: string) => {
     if (!data) return
     setData({
@@ -173,7 +159,6 @@ export default function AboutEditorPage() {
       )
     })
   }
-
   const removeSkillItem = (category: string, index: number) => {
     if (!data) return
     setData({
@@ -185,7 +170,6 @@ export default function AboutEditorPage() {
       )
     })
   }
-
   const updateSkillItem = (category: string, index: number, value: string) => {
     if (!data) return
     setData({
@@ -197,7 +181,6 @@ export default function AboutEditorPage() {
       )
     })
   }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -205,7 +188,6 @@ export default function AboutEditorPage() {
       </div>
     )
   }
-
   if (!data) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -213,7 +195,6 @@ export default function AboutEditorPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -226,7 +207,6 @@ export default function AboutEditorPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
       {/* Success/Error Messages */}
       {success && (
         <div className="p-4 bg-success/10 border border-success rounded-lg text-success flex items-center gap-2">
@@ -240,7 +220,6 @@ export default function AboutEditorPage() {
           {error}
         </div>
       )}
-
       {/* Hero Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Hero Section</h2>
@@ -273,7 +252,6 @@ export default function AboutEditorPage() {
           onChange={(e) => setData({ ...data, hero: { ...data.hero, tagline: e.target.value } })}
         />
       </div>
-
       {/* Story Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <div className="flex items-center justify-between">
@@ -304,7 +282,6 @@ export default function AboutEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Skills Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <h2 className="text-xl font-bold text-foreground">Skills</h2>
@@ -355,7 +332,6 @@ export default function AboutEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Timeline Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <div className="flex items-center justify-between">
@@ -399,7 +375,6 @@ export default function AboutEditorPage() {
                     Education
                   </button>
                 </div>
-
                 <button
                   onClick={() => removeTimelineItem(item.id)}
                   className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
@@ -407,7 +382,6 @@ export default function AboutEditorPage() {
                   <Trash2 size={18} />
                 </button>
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <Input
                   label="Title"
@@ -420,7 +394,6 @@ export default function AboutEditorPage() {
                   onChange={(e) => updateTimelineItem(item.id, 'organization', e.target.value)}
                 />
               </div>
-
               <YearPicker
                 label="Period"
                 value={item.period}
@@ -428,7 +401,6 @@ export default function AboutEditorPage() {
                 placeholder="Select year or range"
                 allowRange={true}
               />
-
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Description</label>
                 <textarea
@@ -442,7 +414,6 @@ export default function AboutEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Social Links */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Social Links</h2>
@@ -462,7 +433,6 @@ export default function AboutEditorPage() {
           onChange={(e) => setData({ ...data, social: { ...data.social, email: e.target.value } })}
         />
       </div>
-
       {/* Save Button at Bottom */}
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving} size="lg" icon={<Save size={20} />}>

@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -9,40 +10,32 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/Toast'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
-
 export default function OrdersPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const { showToast } = useToast()
-
   const [orders, setOrders] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
-
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/dashboard/orders')
       return
     }
-
     if (status === 'authenticated') {
       fetchOrders()
     }
   }, [status, statusFilter])
-
   async function fetchOrders() {
     try {
       setIsLoading(true)
       const params = new URLSearchParams()
       if (statusFilter) params.append('status', statusFilter)
-
       const response = await fetch(`/api/orders?${params.toString()}`)
       const data = await response.json()
-
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch orders')
       }
-
       setOrders(data.orders || [])
     } catch (error: any) {
       showToast(error.message || 'Failed to load orders', 'error')
@@ -50,7 +43,6 @@ export default function OrdersPage() {
       setIsLoading(false)
     }
   }
-
   function getStatusIcon(status: string) {
     switch (status) {
       case 'COMPLETED':
@@ -65,7 +57,6 @@ export default function OrdersPage() {
         return <Package className="w-5 h-5 text-gray-600" />
     }
   }
-
   function getStatusColor(status: string) {
     switch (status) {
       case 'COMPLETED':
@@ -81,7 +72,6 @@ export default function OrdersPage() {
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
-
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -89,13 +79,11 @@ export default function OrdersPage() {
       </div>
     )
   }
-
   return (
     <div className="min-h-screen py-16">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-4xl font-bold text-foreground">My Orders</h1>
-
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -108,7 +96,6 @@ export default function OrdersPage() {
             <option value="CANCELLED">Cancelled</option>
           </select>
         </div>
-
         {orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Package className="w-24 h-24 text-muted-foreground/20 mb-6" />
@@ -143,7 +130,6 @@ export default function OrdersPage() {
                       })}
                     </p>
                   </div>
-
                   <div className="text-right">
                     <p className="text-2xl font-bold text-foreground">
                       {formatPriceShort(Number(order.total), order.currency as SupportedCurrency)}
@@ -155,7 +141,6 @@ export default function OrdersPage() {
                     )}
                   </div>
                 </div>
-
                 <div className="mb-4">
                   <p className="text-sm text-muted-foreground mb-2">Items:</p>
                   <div className="space-y-1">
@@ -167,7 +152,6 @@ export default function OrdersPage() {
                     ))}
                   </div>
                 </div>
-
                 <Link
                   href={`/dashboard/orders/${order.orderNumber}`}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium"

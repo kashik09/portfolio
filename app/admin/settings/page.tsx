@@ -1,25 +1,22 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { Save, AlertTriangle, Mail, Server, Shield, Settings as SettingsIcon, Megaphone } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-
 interface AdminSiteSettings {
   maintenanceMode: boolean
   availableForBusiness: boolean
   avatarUrl: string
 }
-
 interface AdminAdsSettings {
   adsEnabled: boolean
   adsProvider: string
   adsClientId: string
   placements: Record<string, boolean>
 }
-
 type EmailProvider = 'gmail' | 'outlook' | 'yahoo' | 'icloud' | 'custom'
-
 const emailProviders: { value: EmailProvider; label: string }[] = [
   { value: 'gmail', label: 'Gmail' },
   { value: 'outlook', label: 'Outlook' },
@@ -27,7 +24,6 @@ const emailProviders: { value: EmailProvider; label: string }[] = [
   { value: 'icloud', label: 'iCloud' },
   { value: 'custom', label: 'Custom' },
 ]
-
 const providerPresets: Record<
   EmailProvider,
   { host: string; port: string; secure: boolean; help: string }
@@ -63,7 +59,6 @@ const providerPresets: Record<
     help: 'Enter the SMTP host, port, and security settings provided by your email provider.',
   },
 }
-
 const detectProvider = (email: string): EmailProvider => {
   const domain = email.split('@')[1]?.trim().toLowerCase()
   if (!domain) return 'custom'
@@ -75,18 +70,15 @@ const detectProvider = (email: string): EmailProvider => {
   if (['icloud.com', 'me.com', 'mac.com'].includes(domain)) return 'icloud'
   return 'custom'
 }
-
 export default function AdminSettingsPage() {
   const { showToast } = useToast()
   const [saving, setSaving] = useState(false)
   const [activeModal, setActiveModal] = useState<'reset' | 'clear' | null>(null)
-
   const [siteSettings, setSiteSettings] = useState<AdminSiteSettings>({
     maintenanceMode: false,
     availableForBusiness: true,
     avatarUrl: ''
   })
-
   const [adsSettings, setAdsSettings] = useState<AdminAdsSettings>({
     adsEnabled: false,
     adsProvider: '',
@@ -95,7 +87,6 @@ export default function AdminSettingsPage() {
       homepage_hero: false
     }
   })
-
   const [emailSettings, setEmailSettings] = useState({
     smtpHost: 'smtp.gmail.com',
     smtpPort: '587',
@@ -107,15 +98,12 @@ export default function AdminSettingsPage() {
   const [showEmailAdvanced, setShowEmailAdvanced] = useState(false)
   const [hasManualHostOverride, setHasManualHostOverride] = useState(false)
   const [hasManualPortOverride, setHasManualPortOverride] = useState(false)
-
   const [securitySettings, setSecuritySettings] = useState({
     sessionTimeout: '30',
     twoFactorEnabled: false
   })
-
   useEffect(() => {
     let cancelled = false
-
     async function loadSiteSettings() {
       try {
         const res = await fetch('/api/admin/site-settings')
@@ -124,7 +112,6 @@ export default function AdminSettingsPage() {
         }
         const json = await res.json()
         if (!json.success || !json.data || cancelled) return
-
         const data = json.data as {
           maintenanceMode: boolean
           availableForBusiness: boolean
@@ -139,13 +126,11 @@ export default function AdminSettingsPage() {
           smtpPassword?: string | null
           smtpSecure?: boolean | null
         }
-
         setSiteSettings({
           maintenanceMode: data.maintenanceMode,
           availableForBusiness: data.availableForBusiness,
           avatarUrl: data.avatarUrl || '',
         })
-
         setAdsSettings(prev => ({
           adsEnabled: data.adsEnabled,
           adsProvider: data.adsProvider || '',
@@ -157,7 +142,6 @@ export default function AdminSettingsPage() {
             ...prev.placements,
           },
         }))
-
         const resolvedHost = data.smtpHost || emailSettings.smtpHost
         const resolvedPort =
           data.smtpPort !== null && data.smtpPort !== undefined
@@ -169,7 +153,6 @@ export default function AdminSettingsPage() {
           data.smtpPassword || emailSettings.smtpPassword
         const resolvedSecure =
           data.smtpSecure ?? emailSettings.smtpSecure
-
         setEmailSettings(prev => ({
           ...prev,
           smtpHost: resolvedHost,
@@ -178,7 +161,6 @@ export default function AdminSettingsPage() {
           smtpPassword: resolvedPassword,
           smtpSecure: resolvedSecure,
         }))
-
         const detectedProvider = detectProvider(resolvedUsername)
         setEmailProvider(detectedProvider)
         if (detectedProvider === 'custom') {
@@ -197,19 +179,15 @@ export default function AdminSettingsPage() {
         }
       }
     }
-
     loadSiteSettings()
-
     return () => {
       cancelled = true
     }
   }, [showToast])
-
   useEffect(() => {
     const detected = detectProvider(emailSettings.smtpUsername)
     setEmailProvider(prev => (prev === detected ? prev : detected))
   }, [emailSettings.smtpUsername])
-
   useEffect(() => {
     if (emailProvider === 'custom') return
     const preset = providerPresets[emailProvider]
@@ -223,7 +201,6 @@ export default function AdminSettingsPage() {
       setShowEmailAdvanced(false)
     }
   }, [emailProvider, hasManualHostOverride, hasManualPortOverride])
-
   // Auto-switch port when secure toggle changes (for default ports only)
   useEffect(() => {
     setEmailSettings(prev => {
@@ -231,7 +208,6 @@ export default function AdminSettingsPage() {
       const isDefaultPort = currentPort === '587' || currentPort === '465'
       // Only auto-switch if current port is a default (587 or 465)
       if (!isDefaultPort) return prev
-
       if (prev.smtpSecure && currentPort !== '465') {
         return { ...prev, smtpPort: '465' }
       }
@@ -241,7 +217,6 @@ export default function AdminSettingsPage() {
       return prev
     })
   }, [emailSettings.smtpSecure])
-
   const handleSaveSite = async () => {
     try {
       setSaving(true)
@@ -254,9 +229,7 @@ export default function AdminSettingsPage() {
           avatarUrl: siteSettings.avatarUrl.trim() || null,
         }),
       })
-
       const data = await res.json().catch(() => null)
-
       if (!res.ok || !data?.success) {
         showToast(
           (data && data.error) || 'Failed to save site settings',
@@ -264,7 +237,6 @@ export default function AdminSettingsPage() {
         )
         return
       }
-
       showToast('Site settings saved successfully', 'success')
     } catch (error) {
       console.error('Error saving site settings:', error)
@@ -273,7 +245,6 @@ export default function AdminSettingsPage() {
       setSaving(false)
     }
   }
-
   const handleSaveAds = async () => {
     try {
       setSaving(true)
@@ -287,9 +258,7 @@ export default function AdminSettingsPage() {
           adsPlacements: adsSettings.placements,
         }),
       })
-
       const data = await res.json().catch(() => null)
-
       if (!res.ok || !data?.success) {
         showToast(
           (data && data.error) || 'Failed to save ads settings',
@@ -297,7 +266,6 @@ export default function AdminSettingsPage() {
         )
         return
       }
-
       showToast('Ads settings saved successfully', 'success')
     } catch (error) {
       console.error('Error saving ads settings:', error)
@@ -306,7 +274,6 @@ export default function AdminSettingsPage() {
       setSaving(false)
     }
   }
-
   const handleSaveEmail = async () => {
     setSaving(true)
     try {
@@ -315,9 +282,7 @@ export default function AdminSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(emailSettings)
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Email settings saved successfully', 'success')
       } else {
@@ -329,7 +294,6 @@ export default function AdminSettingsPage() {
       setSaving(false)
     }
   }
-
   const handleTestEmail = async () => {
     try {
       const response = await fetch('/api/admin/settings/email', {
@@ -340,9 +304,7 @@ export default function AdminSettingsPage() {
           testEmail: emailSettings.smtpUsername
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Test email sent successfully! Check your inbox.', 'success')
       } else {
@@ -352,14 +314,12 @@ export default function AdminSettingsPage() {
       showToast('Failed to send test email', 'error')
     }
   }
-
   const handleSaveSecurity = async () => {
     setSaving(true)
     await new Promise(resolve => setTimeout(resolve, 1000))
     setSaving(false)
     showToast('Security settings saved successfully', 'success')
   }
-
   const handleResetSettings = async () => {
     setActiveModal(null)
     showToast('Settings reset to defaults', 'success')
@@ -369,22 +329,18 @@ export default function AdminSettingsPage() {
       avatarUrl: ''
     })
   }
-
   const handleClearData = async () => {
     setActiveModal(null)
     showToast('All data cleared successfully', 'success')
   }
-
   const handleProviderSelect = (provider: EmailProvider) => {
     setHasManualHostOverride(false)
     setHasManualPortOverride(false)
     setEmailProvider(provider)
   }
-
   const isCustomProvider = emailProvider === 'custom'
   const isEmailLocked = !isCustomProvider && !showEmailAdvanced
   const providerHelp = providerPresets[emailProvider].help
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -392,7 +348,6 @@ export default function AdminSettingsPage() {
         <h1 className="text-3xl font-bold text-foreground">Settings</h1>
         <p className="text-muted-foreground">Manage your site configuration</p>
       </div>
-
       {/* Site Settings */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
         <div className="flex items-center gap-3">
@@ -404,7 +359,6 @@ export default function AdminSettingsPage() {
             <p className="text-sm text-muted-foreground">Basic site configuration</p>
           </div>
         </div>
-
         <div className="space-y-4">
           <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
             <div>
@@ -425,7 +379,6 @@ export default function AdminSettingsPage() {
               className="w-5 h-5 rounded border-border"
             />
           </label>
-
           <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
             <div>
               <p className="font-medium text-foreground">Available for business</p>
@@ -446,7 +399,6 @@ export default function AdminSettingsPage() {
               className="w-5 h-5 rounded border-border"
             />
           </label>
-
           <div className="space-y-2 rounded-lg border border-border bg-muted p-4">
             <label className="text-sm font-medium text-foreground" htmlFor="avatarUrl">
               Avatar URL
@@ -469,7 +421,6 @@ export default function AdminSettingsPage() {
             </p>
           </div>
         </div>
-
         <button
           onClick={handleSaveSite}
           disabled={saving}
@@ -479,7 +430,6 @@ export default function AdminSettingsPage() {
           {saving ? 'Saving...' : 'Save Site Settings'}
         </button>
       </div>
-
       {/* Ads Settings */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
         <div className="flex items-center gap-3">
@@ -493,7 +443,6 @@ export default function AdminSettingsPage() {
             </p>
           </div>
         </div>
-
         <div className="space-y-4">
           <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
             <div>
@@ -515,7 +464,6 @@ export default function AdminSettingsPage() {
               className="w-5 h-5 rounded border-border"
             />
           </label>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
@@ -552,7 +500,6 @@ export default function AdminSettingsPage() {
               />
             </div>
           </div>
-
           <div>
             <p className="block text-sm font-medium text-foreground mb-2">
               Placements
@@ -587,7 +534,6 @@ export default function AdminSettingsPage() {
             </label>
           </div>
         </div>
-
         <button
           onClick={handleSaveAds}
           disabled={saving}
@@ -597,7 +543,6 @@ export default function AdminSettingsPage() {
           {saving ? 'Saving...' : 'Save Ads Settings'}
         </button>
       </div>
-
       {/* Email Settings */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
         <div className="flex items-center gap-3">
@@ -609,7 +554,6 @@ export default function AdminSettingsPage() {
             <p className="text-sm text-muted">SMTP configuration for notifications</p>
           </div>
         </div>
-
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             Provider
@@ -643,7 +587,6 @@ export default function AdminSettingsPage() {
             </button>
           )}
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-app mb-2">
@@ -666,7 +609,6 @@ export default function AdminSettingsPage() {
               }`}
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-app mb-2">
               SMTP Port
@@ -691,7 +633,6 @@ export default function AdminSettingsPage() {
               }`}
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-app mb-2">
               SMTP Username
@@ -708,7 +649,6 @@ export default function AdminSettingsPage() {
               className="w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:hsl(var(--bc)/0.65)] focus:border-[color:hsl(var(--p)/0.6)] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)] outline-none transition"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-app mb-2">
               SMTP Password
@@ -726,7 +666,6 @@ export default function AdminSettingsPage() {
               className="w-full px-4 py-2 surface-app border border-app rounded-lg text-sm text-app placeholder:text-[color:hsl(var(--bc)/0.65)] focus:border-[color:hsl(var(--p)/0.6)] focus:ring-2 focus:ring-[color:hsl(var(--p)/0.35)] outline-none transition"
             />
           </div>
-
           <div className="md:col-span-2">
             <label className="flex items-center justify-between gap-4 rounded-lg border border-app surface-app px-4 py-3">
               <div>
@@ -751,7 +690,6 @@ export default function AdminSettingsPage() {
             </label>
           </div>
         </div>
-
         <div className="flex gap-3">
           <button
             onClick={handleSaveEmail}
@@ -770,7 +708,6 @@ export default function AdminSettingsPage() {
           </button>
         </div>
       </div>
-
       {/* Security Settings */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
         <div className="flex items-center gap-3">
@@ -782,7 +719,6 @@ export default function AdminSettingsPage() {
             <p className="text-sm text-muted-foreground">Authentication and session management</p>
           </div>
         </div>
-
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -800,7 +736,6 @@ export default function AdminSettingsPage() {
               <option value="1440">24 hours</option>
             </select>
           </div>
-
           <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
             <div>
               <p className="font-medium text-foreground">Two-Factor Authentication</p>
@@ -814,7 +749,6 @@ export default function AdminSettingsPage() {
             />
           </label>
         </div>
-
         <button
           onClick={handleSaveSecurity}
           disabled={saving}
@@ -824,7 +758,6 @@ export default function AdminSettingsPage() {
           {saving ? 'Saving...' : 'Save Security Settings'}
         </button>
       </div>
-
       {/* Danger Zone */}
       <div className="bg-card rounded-2xl border border-red-500/30 p-6 space-y-6">
         <div className="flex items-center gap-3">
@@ -836,7 +769,6 @@ export default function AdminSettingsPage() {
             <p className="text-sm text-muted-foreground">Irreversible and destructive actions</p>
           </div>
         </div>
-
         <div className="space-y-3">
           <div className="p-4 border border-border rounded-lg">
             <h3 className="font-medium text-foreground mb-1">Reset All Settings</h3>
@@ -848,7 +780,6 @@ export default function AdminSettingsPage() {
               Reset Settings
             </button>
           </div>
-
           <div className="p-4 border border-red-500/30 rounded-lg bg-red-500/5">
             <h3 className="font-medium text-red-600 dark:text-red-400 mb-1">Clear All Data</h3>
             <p className="text-sm text-muted-foreground mb-3">Permanently delete all projects, requests, and user data</p>
@@ -861,7 +792,6 @@ export default function AdminSettingsPage() {
           </div>
         </div>
       </div>
-
       {/* Reset Confirmation Modal */}
       <ConfirmModal
         isOpen={activeModal === 'reset'}
@@ -872,7 +802,6 @@ export default function AdminSettingsPage() {
         confirmText="Reset Settings"
         type="warning"
       />
-
       {/* Clear Data Confirmation Modal */}
       <ConfirmModal
         isOpen={activeModal === 'clear'}

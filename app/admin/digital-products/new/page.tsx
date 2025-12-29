@@ -1,12 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
-
 const CATEGORIES = [
   { value: 'TEMPLATE', label: 'Template' },
   { value: 'THEME', label: 'Theme' },
@@ -17,12 +17,10 @@ const CATEGORIES = [
   { value: 'LICENSE', label: 'License' },
   { value: 'OTHER', label: 'Other' }
 ]
-
 export default function NewDigitalProductPage() {
   const router = useRouter()
   const { showToast } = useToast()
   const [saving, setSaving] = useState(false)
-
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -43,10 +41,8 @@ export default function NewDigitalProductPage() {
     changelog: '',
     documentation: ''
   })
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
-
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
@@ -54,7 +50,6 @@ export default function NewDigitalProductPage() {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
   }
-
   // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value
@@ -62,14 +57,11 @@ export default function NewDigitalProductPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
-
     setFormData(prev => ({ ...prev, name, slug }))
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-
     try {
       // Validate required fields
       if (!formData.name || !formData.slug || !formData.description || !formData.price || !formData.fileUrl || !formData.fileSize || !formData.fileType) {
@@ -77,7 +69,6 @@ export default function NewDigitalProductPage() {
         setSaving(false)
         return
       }
-
       const response = await fetch('/api/admin/digital-products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -102,9 +93,7 @@ export default function NewDigitalProductPage() {
           documentation: formData.documentation || null
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Product created successfully', 'success')
         router.push('/admin/digital-products')
@@ -118,7 +107,6 @@ export default function NewDigitalProductPage() {
       setSaving(false)
     }
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -134,13 +122,11 @@ export default function NewDigitalProductPage() {
           <p className="text-muted-foreground">Add a new digital product to your store</p>
         </div>
       </div>
-
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           <h2 className="text-xl font-semibold text-foreground">Basic Information</h2>
-
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -156,7 +142,6 @@ export default function NewDigitalProductPage() {
               placeholder="My Awesome Template"
             />
           </div>
-
           {/* Slug */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -175,7 +160,6 @@ export default function NewDigitalProductPage() {
               URL-friendly version of the name (auto-generated)
             </p>
           </div>
-
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -191,7 +175,6 @@ export default function NewDigitalProductPage() {
               placeholder="A detailed description of your product..."
             />
           </div>
-
           {/* Category and Price */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -209,7 +192,6 @@ export default function NewDigitalProductPage() {
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Price (USD) <span className="text-red-500">*</span>
@@ -227,7 +209,6 @@ export default function NewDigitalProductPage() {
               />
             </div>
           </div>
-
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -243,11 +224,9 @@ export default function NewDigitalProductPage() {
             />
           </div>
         </div>
-
         {/* Files */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           <h2 className="text-xl font-semibold text-foreground">Files</h2>
-
           {/* File URL */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -263,7 +242,6 @@ export default function NewDigitalProductPage() {
               placeholder="https://example.com/files/product.zip"
             />
           </div>
-
           {/* File Size and Type */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -280,7 +258,6 @@ export default function NewDigitalProductPage() {
                 placeholder="1024000"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 File Type <span className="text-red-500">*</span>
@@ -296,7 +273,6 @@ export default function NewDigitalProductPage() {
               />
             </div>
           </div>
-
           {/* Thumbnail URL */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -312,11 +288,9 @@ export default function NewDigitalProductPage() {
             />
           </div>
         </div>
-
         {/* License Types */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Available Licenses</h2>
-
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -331,7 +305,6 @@ export default function NewDigitalProductPage() {
                 <p className="text-sm text-muted-foreground">For individual use</p>
               </div>
             </label>
-
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -345,7 +318,6 @@ export default function NewDigitalProductPage() {
                 <p className="text-sm text-muted-foreground">For commercial projects</p>
               </div>
             </label>
-
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -361,11 +333,9 @@ export default function NewDigitalProductPage() {
             </label>
           </div>
         </div>
-
         {/* Additional Information */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           <h2 className="text-xl font-semibold text-foreground">Additional Information</h2>
-
           {/* Version */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -380,7 +350,6 @@ export default function NewDigitalProductPage() {
               placeholder="1.0.0"
             />
           </div>
-
           {/* Changelog */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -395,7 +364,6 @@ export default function NewDigitalProductPage() {
               placeholder="Version history and changes..."
             />
           </div>
-
           {/* Documentation */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -411,11 +379,9 @@ export default function NewDigitalProductPage() {
             />
           </div>
         </div>
-
         {/* Publishing Options */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Publishing Options</h2>
-
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -430,7 +396,6 @@ export default function NewDigitalProductPage() {
                 <p className="text-sm text-muted-foreground">Make this product available to customers</p>
               </div>
             </label>
-
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -446,7 +411,6 @@ export default function NewDigitalProductPage() {
             </label>
           </div>
         </div>
-
         {/* Actions */}
         <div className="flex gap-3">
           <button

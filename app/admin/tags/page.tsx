@@ -1,17 +1,16 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { Plus, X, Edit, Tag, Code } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-
 interface TagItem {
   id: number
   name: string
   type: 'tag' | 'tech'
   usageCount: number
 }
-
 export default function TagsManagerPage() {
   const { showToast } = useToast()
   const [tags, setTags] = useState<TagItem[]>([
@@ -25,45 +24,37 @@ export default function TagsManagerPage() {
   const [newTagType, setNewTagType] = useState<'tag' | 'tech'>('tag')
   const [editingTag, setEditingTag] = useState<TagItem | null>(null)
   const [deleteTag, setDeleteTag] = useState<TagItem | null>(null)
-
   const handleAddTag = () => {
     if (!newTagName.trim()) {
       showToast('Please enter a tag name', 'warning')
       return
     }
-
     const newTag: TagItem = {
       id: Date.now(),
       name: newTagName.trim(),
       type: newTagType,
       usageCount: 0
     }
-
     setTags([...tags, newTag])
     setNewTagName('')
     showToast(`${newTagType === 'tag' ? 'Tag' : 'Tech'} added successfully`, 'success')
   }
-
   const handleUpdateTag = () => {
     if (!editingTag || !editingTag.name.trim()) {
       showToast('Please enter a valid name', 'warning')
       return
     }
-
     setTags(tags.map(t => t.id === editingTag.id ? editingTag : t))
     setEditingTag(null)
     showToast('Tag updated successfully', 'success')
   }
-
   const handleDeleteTag = (tag: TagItem) => {
     setTags(tags.filter(t => t.id !== tag.id))
     setDeleteTag(null)
     showToast('Tag deleted successfully', 'success')
   }
-
   const tagsList = tags.filter(t => t.type === 'tag')
   const techList = tags.filter(t => t.type === 'tech')
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -71,7 +62,6 @@ export default function TagsManagerPage() {
         <h1 className="text-3xl font-bold text-foreground">Tags & Tech Stack Manager</h1>
         <p className="text-muted-foreground">Manage your project tags and technologies</p>
       </div>
-
       {/* Add New */}
       <div className="bg-card rounded-2xl border border-border p-6">
         <h2 className="text-xl font-bold text-foreground mb-4">Add New</h2>
@@ -101,7 +91,6 @@ export default function TagsManagerPage() {
           </button>
         </div>
       </div>
-
       {/* Tags List */}
       <div className="bg-card rounded-2xl border border-border p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -146,7 +135,6 @@ export default function TagsManagerPage() {
           )}
         </div>
       </div>
-
       {/* Tech Stack List */}
       <div className="bg-card rounded-2xl border border-border p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -191,7 +179,6 @@ export default function TagsManagerPage() {
           )}
         </div>
       </div>
-
       {/* Edit Modal */}
       {editingTag && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -222,7 +209,6 @@ export default function TagsManagerPage() {
           </div>
         </div>
       )}
-
       {/* Delete Confirmation */}
       <ConfirmModal
         isOpen={!!deleteTag}

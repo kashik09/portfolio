@@ -1,11 +1,11 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Download, Package, Search, Filter } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface UserDownload {
   slug: string
   name: string
@@ -19,43 +19,34 @@ interface UserDownload {
   fileSize: number
   licenseStatus: 'ACTIVE' | 'EXPIRED' | 'RESTRICTED'
 }
-
 interface MeDownloadsResponse {
   success: boolean
   data?: {
     downloads: UserDownload[]
   }
 }
-
 export default function DownloadsPage() {
   const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
   const [downloads, setDownloads] = useState<UserDownload[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
-
   useEffect(() => {
     fetchDownloads()
   }, [])
-
   const fetchDownloads = async () => {
     try {
       setLoading(true)
-
       const response = await fetch('/api/me/downloads', {
         method: 'GET',
       })
-
       if (!response.ok) {
         throw new Error('Failed to load downloads')
       }
-
       const json = (await response.json()) as MeDownloadsResponse
-
       if (!json.success || !json.data) {
         throw new Error('Failed to load downloads')
       }
-
       setDownloads(json.data.downloads || [])
     } catch (error) {
       console.error('Error fetching downloads:', error)
@@ -64,27 +55,21 @@ export default function DownloadsPage() {
       setLoading(false)
     }
   }
-
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return bytes + ' B'
     if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
     return (bytes / 1048576).toFixed(1) + ' MB'
   }
-
   const formatCategory = (category: string) => {
     return category.replace(/_/g, ' ')
   }
-
   const filteredDownloads = downloads.filter(download => {
     const matchesSearch = download.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       download.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = categoryFilter === 'all' || download.category === categoryFilter
-
     return matchesSearch && matchesCategory
   })
-
   const categories = Array.from(new Set(downloads.map(d => d.category)))
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -92,7 +77,6 @@ export default function DownloadsPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-6 max-w-7xl">
       {/* Header */}
@@ -102,7 +86,6 @@ export default function DownloadsPage() {
           Access all your purchased digital products
         </p>
       </div>
-
       {downloads.length === 0 ? (
         /* Empty State */
         <div className="bg-card rounded-2xl border border-border p-12 text-center">
@@ -132,7 +115,6 @@ export default function DownloadsPage() {
                 className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
               />
             </div>
-
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -146,7 +128,6 @@ export default function DownloadsPage() {
               ))}
             </select>
           </div>
-
           {/* Downloads Grid */}
           {filteredDownloads.length === 0 ? (
             <div className="bg-card rounded-2xl border border-border p-12 text-center">
@@ -177,7 +158,6 @@ export default function DownloadsPage() {
                       <Package className="text-primary" size={48} />
                     </div>
                   )}
-
                   {/* Content */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-2">
@@ -193,11 +173,9 @@ export default function DownloadsPage() {
                         </span>
                       </div>
                     </div>
-
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                       {download.description}
                     </p>
-
                     {/* Download Info */}
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
@@ -211,7 +189,6 @@ export default function DownloadsPage() {
                         {download.downloadLimit - download.downloadsUsed} downloads left (3 per 14 days)
                       </span>
                     </div>
-
                     {/* Progress Bar */}
                     <div className="mt-3 w-full bg-muted rounded-full h-2 overflow-hidden">
                       <div

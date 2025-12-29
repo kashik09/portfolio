@@ -1,12 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { ArrowLeft, Upload, Plus, X, Camera } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
 import { ScreenshotCapture } from '@/components/admin/ScreenshotCapture'
-
 export default function NewProjectPage() {
   const router = useRouter()
   const { showToast } = useToast()
@@ -17,7 +17,6 @@ export default function NewProjectPage() {
   const [techInput, setTechInput] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [uploadMode, setUploadMode] = useState<'manual' | 'screenshot'>('manual')
-
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -29,21 +28,18 @@ export default function NewProjectPage() {
     featured: false,
     published: true
   })
-
   // Preset suggestions
   const tagSuggestions = [
     'javascript', 'typescript', 'react', 'nextjs', 'calculator',
     'webapp', 'mobile', 'api', 'fullstack', 'backend', 'frontend',
     'ui-ux', 'database', 'authentication', 'realtime'
   ]
-
   const techSuggestions = [
     'React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS',
     'Node.js', 'PostgreSQL', 'Prisma', 'MongoDB', 'Express',
     'Swift', 'PHP', 'Python', 'Git', 'Vercel', 'Supabase',
     'NextAuth', 'Lucide React'
   ]
-
   // Auto-generate slug from title
   const generateSlug = (title: string) => {
     return title
@@ -51,11 +47,9 @@ export default function NewProjectPage() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
   }
-
   const handleTitleChange = (title: string) => {
     setFormData({ ...formData, title, slug: generateSlug(title) })
   }
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -72,7 +66,6 @@ export default function NewProjectPage() {
       reader.readAsDataURL(file)
     }
   }
-
   const addTag = (tag?: string) => {
     const tagToAdd = tag || tagInput.trim()
     if (tagToAdd && !tags.includes(tagToAdd)) {
@@ -80,11 +73,9 @@ export default function NewProjectPage() {
       if (!tag) setTagInput('')
     }
   }
-
   const removeTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag))
   }
-
   const addTech = (tech?: string) => {
     const techToAdd = tech || techInput.trim()
     if (techToAdd && !techStack.includes(techToAdd)) {
@@ -92,15 +83,12 @@ export default function NewProjectPage() {
       if (!tech) setTechInput('')
     }
   }
-
   const removeTech = (tech: string) => {
     setTechStack(techStack.filter(t => t !== tech))
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
     try {
       // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000))
@@ -113,7 +101,6 @@ export default function NewProjectPage() {
       setLoading(false)
     }
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -129,7 +116,6 @@ export default function NewProjectPage() {
           <p className="text-muted-foreground">Add a new project to your portfolio</p>
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           {/* Title & Slug */}
@@ -161,7 +147,6 @@ export default function NewProjectPage() {
               />
             </div>
           </div>
-
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -176,7 +161,6 @@ export default function NewProjectPage() {
               required
             />
           </div>
-
           {/* Problem/Purpose */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -191,7 +175,6 @@ export default function NewProjectPage() {
               placeholder="e.g., This calculator helps students quickly perform complex calculations without needing physical hardware..."
             />
           </div>
-
           {/* Category & URLs */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -236,13 +219,11 @@ export default function NewProjectPage() {
               />
             </div>
           </div>
-
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Tags
             </label>
-
             {/* Suggestions */}
             <div className="mb-3">
               <p className="text-xs text-muted-foreground mb-2">Click to add or type your own:</p>
@@ -259,7 +240,6 @@ export default function NewProjectPage() {
                 ))}
               </div>
             </div>
-
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -295,13 +275,11 @@ export default function NewProjectPage() {
               ))}
             </div>
           </div>
-
           {/* Tech Stack */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Tech Stack
             </label>
-
             {/* Suggestions */}
             <div className="mb-3">
               <p className="text-xs text-muted-foreground mb-2">Click to add or type your own:</p>
@@ -318,7 +296,6 @@ export default function NewProjectPage() {
                 ))}
               </div>
             </div>
-
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -354,13 +331,11 @@ export default function NewProjectPage() {
               ))}
             </div>
           </div>
-
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-4">
               Thumbnail Image
             </label>
-
             {/* Upload Mode Toggle */}
             <div className="mb-4 flex gap-2">
               <button
@@ -388,7 +363,6 @@ export default function NewProjectPage() {
                 Auto-Capture
               </button>
             </div>
-
             {imagePreview && (
               <div className="mb-4 relative">
                 <img
@@ -405,7 +379,6 @@ export default function NewProjectPage() {
                 </button>
               </div>
             )}
-
             {uploadMode === 'manual' ? (
               <label className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer block">
                 <input
@@ -429,7 +402,6 @@ export default function NewProjectPage() {
               />
             )}
           </div>
-
           {/* Checkboxes */}
           <div className="space-y-4">
             <label className="flex items-start gap-2 cursor-pointer">
@@ -462,7 +434,6 @@ export default function NewProjectPage() {
             </label>
           </div>
         </div>
-
         {/* Actions */}
         <div className="flex items-center justify-end gap-4">
           <Link

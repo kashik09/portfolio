@@ -1,18 +1,17 @@
 /*
+
+export const dynamic = 'force-dynamic'
  * DEPRECATED: This CMS is no longer actively used
  *
  * The /services page has been removed and now redirects to /products.
  * This editor is kept for backward compatibility with existing API endpoints.
  * Consider removing if the services API endpoint is no longer needed.
  */
-
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Plus, Trash2, Save, AlertCircle } from 'lucide-react'
-
 interface Service {
   id: string
   icon: string
@@ -21,7 +20,6 @@ interface Service {
   features: string[]
   pricing: string
 }
-
 interface ServicesData {
   header: {
     title: string
@@ -43,18 +41,15 @@ interface ServicesData {
     version: string
   }
 }
-
 export default function ServicesEditorPage() {
   const [data, setData] = useState<ServicesData | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
   useEffect(() => {
     fetchData()
   }, [])
-
   const fetchData = async () => {
     try {
       const res = await fetch('/api/content/services')
@@ -67,13 +62,11 @@ export default function ServicesEditorPage() {
       setLoading(false)
     }
   }
-
   const handleSave = async () => {
     if (!data) return
     setSaving(true)
     setError('')
     setSuccess(false)
-
     try {
       const res = await fetch('/api/content/services', {
         method: 'PUT',
@@ -86,7 +79,6 @@ export default function ServicesEditorPage() {
           }
         })
       })
-
       if (!res.ok) throw new Error('Failed to save')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
@@ -96,7 +88,6 @@ export default function ServicesEditorPage() {
       setSaving(false)
     }
   }
-
   const addService = () => {
     if (!data) return
     const newService: Service = {
@@ -112,7 +103,6 @@ export default function ServicesEditorPage() {
       services: [...data.services, newService]
     })
   }
-
   const removeService = (id: string) => {
     if (!data) return
     setData({
@@ -120,7 +110,6 @@ export default function ServicesEditorPage() {
       services: data.services.filter(s => s.id !== id)
     })
   }
-
   const updateService = (id: string, field: keyof Service, value: any) => {
     if (!data) return
     setData({
@@ -130,7 +119,6 @@ export default function ServicesEditorPage() {
       )
     })
   }
-
   const addFeature = (serviceId: string) => {
     if (!data) return
     setData({
@@ -140,7 +128,6 @@ export default function ServicesEditorPage() {
       )
     })
   }
-
   const removeFeature = (serviceId: string, index: number) => {
     if (!data) return
     setData({
@@ -150,7 +137,6 @@ export default function ServicesEditorPage() {
       )
     })
   }
-
   const updateFeature = (serviceId: string, index: number, value: string) => {
     if (!data) return
     setData({
@@ -163,7 +149,6 @@ export default function ServicesEditorPage() {
       )
     })
   }
-
   const addFAQ = () => {
     if (!data) return
     setData({
@@ -175,7 +160,6 @@ export default function ServicesEditorPage() {
       }]
     })
   }
-
   const removeFAQ = (id: string) => {
     if (!data) return
     setData({
@@ -183,7 +167,6 @@ export default function ServicesEditorPage() {
       faq: data.faq.filter(f => f.id !== id)
     })
   }
-
   const updateFAQ = (id: string, field: 'question' | 'answer', value: string) => {
     if (!data) return
     setData({
@@ -193,7 +176,6 @@ export default function ServicesEditorPage() {
       )
     })
   }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -201,7 +183,6 @@ export default function ServicesEditorPage() {
       </div>
     )
   }
-
   if (!data) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -209,7 +190,6 @@ export default function ServicesEditorPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       {/* Deprecation Warning */}
@@ -219,7 +199,6 @@ export default function ServicesEditorPage() {
           The /services page has been removed and now redirects to /products. This editor is kept for backward compatibility only.
         </p>
       </div>
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -230,7 +209,6 @@ export default function ServicesEditorPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
       {/* Success/Error Messages */}
       {success && (
         <div className="p-4 bg-success/10 border border-success rounded-lg text-success flex items-center gap-2">
@@ -244,7 +222,6 @@ export default function ServicesEditorPage() {
           {error}
         </div>
       )}
-
       {/* Page Header Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Page Header</h2>
@@ -259,7 +236,6 @@ export default function ServicesEditorPage() {
           onChange={(e) => setData({ ...data, header: { ...data.header, subtitle: e.target.value } })}
         />
       </div>
-
       {/* Services Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <div className="flex items-center justify-between">
@@ -268,7 +244,6 @@ export default function ServicesEditorPage() {
             Add Service
           </Button>
         </div>
-
         <div className="space-y-6">
           {data.services.map((service) => (
             <div key={service.id} className="border border-border rounded-lg p-6 space-y-4">
@@ -281,7 +256,6 @@ export default function ServicesEditorPage() {
                   <Trash2 size={20} />
                 </button>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="Title"
@@ -295,19 +269,16 @@ export default function ServicesEditorPage() {
                   placeholder="Code, Smartphone, Palette, Zap"
                 />
               </div>
-
               <Input
                 label="Description"
                 value={service.description}
                 onChange={(e) => updateService(service.id, 'description', e.target.value)}
               />
-
               <Input
                 label="Pricing"
                 value={service.pricing}
                 onChange={(e) => updateService(service.id, 'pricing', e.target.value)}
               />
-
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-medium text-foreground">Features</label>
@@ -341,7 +312,6 @@ export default function ServicesEditorPage() {
           ))}
         </div>
       </div>
-
       {/* CTA Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Call to Action</h2>
@@ -361,7 +331,6 @@ export default function ServicesEditorPage() {
           onChange={(e) => setData({ ...data, cta: { ...data.cta, buttonText: e.target.value } })}
         />
       </div>
-
       {/* FAQ Section */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
         <div className="flex items-center justify-between">
@@ -370,7 +339,6 @@ export default function ServicesEditorPage() {
             Add Question
           </Button>
         </div>
-
         <div className="space-y-4">
           {data.faq.map((item) => (
             <div key={item.id} className="border border-border rounded-lg p-4 space-y-3">
@@ -401,7 +369,6 @@ export default function ServicesEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Save Button at Bottom */}
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving} size="lg" icon={<Save size={20} />}>

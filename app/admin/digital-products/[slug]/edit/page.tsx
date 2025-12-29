@@ -1,12 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
-
 const CATEGORIES = [
   { value: 'TEMPLATE', label: 'Template' },
   { value: 'THEME', label: 'Theme' },
@@ -17,7 +17,6 @@ const CATEGORIES = [
   { value: 'LICENSE', label: 'License' },
   { value: 'OTHER', label: 'Other' }
 ]
-
 interface Product {
   id: string
   name: string
@@ -39,17 +38,14 @@ interface Product {
   changelog: string | null
   documentation: string | null
 }
-
 export default function EditDigitalProductPage() {
   const router = useRouter()
   const params = useParams()
   const productSlug = params.slug as string
   const { showToast } = useToast()
-
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [product, setProduct] = useState<Product | null>(null)
-
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -70,26 +66,21 @@ export default function EditDigitalProductPage() {
     changelog: '',
     documentation: ''
   })
-
   useEffect(() => {
     fetchProduct()
   }, [productSlug])
-
   const fetchProduct = async () => {
     try {
       setLoading(true)
       // First, get all products to find the one with this slug
       const response = await fetch('/api/admin/digital-products')
       const data = await response.json()
-
       if (data.success) {
         const product = data.products.find((p: any) => p.slug === productSlug)
-
         if (product) {
           // Fetch full product details using the ID
           const detailResponse = await fetch(`/api/admin/digital-products/${product.id}`)
           const detailData = await detailResponse.json()
-
           if (detailData.success) {
             const p = detailData.data
             setProduct(p)
@@ -126,10 +117,8 @@ export default function EditDigitalProductPage() {
       setLoading(false)
     }
   }
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
-
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
       setFormData(prev => ({ ...prev, [name]: checked }))
@@ -137,13 +126,10 @@ export default function EditDigitalProductPage() {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!product) return
-
     setSaving(true)
-
     try {
       const response = await fetch(`/api/admin/digital-products/${product.id}`, {
         method: 'PATCH',
@@ -169,9 +155,7 @@ export default function EditDigitalProductPage() {
           documentation: formData.documentation || null
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Product updated successfully', 'success')
         router.push('/admin/digital-products')
@@ -185,7 +169,6 @@ export default function EditDigitalProductPage() {
       setSaving(false)
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -193,7 +176,6 @@ export default function EditDigitalProductPage() {
       </div>
     )
   }
-
   if (!product) {
     return (
       <div className="text-center py-12">
@@ -204,7 +186,6 @@ export default function EditDigitalProductPage() {
       </div>
     )
   }
-
   return (
     <div className="max-w-4xl space-y-6">
       {/* Header */}
@@ -220,13 +201,11 @@ export default function EditDigitalProductPage() {
           <p className="text-muted-foreground">Update product information</p>
         </div>
       </div>
-
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           <h2 className="text-xl font-semibold text-foreground">Basic Information</h2>
-
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -241,7 +220,6 @@ export default function EditDigitalProductPage() {
               required
             />
           </div>
-
           {/* Slug */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -259,7 +237,6 @@ export default function EditDigitalProductPage() {
               URL-friendly version of the name
             </p>
           </div>
-
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -274,7 +251,6 @@ export default function EditDigitalProductPage() {
               required
             />
           </div>
-
           {/* Category and Price */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -292,7 +268,6 @@ export default function EditDigitalProductPage() {
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Price (USD) <span className="text-red-500">*</span>
@@ -309,7 +284,6 @@ export default function EditDigitalProductPage() {
               />
             </div>
           </div>
-
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -325,11 +299,9 @@ export default function EditDigitalProductPage() {
             />
           </div>
         </div>
-
         {/* Files */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           <h2 className="text-xl font-semibold text-foreground">Files</h2>
-
           {/* File URL */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -344,7 +316,6 @@ export default function EditDigitalProductPage() {
               required
             />
           </div>
-
           {/* File Size and Type */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -360,7 +331,6 @@ export default function EditDigitalProductPage() {
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 File Type <span className="text-red-500">*</span>
@@ -375,7 +345,6 @@ export default function EditDigitalProductPage() {
               />
             </div>
           </div>
-
           {/* Thumbnail URL */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -390,11 +359,9 @@ export default function EditDigitalProductPage() {
             />
           </div>
         </div>
-
         {/* License Types */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Available Licenses</h2>
-
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -409,7 +376,6 @@ export default function EditDigitalProductPage() {
                 <p className="text-sm text-muted-foreground">For individual use</p>
               </div>
             </label>
-
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -423,7 +389,6 @@ export default function EditDigitalProductPage() {
                 <p className="text-sm text-muted-foreground">For commercial projects</p>
               </div>
             </label>
-
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -439,11 +404,9 @@ export default function EditDigitalProductPage() {
             </label>
           </div>
         </div>
-
         {/* Additional Information */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           <h2 className="text-xl font-semibold text-foreground">Additional Information</h2>
-
           {/* Version */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -457,7 +420,6 @@ export default function EditDigitalProductPage() {
               className="w-full px-4 py-2 bg-muted border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
             />
           </div>
-
           {/* Changelog */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -471,7 +433,6 @@ export default function EditDigitalProductPage() {
               className="w-full px-4 py-2 bg-muted border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none"
             />
           </div>
-
           {/* Documentation */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -486,11 +447,9 @@ export default function EditDigitalProductPage() {
             />
           </div>
         </div>
-
         {/* Publishing Options */}
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Publishing Options</h2>
-
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -505,7 +464,6 @@ export default function EditDigitalProductPage() {
                 <p className="text-sm text-muted-foreground">Make this product available to customers</p>
               </div>
             </label>
-
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -521,7 +479,6 @@ export default function EditDigitalProductPage() {
             </label>
           </div>
         </div>
-
         {/* Actions */}
         <div className="flex gap-3">
           <button

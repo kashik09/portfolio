@@ -1,11 +1,11 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, FileText, Clock, ListChecks } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface RequestDetail {
   id: string
   projectType: string
@@ -16,14 +16,12 @@ interface RequestDetail {
   requirements?: string | null
   createdAt: string
 }
-
 interface ServiceProjectPhase {
   id: string
   phase: string
   startedAt: string
   completedAt?: string | null
 }
-
 interface ServiceProjectSummary {
   id: string
   name: string
@@ -37,7 +35,6 @@ interface ServiceProjectSummary {
   scope?: string | null
   phases: ServiceProjectPhase[]
 }
-
 interface RequestDetailResponse {
   success: boolean
   data?: {
@@ -45,13 +42,11 @@ interface RequestDetailResponse {
     serviceProject: ServiceProjectSummary | null
   }
 }
-
 interface RequestDetailPageProps {
   params: {
     id: string
   }
 }
-
 function formatDate(dateString: string) {
   const date = new Date(dateString)
   return date.toLocaleDateString(undefined, {
@@ -60,11 +55,9 @@ function formatDate(dateString: string) {
     day: 'numeric',
   })
 }
-
 function formatPhase(phase: string) {
   return phase.replace('_', ' ')
 }
-
 export default function RequestDetailPage({ params }: RequestDetailPageProps) {
   const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
@@ -72,16 +65,12 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
   const [request, setRequest] = useState<RequestDetail | null>(null)
   const [serviceProject, setServiceProject] =
     useState<ServiceProjectSummary | null>(null)
-
   useEffect(() => {
     let cancelled = false
-
     async function load() {
       try {
         setLoading(true)
-
         const res = await fetch(`/api/me/requests/${params.id}`)
-
         if (!res.ok) {
           if (res.status === 404 && !cancelled) {
             setNotFound(true)
@@ -90,14 +79,11 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
           }
           return
         }
-
         const json = (await res.json()) as RequestDetailResponse
         if (!json.success || !json.data) {
           throw new Error('Failed to load request details')
         }
-
         if (cancelled) return
-
         setRequest(json.data.request)
         setServiceProject(json.data.serviceProject)
       } catch (error) {
@@ -111,14 +97,11 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
         }
       }
     }
-
     load()
-
     return () => {
       cancelled = true
     }
   }, [params.id, showToast])
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -126,7 +109,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
       </div>
     )
   }
-
   if (notFound || !request) {
     return (
       <div className="max-w-3xl">
@@ -153,7 +135,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
       </div>
     )
   }
-
   const designRevisionsRemaining =
     serviceProject &&
     Math.max(
@@ -166,7 +147,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
       0,
       serviceProject.buildRevisionsMax - serviceProject.buildRevisions
     )
-
   return (
     <div className="space-y-6 max-w-4xl">
       <Link
@@ -176,7 +156,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
         <ArrowLeft size={20} />
         Back to Requests
       </Link>
-
       {/* Request Summary */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
         <div className="flex items-center gap-3">
@@ -192,7 +171,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
             </p>
           </div>
         </div>
-
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <span>
             Budget:{' '}
@@ -215,7 +193,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
           </span>
         </div>
       </div>
-
       {/* Request Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card rounded-2xl border border-border p-6">
@@ -226,7 +203,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
             {request.description}
           </p>
         </div>
-
         <div className="bg-card rounded-2xl border border-border p-6">
           <h2 className="text-lg font-bold text-foreground mb-3">
             Additional Requirements
@@ -236,7 +212,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
           </p>
         </div>
       </div>
-
       {/* Service Project Summary */}
       {serviceProject && (
         <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
@@ -253,7 +228,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
               </p>
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground mb-1">Current phase</p>
@@ -278,7 +252,6 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
               </p>
             </div>
           </div>
-
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground mb-1">
@@ -311,4 +284,3 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
     </div>
   )
 }
-

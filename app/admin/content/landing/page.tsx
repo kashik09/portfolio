@@ -1,8 +1,8 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, RefreshCw } from 'lucide-react'
-
 interface HeroContent {
   title: string
   highlight: string
@@ -12,18 +12,15 @@ interface HeroContent {
   secondaryCtaLabel: string
   secondaryCtaHref: string
 }
-
 interface ProofItem {
   id: string
   text: string
 }
-
 interface PhilosophySection {
   id: string
   title: string
   description: string
 }
-
 interface LandingContent {
   hero: HeroContent
   proofSnapshot: ProofItem[]
@@ -33,17 +30,14 @@ interface LandingContent {
     href: string
   }
 }
-
 export default function LandingContentEditor() {
   const [content, setContent] = useState<LandingContent | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
   useEffect(() => {
     fetchContent()
   }, [])
-
   const fetchContent = async () => {
     try {
       setLoading(true)
@@ -84,22 +78,17 @@ export default function LandingContentEditor() {
       setLoading(false)
     }
   }
-
   const saveContent = async () => {
     if (!content) return
-
     try {
       setSaving(true)
       setMessage(null)
-
       const res = await fetch('/api/content/landing', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(content)
       })
-
       if (!res.ok) throw new Error('Failed to save')
-
       setMessage({ type: 'success', text: 'Content saved successfully!' })
     } catch (error) {
       setMessage({ type: 'error', text: 'Error saving content' })
@@ -107,7 +96,6 @@ export default function LandingContentEditor() {
       setSaving(false)
     }
   }
-
   const addProofItem = () => {
     if (!content) return
     setContent({
@@ -118,7 +106,6 @@ export default function LandingContentEditor() {
       ]
     })
   }
-
   const removeProofItem = (id: string) => {
     if (!content) return
     setContent({
@@ -126,7 +113,6 @@ export default function LandingContentEditor() {
       proofSnapshot: content.proofSnapshot.filter(item => item.id !== id)
     })
   }
-
   const updateProofItem = (id: string, text: string) => {
     if (!content) return
     setContent({
@@ -136,7 +122,6 @@ export default function LandingContentEditor() {
       )
     })
   }
-
   const addPhilosophy = () => {
     if (!content) return
     setContent({
@@ -147,7 +132,6 @@ export default function LandingContentEditor() {
       ]
     })
   }
-
   const removePhilosophy = (id: string) => {
     if (!content) return
     setContent({
@@ -155,7 +139,6 @@ export default function LandingContentEditor() {
       philosophy: content.philosophy.filter(item => item.id !== id)
     })
   }
-
   const updatePhilosophy = (id: string, field: 'title' | 'description', value: string) => {
     if (!content) return
     setContent({
@@ -165,7 +148,6 @@ export default function LandingContentEditor() {
       )
     })
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -176,7 +158,6 @@ export default function LandingContentEditor() {
       </div>
     )
   }
-
   if (!content) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -184,7 +165,6 @@ export default function LandingContentEditor() {
       </div>
     )
   }
-
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <div className="flex items-center justify-between">
@@ -211,7 +191,6 @@ export default function LandingContentEditor() {
           </button>
         </div>
       </div>
-
       {message && (
         <div
           className={`p-4 rounded-lg border ${
@@ -223,7 +202,6 @@ export default function LandingContentEditor() {
           {message.text}
         </div>
       )}
-
       {/* Hero Section */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <h2 className="text-2xl font-bold text-foreground mb-4">Hero Section</h2>
@@ -299,7 +277,6 @@ export default function LandingContentEditor() {
           </div>
         </div>
       </section>
-
       {/* Proof Snapshot */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <div className="flex items-center justify-between mb-4">
@@ -333,7 +310,6 @@ export default function LandingContentEditor() {
           ))}
         </div>
       </section>
-
       {/* Philosophy Sections */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <div className="flex items-center justify-between mb-4">
@@ -383,7 +359,6 @@ export default function LandingContentEditor() {
           ))}
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <h2 className="text-2xl font-bold text-foreground mb-4">Bottom CTA</h2>
@@ -408,7 +383,6 @@ export default function LandingContentEditor() {
           </div>
         </div>
       </section>
-
       {/* Save Button (Bottom) */}
       <div className="flex justify-end">
         <button

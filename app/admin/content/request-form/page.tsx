@@ -1,10 +1,10 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Plus, Trash2, Save, AlertCircle } from 'lucide-react'
-
 interface FormConfig {
   header: {
     title: string
@@ -52,18 +52,15 @@ interface FormConfig {
     version: string
   }
 }
-
 export default function RequestFormEditorPage() {
   const [data, setData] = useState<FormConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
   useEffect(() => {
     fetchData()
   }, [])
-
   const fetchData = async () => {
     try {
       const res = await fetch('/api/content/request-form')
@@ -76,13 +73,11 @@ export default function RequestFormEditorPage() {
       setLoading(false)
     }
   }
-
   const handleSave = async () => {
     if (!data) return
     setSaving(true)
     setError('')
     setSuccess(false)
-
     try {
       const res = await fetch('/api/content/request-form', {
         method: 'PUT',
@@ -95,7 +90,6 @@ export default function RequestFormEditorPage() {
           }
         })
       })
-
       if (!res.ok) throw new Error('Failed to save')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
@@ -105,7 +99,6 @@ export default function RequestFormEditorPage() {
       setSaving(false)
     }
   }
-
   const addOption = (field: 'serviceTypes' | 'budgetRanges' | 'timelines') => {
     if (!data) return
     setData({
@@ -116,7 +109,6 @@ export default function RequestFormEditorPage() {
       }
     })
   }
-
   const removeOption = (field: 'serviceTypes' | 'budgetRanges' | 'timelines', index: number) => {
     if (!data) return
     setData({
@@ -127,7 +119,6 @@ export default function RequestFormEditorPage() {
       }
     })
   }
-
   const updateOption = (
     field: 'serviceTypes' | 'budgetRanges' | 'timelines',
     index: number,
@@ -145,7 +136,6 @@ export default function RequestFormEditorPage() {
       }
     })
   }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -153,7 +143,6 @@ export default function RequestFormEditorPage() {
       </div>
     )
   }
-
   if (!data) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -161,7 +150,6 @@ export default function RequestFormEditorPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -174,7 +162,6 @@ export default function RequestFormEditorPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
       {/* Success/Error Messages */}
       {success && (
         <div className="p-4 bg-success/10 border border-success rounded-lg text-success flex items-center gap-2">
@@ -188,7 +175,6 @@ export default function RequestFormEditorPage() {
           {error}
         </div>
       )}
-
       {/* Page Header */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Page Header</h2>
@@ -203,7 +189,6 @@ export default function RequestFormEditorPage() {
           onChange={(e) => setData({ ...data, header: { ...data.header, subtitle: e.target.value } })}
         />
       </div>
-
       {/* Field Labels */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Field Labels</h2>
@@ -245,7 +230,6 @@ export default function RequestFormEditorPage() {
           />
         </div>
       </div>
-
       {/* Placeholders */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Placeholders</h2>
@@ -269,7 +253,6 @@ export default function RequestFormEditorPage() {
           />
         </div>
       </div>
-
       {/* Service Types */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <div className="flex items-center justify-between">
@@ -303,7 +286,6 @@ export default function RequestFormEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Budget Ranges */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <div className="flex items-center justify-between">
@@ -337,7 +319,6 @@ export default function RequestFormEditorPage() {
           ))}
         </div>
       </div>
-
       {/* Timelines */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <div className="flex items-center justify-between">
@@ -371,7 +352,6 @@ export default function RequestFormEditorPage() {
           ))}
         </div>
       </div>
-
       {/* File Upload Config */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">File Upload</h2>
@@ -391,7 +371,6 @@ export default function RequestFormEditorPage() {
           onChange={(e) => setData({ ...data, fileUpload: { ...data.fileUpload, acceptedFormats: e.target.value } })}
         />
       </div>
-
       {/* Submit Button */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Submit Button</h2>
@@ -406,7 +385,6 @@ export default function RequestFormEditorPage() {
           onChange={(e) => setData({ ...data, submitButton: { ...data.submitButton, loadingText: e.target.value } })}
         />
       </div>
-
       {/* Success Message */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Success Message</h2>
@@ -420,7 +398,6 @@ export default function RequestFormEditorPage() {
           />
         </div>
       </div>
-
       {/* Disclaimer */}
       <div className="bg-card rounded-2xl p-6 border border-border space-y-4">
         <h2 className="text-xl font-bold text-foreground">Disclaimer</h2>
@@ -452,7 +429,6 @@ export default function RequestFormEditorPage() {
           />
         </div>
       </div>
-
       {/* Save Button at Bottom */}
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving} size="lg" icon={<Save size={20} />}>

@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -8,28 +9,22 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/Toast'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
-
 export default function OrderDetailPage({ params }: { params: { orderNumber: string } }) {
   const router = useRouter()
   const { showToast } = useToast()
-
   const [order, setOrder] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
-
   useEffect(() => {
     fetchOrder()
   }, [params.orderNumber])
-
   async function fetchOrder() {
     try {
       setIsLoading(true)
       const response = await fetch(`/api/orders/${params.orderNumber}`)
       const data = await response.json()
-
       if (!response.ok) {
         throw new Error(data.error || 'Order not found')
       }
-
       setOrder(data.order)
     } catch (error: any) {
       showToast(error.message || 'Failed to load order', 'error')
@@ -38,12 +33,10 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
       setIsLoading(false)
     }
   }
-
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text)
     showToast('Copied to clipboard!', 'success')
   }
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -51,13 +44,10 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
       </div>
     )
   }
-
   if (!order) {
     return null
   }
-
   const isCompleted = order.status === 'COMPLETED'
-
   return (
     <div className="min-h-screen py-16">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -65,7 +55,6 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
           <h1 className="text-4xl font-bold text-foreground mb-2">Order Details</h1>
           <p className="text-muted-foreground">Order #{order.orderNumber}</p>
         </div>
-
         {/* Order Status */}
         <div className="bg-card rounded-xl border border-border p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -84,7 +73,6 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
                 </p>
               </div>
             </div>
-
             <div className="text-right">
               <p className="text-3xl font-bold text-foreground">
                 {formatPriceShort(Number(order.total), order.currency as SupportedCurrency)}
@@ -97,11 +85,9 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
             </div>
           </div>
         </div>
-
         {/* Order Items */}
         <div className="bg-card rounded-xl border border-border p-6 mb-6">
           <h2 className="text-xl font-bold text-foreground mb-4">Order Items</h2>
-
           <div className="space-y-4">
             {order.items.map((item: any) => (
               <div key={item.id} className="border border-border rounded-lg p-4">
@@ -114,7 +100,6 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
                     {formatPriceShort(Number(item.price), item.currency as SupportedCurrency)}
                   </p>
                 </div>
-
                 {item.license && (
                   <div className="bg-muted rounded-lg p-3 space-y-2">
                     <div className="flex items-center justify-between">
@@ -129,7 +114,6 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
                     <code className="block text-sm text-foreground font-mono break-all">
                       {item.license.licenseKey}
                     </code>
-
                     {item.license.status === 'ACTIVE' && (
                       <Link
                         href={`/dashboard/downloads/${item.product.slug}`}
@@ -145,11 +129,9 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
             ))}
           </div>
         </div>
-
         {/* Payment Information */}
         <div className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-xl font-bold text-foreground mb-4">Payment Information</h2>
-
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground mb-1">Payment Method</p>
@@ -157,12 +139,10 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
                 {order.purchaseType === 'CREDITS' ? 'Membership Credits' : order.paymentMethod || 'Manual'}
               </p>
             </div>
-
             <div>
               <p className="text-muted-foreground mb-1">Payment Status</p>
               <p className="text-foreground font-medium">{order.paymentStatus}</p>
             </div>
-
             {order.transactionId && (
               <div className="col-span-2">
                 <p className="text-muted-foreground mb-1">Transaction ID</p>

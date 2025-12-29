@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { Shield, Check, AlertCircle, Download } from 'lucide-react'
@@ -7,7 +8,6 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Spinner } from '@/components/ui/Spinner'
 import Image from 'next/image'
-
 export default function SecurityPage() {
   const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
@@ -19,11 +19,9 @@ export default function SecurityPage() {
   const [error, setError] = useState<string | null>(null)
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-
   useEffect(() => {
     checkTwoFactorStatus()
   }, [])
-
   const checkTwoFactorStatus = async () => {
     try {
       setLoading(true)
@@ -37,18 +35,14 @@ export default function SecurityPage() {
       setLoading(false)
     }
   }
-
   const handleSetup2FA = async () => {
     try {
       setSubmitting(true)
       setError(null)
-
       const response = await fetch('/api/auth/2fa/setup', {
         method: 'POST'
       })
-
       const data = await response.json()
-
       if (data.success) {
         setQrCode(data.data.qrCode)
         setSecret(data.data.secret)
@@ -64,20 +58,16 @@ export default function SecurityPage() {
       setSubmitting(false)
     }
   }
-
   const handleVerify2FA = async () => {
     try {
       setSubmitting(true)
       setError(null)
-
       const response = await fetch('/api/auth/2fa/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: verificationCode })
       })
-
       const data = await response.json()
-
       if (data.success) {
         setSetupStep('complete')
         setTwoFactorEnabled(true)
@@ -91,7 +81,6 @@ export default function SecurityPage() {
       setSubmitting(false)
     }
   }
-
   const handleDownloadBackupCodes = () => {
     const text = backupCodes.join('\n')
     const blob = new Blob([text], { type: 'text/plain' })
@@ -102,7 +91,6 @@ export default function SecurityPage() {
     a.click()
     URL.revokeObjectURL(url)
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -110,7 +98,6 @@ export default function SecurityPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       <div>
@@ -119,7 +106,6 @@ export default function SecurityPage() {
           Manage two-factor authentication for your account
         </p>
       </div>
-
       {/* 2FA Status */}
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex items-center gap-4 mb-6">
@@ -137,14 +123,12 @@ export default function SecurityPage() {
             </p>
           </div>
         </div>
-
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
             <AlertCircle className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" size={20} />
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
-
         {/* Initial State */}
         {setupStep === 'initial' && !twoFactorEnabled && (
           <div className="space-y-4">
@@ -156,7 +140,6 @@ export default function SecurityPage() {
             </Button>
           </div>
         )}
-
         {/* QR Code Step */}
         {setupStep === 'qr' && qrCode && (
           <div className="space-y-6">
@@ -172,7 +155,6 @@ export default function SecurityPage() {
                 Or manually enter this secret: <code className="font-mono text-foreground">{secret}</code>
               </p>
             </div>
-
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">Backup Codes</h3>
               <p className="text-muted-foreground mb-4">
@@ -190,7 +172,6 @@ export default function SecurityPage() {
                 Download Backup Codes
               </Button>
             </div>
-
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">Verify Setup</h3>
               <p className="text-muted-foreground mb-4">
@@ -215,7 +196,6 @@ export default function SecurityPage() {
             </div>
           </div>
         )}
-
         {/* Complete Step */}
         {setupStep === 'complete' && (
           <div className="text-center py-8">
@@ -229,7 +209,6 @@ export default function SecurityPage() {
             <Button onClick={() => window.location.reload()}>Done</Button>
           </div>
         )}
-
         {/* Already Enabled */}
         {twoFactorEnabled && setupStep === 'initial' && (
           <div className="space-y-4">

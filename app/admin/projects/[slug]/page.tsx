@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { ArrowLeft, ExternalLink, Github, Edit, Trash2, Calendar, Eye, Tag, Code } from 'lucide-react'
 import Link from 'next/link'
@@ -7,7 +8,6 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-
 interface Project {
   id: string
   title: string
@@ -24,23 +24,19 @@ interface Project {
   viewCount: number
   thumbnail?: string
 }
-
 export default function ProjectDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter()
   const { showToast } = useToast()
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-
   useEffect(() => {
     fetchProject()
   }, [params.slug])
-
   const fetchProject = async () => {
     try {
       const response = await fetch(`/api/admin/projects/${params.slug}`)
       if (!response.ok) throw new Error('Failed to fetch project')
-
       const data = await response.json()
       setProject(data.data)
     } catch (err) {
@@ -50,17 +46,13 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       setLoading(false)
     }
   }
-
   const handleDelete = async () => {
     if (!project) return
-
     try {
       const response = await fetch(`/api/admin/projects/${project.slug}`, {
         method: 'DELETE'
       })
-
       if (!response.ok) throw new Error('Failed to delete project')
-
       showToast('Project deleted successfully', 'success')
       router.push('/admin/projects')
     } catch (err) {
@@ -68,7 +60,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       showToast('Failed to delete project', 'error')
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -76,7 +67,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       </div>
     )
   }
-
   if (!project) {
     return (
       <div className="text-center py-12">
@@ -87,7 +77,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -121,7 +110,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           </button>
         </div>
       </div>
-
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Main Info */}
@@ -139,13 +127,11 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
               />
             </div>
           )}
-
           {/* Description */}
           <div className="bg-card rounded-2xl border border-border p-6">
             <h2 className="text-xl font-bold text-foreground mb-4">Description</h2>
             <p className="text-foreground leading-relaxed">{project.description}</p>
           </div>
-
           {/* Tags & Tech Stack */}
           <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
             <div>
@@ -164,7 +150,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                 ))}
               </div>
             </div>
-
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Code className="text-primary" size={20} />
@@ -183,7 +168,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             </div>
           </div>
         </div>
-
         {/* Right Column - Metadata */}
         <div className="space-y-6">
           {/* Quick Stats */}
@@ -197,7 +181,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   {project.category}
                 </span>
               </div>
-
               <div className="flex items-center justify-between">
                 <span className="text-foreground-muted text-sm">Status</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -208,7 +191,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   {project.published ? 'Published' : 'Draft'}
                 </span>
               </div>
-
               <div className="flex items-center justify-between">
                 <span className="text-foreground-muted text-sm">Featured</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -219,7 +201,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   {project.featured ? 'Yes' : 'No'}
                 </span>
               </div>
-
               <div className="flex items-center justify-between pt-3 border-t border-border">
                 <div className="flex items-center gap-2 text-foreground-muted text-sm">
                   <Calendar size={16} />
@@ -227,7 +208,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                 </div>
                 <span className="text-foreground font-medium">{project.createdAt}</span>
               </div>
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-foreground-muted text-sm">
                   <Eye size={16} />
@@ -237,7 +217,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
               </div>
             </div>
           </div>
-
           {/* Links */}
           <div className="bg-card rounded-2xl border border-border p-6 space-y-3">
             <h3 className="text-lg font-bold text-foreground mb-4">Links</h3>
@@ -254,7 +233,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                 <ExternalLink className="text-foreground-muted group-hover:text-foreground transition" size={16} />
               </a>
             )}
-
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
@@ -267,14 +245,12 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                 <ExternalLink className="text-foreground-muted group-hover:text-foreground transition" size={16} />
               </a>
             )}
-
             {!project.githubUrl && !project.liveUrl && (
               <p className="text-foreground-muted text-sm text-center py-4">No links available</p>
             )}
           </div>
         </div>
       </div>
-
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteModal}

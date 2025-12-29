@@ -1,19 +1,18 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Megaphone, Save } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/Toast'
-
 interface AdsSettings {
   adsEnabled: boolean
   adsProvider: string
   adsClientId: string
   placements: Record<string, boolean>
 }
-
 export default function AdsAdminPage() {
   const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
@@ -28,17 +27,14 @@ export default function AdsAdminPage() {
       blog_footer: false
     }
   })
-
   useEffect(() => {
     loadAdsSettings()
   }, [])
-
   const loadAdsSettings = async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/admin/site-settings')
       const json = await response.json()
-
       if (json.success && json.data) {
         const data = json.data
         setAdsSettings({
@@ -59,7 +55,6 @@ export default function AdsAdminPage() {
       setLoading(false)
     }
   }
-
   const handleSave = async () => {
     try {
       setSaving(true)
@@ -73,9 +68,7 @@ export default function AdsAdminPage() {
           adsPlacements: adsSettings.placements
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Ads settings saved successfully', 'success')
       } else {
@@ -88,7 +81,6 @@ export default function AdsAdminPage() {
       setSaving(false)
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -96,7 +88,6 @@ export default function AdsAdminPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -112,7 +103,6 @@ export default function AdsAdminPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
       {/* Ads Configuration */}
       <div className="bg-card border border-border rounded-lg p-6 space-y-6">
         <div className="flex items-center gap-3 mb-4">
@@ -126,7 +116,6 @@ export default function AdsAdminPage() {
             </p>
           </div>
         </div>
-
         {/* Enable Ads Toggle */}
         <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
           <div>
@@ -142,7 +131,6 @@ export default function AdsAdminPage() {
             className="w-5 h-5 rounded border-border cursor-pointer"
           />
         </label>
-
         {/* Provider and Client ID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
@@ -158,14 +146,12 @@ export default function AdsAdminPage() {
             onChange={(e) => setAdsSettings({ ...adsSettings, adsClientId: e.target.value })}
           />
         </div>
-
         {/* Placements */}
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-2">Ad Placements</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Toggle where ads are allowed to appear. Ads are never shown on admin, dashboard, or auth pages.
           </p>
-
           <div className="space-y-3">
             <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
               <div>
@@ -184,7 +170,6 @@ export default function AdsAdminPage() {
                 className="w-5 h-5 rounded border-border cursor-pointer"
               />
             </label>
-
             <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
               <div>
                 <p className="font-medium text-foreground">Projects – Sidebar</p>
@@ -202,7 +187,6 @@ export default function AdsAdminPage() {
                 className="w-5 h-5 rounded border-border cursor-pointer"
               />
             </label>
-
             <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
               <div>
                 <p className="font-medium text-foreground">Blog – Footer</p>
@@ -223,7 +207,6 @@ export default function AdsAdminPage() {
           </div>
         </div>
       </div>
-
       {/* Info Banner */}
       <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
         <p className="text-sm text-blue-600 dark:text-blue-400">

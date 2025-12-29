@@ -1,18 +1,16 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Save, AlertCircle, FileText } from 'lucide-react'
-
 interface LegalPageContent {
   title: string
   content: string
   published: boolean
   lastUpdated: string
 }
-
 type PageType = 'terms' | 'privacy-policy'
-
 export default function LegalContentEditorPage() {
   const [activeTab, setActiveTab] = useState<PageType>('terms')
   const [termsContent, setTermsContent] = useState<LegalPageContent | null>(null)
@@ -21,23 +19,18 @@ export default function LegalContentEditorPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
   useEffect(() => {
     fetchData()
   }, [])
-
   const fetchData = async () => {
     try {
       setLoading(true)
-
       const [termsRes, privacyRes] = await Promise.all([
         fetch('/api/content/terms'),
         fetch('/api/content/privacy-policy')
       ])
-
       const termsData = await termsRes.json()
       const privacyData = await privacyRes.json()
-
       if (termsData.success) setTermsContent(termsData.data)
       if (privacyData.success) setPrivacyContent(privacyData.data)
     } catch (err) {
@@ -46,34 +39,27 @@ export default function LegalContentEditorPage() {
       setLoading(false)
     }
   }
-
   const handleSave = async (type: PageType) => {
     const content = type === 'terms' ? termsContent : privacyContent
     if (!content) return
-
     setSaving(true)
     setError('')
     setSuccess(false)
-
     try {
       const res = await fetch(`/api/content/${type}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(content)
       })
-
       const result = await res.json()
-
       if (!result.success) {
         throw new Error(result.error || 'Failed to save')
       }
-
       if (type === 'terms') {
         setTermsContent(result.data)
       } else {
         setPrivacyContent(result.data)
       }
-
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
@@ -82,7 +68,6 @@ export default function LegalContentEditorPage() {
       setSaving(false)
     }
   }
-
   const currentContent = activeTab === 'terms' ? termsContent : privacyContent
   const setCurrentContent = (data: LegalPageContent) => {
     if (activeTab === 'terms') {
@@ -91,7 +76,6 @@ export default function LegalContentEditorPage() {
       setPrivacyContent(data)
     }
   }
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -99,7 +83,6 @@ export default function LegalContentEditorPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -116,7 +99,6 @@ export default function LegalContentEditorPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
       {/* Success/Error Messages */}
       {success && (
         <div className="p-4 bg-success/10 border border-success rounded-lg text-success flex items-center gap-2">
@@ -130,7 +112,6 @@ export default function LegalContentEditorPage() {
           {error}
         </div>
       )}
-
       {/* Tab Navigation */}
       <div className="border-b border-border">
         <nav className="flex gap-4">
@@ -162,7 +143,6 @@ export default function LegalContentEditorPage() {
           </button>
         </nav>
       </div>
-
       {/* Content Editor */}
       {currentContent && (
         <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
@@ -179,7 +159,6 @@ export default function LegalContentEditorPage() {
               className="w-full px-4 py-2 bg-muted border border-border rounded-lg text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Published
@@ -198,7 +177,6 @@ export default function LegalContentEditorPage() {
               </span>
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Content (HTML)
@@ -215,14 +193,12 @@ export default function LegalContentEditorPage() {
               className="w-full px-4 py-3 bg-muted border border-border rounded-lg text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none font-mono text-sm"
             />
           </div>
-
           <div className="bg-muted/50 rounded-lg p-4">
             <p className="text-sm text-foreground-muted">
               <strong>Last Updated:</strong>{' '}
               {new Date(currentContent.lastUpdated).toLocaleString()}
             </p>
           </div>
-
           {/* Preview Section */}
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">Preview</h3>
@@ -246,7 +222,6 @@ export default function LegalContentEditorPage() {
           </div>
         </div>
       )}
-
       {/* Save Button at Bottom */}
       <div className="flex justify-end">
         <Button

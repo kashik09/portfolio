@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { ArrowLeft, Upload, Plus, X, FolderOpen, Camera } from 'lucide-react'
 import Link from 'next/link'
@@ -7,7 +8,6 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
 import { ScreenshotCapture } from '@/components/admin/ScreenshotCapture'
-
 interface Project {
   id: number
   title: string
@@ -21,7 +21,6 @@ interface Project {
   featured: boolean
   published: boolean
 }
-
 export default function EditProjectPage({ params }: { params: { slug: string } }) {
   const router = useRouter()
   const { showToast } = useToast()
@@ -33,7 +32,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [thumbnailPath, setThumbnailPath] = useState('')
   const [uploadMode, setUploadMode] = useState<'manual' | 'screenshot'>('manual')
-
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -44,31 +42,26 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
     featured: false,
     published: true
   })
-
   // Preset suggestions
   const tagSuggestions = [
     'javascript', 'typescript', 'react', 'nextjs', 'calculator',
     'webapp', 'mobile', 'api', 'fullstack', 'backend', 'frontend',
     'ui-ux', 'database', 'authentication', 'realtime'
   ]
-
   const techSuggestions = [
     'React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS',
     'Node.js', 'PostgreSQL', 'Prisma', 'MongoDB', 'Express',
     'Swift', 'PHP', 'Python', 'Git', 'Vercel', 'Supabase',
     'NextAuth', 'Lucide React'
   ]
-
   useEffect(() => {
     fetchProject()
   }, [params.slug])
-
   const fetchProject = async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/admin/projects/${params.slug}`)
       const data = await response.json()
-
       if (data.success && data.data) {
         const project = data.data
         setFormData({
@@ -98,7 +91,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       setLoading(false)
     }
   }
-
   // Auto-generate slug from title
   const generateSlug = (title: string) => {
     return title
@@ -106,11 +98,9 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
   }
-
   const handleTitleChange = (title: string) => {
     setFormData({ ...formData, title, slug: generateSlug(title) })
   }
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -122,7 +112,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       showToast('Image uploaded successfully', 'success')
     }
   }
-
   const addTag = (tag?: string) => {
     const tagToAdd = tag || tagInput.trim()
     if (tagToAdd && !tags.includes(tagToAdd)) {
@@ -130,11 +119,9 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       if (!tag) setTagInput('')
     }
   }
-
   const removeTag = (tag: string) => {
     setTags(tags.filter(t => t !== tag))
   }
-
   const addTech = (tech?: string) => {
     const techToAdd = tech || techInput.trim()
     if (techToAdd && !techStack.includes(techToAdd)) {
@@ -142,15 +129,12 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       if (!tech) setTechInput('')
     }
   }
-
   const removeTech = (tech: string) => {
     setTechStack(techStack.filter(t => t !== tech))
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
     try {
       const response = await fetch(`/api/admin/projects/${params.slug}`, {
         method: 'PATCH',
@@ -162,9 +146,7 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
           thumbnail: thumbnailPath || null
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Project updated successfully', 'success')
         router.push(`/admin/projects/${params.slug}`)
@@ -178,7 +160,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       setLoading(false)
     }
   }
-
   if (loading && !formData.title) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -186,7 +167,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -202,7 +182,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
           <p className="text-muted-foreground">Update project details</p>
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-card rounded-2xl border border-border p-6 space-y-6">
           {/* Title & Slug */}
@@ -234,7 +213,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
               />
             </div>
           </div>
-
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -249,7 +227,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
               required
             />
           </div>
-
           {/* Category & URLs */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -294,13 +271,11 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
               />
             </div>
           </div>
-
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Tags
             </label>
-
             {/* Suggestions */}
             <div className="mb-3">
               <p className="text-xs text-muted-foreground mb-2">Click to add or type your own:</p>
@@ -317,7 +292,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
                 ))}
               </div>
             </div>
-
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -353,13 +327,11 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
               ))}
             </div>
           </div>
-
           {/* Tech Stack */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Tech Stack
             </label>
-
             {/* Suggestions */}
             <div className="mb-3">
               <p className="text-xs text-muted-foreground mb-2">Click to add or type your own:</p>
@@ -376,7 +348,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
                 ))}
               </div>
             </div>
-
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -412,13 +383,11 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
               ))}
             </div>
           </div>
-
           {/* Thumbnail Upload */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-4">
               Thumbnail Image
             </label>
-
             {/* Upload Mode Toggle */}
             <div className="mb-4 flex gap-2">
               <button
@@ -446,7 +415,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
                 Auto-Capture
               </button>
             </div>
-
             {imagePreview && (
               <div className="mb-4 relative">
                 <img
@@ -467,7 +435,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
                 </button>
               </div>
             )}
-
             {uploadMode === 'manual' ? (
               <div>
                 <input
@@ -518,7 +485,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
               />
             )}
           </div>
-
           {/* Checkboxes */}
           <div className="space-y-4">
             <label className="flex items-start gap-2 cursor-pointer">
@@ -551,7 +517,6 @@ export default function EditProjectPage({ params }: { params: { slug: string } }
             </label>
           </div>
         </div>
-
         {/* Actions */}
         <div className="flex items-center justify-end gap-4">
           <Link

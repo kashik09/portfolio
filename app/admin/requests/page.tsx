@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import {
   Search, Eye, Trash2, Mail, Clock, CheckCircle, XCircle,
@@ -8,7 +9,6 @@ import {
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface ProjectRequest {
   id: string
   name: string
@@ -30,7 +30,6 @@ interface ProjectRequest {
     email: string
   } | null
 }
-
 interface Stats {
   total: number
   pending: number
@@ -38,7 +37,6 @@ interface Stats {
   completed: number
   rejected: number
 }
-
 export default function AdminRequestsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filter, setFilter] = useState('all')
@@ -58,20 +56,16 @@ export default function AdminRequestsPage() {
   })
   const [adminNotes, setAdminNotes] = useState('')
   const { showToast } = useToast()
-
   useEffect(() => {
     fetchRequests()
   }, [searchQuery, filter])
-
   const fetchRequests = async () => {
     try {
       const params = new URLSearchParams()
       if (searchQuery) params.append('search', searchQuery)
       if (filter !== 'all') params.append('status', filter)
-
       const response = await fetch(`/api/admin/requests?${params}`)
       const data = await response.json()
-
       if (data.success) {
         setRequests(data.data)
         setStats(data.stats)
@@ -85,10 +79,8 @@ export default function AdminRequestsPage() {
       setLoading(false)
     }
   }
-
   const handleAccept = async () => {
     if (!actionModal.requestId) return
-
     try {
       const response = await fetch(`/api/admin/requests/${actionModal.requestId}`, {
         method: 'PATCH',
@@ -98,9 +90,7 @@ export default function AdminRequestsPage() {
           adminNotes: adminNotes || 'Request accepted'
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Request accepted! Email notification sent.', 'success')
         fetchRequests()
@@ -115,13 +105,11 @@ export default function AdminRequestsPage() {
       showToast('Failed to accept request', 'error')
     }
   }
-
   const handleReject = async () => {
     if (!actionModal.requestId || !adminNotes) {
       showToast('Please provide a reason for rejection', 'error')
       return
     }
-
     try {
       const response = await fetch(`/api/admin/requests/${actionModal.requestId}`, {
         method: 'PATCH',
@@ -131,9 +119,7 @@ export default function AdminRequestsPage() {
           adminNotes
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Request rejected. Email notification sent.', 'success')
         fetchRequests()
@@ -148,17 +134,13 @@ export default function AdminRequestsPage() {
       showToast('Failed to reject request', 'error')
     }
   }
-
   const handleDelete = async () => {
     if (!deleteModal.requestId) return
-
     try {
       const response = await fetch(`/api/admin/requests/${deleteModal.requestId}`, {
         method: 'DELETE'
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('Request deleted successfully', 'success')
         fetchRequests()
@@ -172,7 +154,6 @@ export default function AdminRequestsPage() {
       setDeleteModal({ isOpen: false, requestId: null })
     }
   }
-
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       PENDING: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
@@ -184,7 +165,6 @@ export default function AdminRequestsPage() {
     }
     return styles[status] || styles.PENDING
   }
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'PENDING': return <Clock size={16} />
@@ -195,7 +175,6 @@ export default function AdminRequestsPage() {
       default: return <Clock size={16} />
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -203,7 +182,6 @@ export default function AdminRequestsPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -211,7 +189,6 @@ export default function AdminRequestsPage() {
         <h1 className="text-3xl font-bold text-foreground">Service Requests</h1>
         <p className="text-muted-foreground">Manage incoming project requests</p>
       </div>
-
       {/* Filters & Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
@@ -237,7 +214,6 @@ export default function AdminRequestsPage() {
           <option value="REJECTED">Rejected</option>
         </select>
       </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-card rounded-xl border border-border p-6">
@@ -276,7 +252,6 @@ export default function AdminRequestsPage() {
           <p className="text-2xl font-bold text-foreground">{stats.total}</p>
         </div>
       </div>
-
       {/* Requests Table */}
       <div className="bg-card rounded-2xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
@@ -382,7 +357,6 @@ export default function AdminRequestsPage() {
           </table>
         </div>
       </div>
-
       {/* View Details Modal */}
       {showModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
@@ -481,7 +455,6 @@ export default function AdminRequestsPage() {
           </div>
         </div>
       )}
-
       {/* Accept/Reject Modal */}
       <ConfirmModal
         isOpen={actionModal.isOpen}
@@ -511,7 +484,6 @@ export default function AdminRequestsPage() {
         confirmText={actionModal.type === 'accept' ? 'Accept' : 'Reject'}
         type={actionModal.type === 'accept' ? 'primary' : 'danger'}
       />
-
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}

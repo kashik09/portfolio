@@ -1,12 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, Plus, Package, Download, DollarSign, Eye, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-
 interface DigitalProduct {
   id: string
   title: string
@@ -22,7 +22,6 @@ interface DigitalProduct {
   licenseTypes: string[]
   createdAt: string
 }
-
 export default function AdminDigitalProductsPage() {
   const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
@@ -34,20 +33,16 @@ export default function AdminDigitalProductsPage() {
     show: false,
     productId: null
   })
-
   useEffect(() => {
     fetchProducts()
   }, [])
-
   const fetchProducts = async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/admin/digital-products')
-
       if (!response.ok) {
         throw new Error('Failed to fetch products')
       }
-
       const data = await response.json()
       setProducts(data.products || [])
     } catch (error) {
@@ -57,19 +52,15 @@ export default function AdminDigitalProductsPage() {
       setLoading(false)
     }
   }
-
   const handleDelete = async () => {
     if (!deleteModal.productId) return
-
     try {
       const response = await fetch(`/api/admin/digital-products/${deleteModal.productId}`, {
         method: 'DELETE'
       })
-
       if (!response.ok) {
         throw new Error('Failed to delete product')
       }
-
       showToast('Product deleted successfully', 'success')
       fetchProducts()
     } catch (error) {
@@ -79,7 +70,6 @@ export default function AdminDigitalProductsPage() {
       setDeleteModal({ show: false, productId: null })
     }
   }
-
   const togglePublished = async (id: string, currentStatus: boolean) => {
     try {
       const response = await fetch(`/api/admin/digital-products/${id}`, {
@@ -87,11 +77,9 @@ export default function AdminDigitalProductsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ published: !currentStatus })
       })
-
       if (!response.ok) {
         throw new Error('Failed to update product')
       }
-
       showToast(`Product ${!currentStatus ? 'published' : 'unpublished'} successfully`, 'success')
       fetchProducts()
     } catch (error) {
@@ -99,7 +87,6 @@ export default function AdminDigitalProductsPage() {
       showToast('Failed to update product', 'error')
     }
   }
-
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -107,19 +94,15 @@ export default function AdminDigitalProductsPage() {
     const matchesStatus = statusFilter === 'ALL' ||
       (statusFilter === 'PUBLISHED' && product.published) ||
       (statusFilter === 'DRAFT' && !product.published)
-
     return matchesSearch && matchesCategory && matchesStatus
   })
-
   const stats = {
     total: products.length,
     published: products.filter(p => p.published).length,
     draft: products.filter(p => !p.published).length,
     featured: products.filter(p => p.featured).length
   }
-
   const categories = Array.from(new Set(products.map(p => p.category)))
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -127,7 +110,6 @@ export default function AdminDigitalProductsPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -144,7 +126,6 @@ export default function AdminDigitalProductsPage() {
           Add Product
         </Link>
       </div>
-
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl p-6 border border-border">
@@ -154,7 +135,6 @@ export default function AdminDigitalProductsPage() {
           </div>
           <p className="text-2xl font-bold text-foreground">{stats.total}</p>
         </div>
-
         <div className="bg-card rounded-xl p-6 border border-border">
           <div className="flex items-center gap-3 mb-2">
             <CheckCircle className="text-success" size={20} />
@@ -162,7 +142,6 @@ export default function AdminDigitalProductsPage() {
           </div>
           <p className="text-2xl font-bold text-foreground">{stats.published}</p>
         </div>
-
         <div className="bg-card rounded-xl p-6 border border-border">
           <div className="flex items-center gap-3 mb-2">
             <XCircle className="text-warning" size={20} />
@@ -170,7 +149,6 @@ export default function AdminDigitalProductsPage() {
           </div>
           <p className="text-2xl font-bold text-foreground">{stats.draft}</p>
         </div>
-
         <div className="bg-card rounded-xl p-6 border border-border">
           <div className="flex items-center gap-3 mb-2">
             <Download className="text-info" size={20} />
@@ -179,7 +157,6 @@ export default function AdminDigitalProductsPage() {
           <p className="text-2xl font-bold text-foreground">{stats.featured}</p>
         </div>
       </div>
-
       {/* Filters */}
       <div className="bg-card rounded-xl p-6 border border-border space-y-4">
         {/* Search */}
@@ -193,7 +170,6 @@ export default function AdminDigitalProductsPage() {
             className="w-full pl-12 pr-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-
         {/* Filter Buttons */}
         <div className="flex flex-wrap gap-4">
           <div className="flex flex-wrap gap-2">
@@ -212,7 +188,6 @@ export default function AdminDigitalProductsPage() {
               </button>
             ))}
           </div>
-
           <div className="flex flex-wrap gap-2">
             <span className="text-sm text-foreground-muted self-center">Category:</span>
             <button
@@ -241,7 +216,6 @@ export default function AdminDigitalProductsPage() {
           </div>
         </div>
       </div>
-
       {/* Products List */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         {filteredProducts.length === 0 ? (
@@ -334,7 +308,6 @@ export default function AdminDigitalProductsPage() {
           </div>
         )}
       </div>
-
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.show}

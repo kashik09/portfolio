@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { FolderKanban, FileText, Users, Eye } from 'lucide-react'
 import Link from 'next/link'
 

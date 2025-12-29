@@ -1,12 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface User {
   id: string
   name: string | null
@@ -15,26 +15,21 @@ interface User {
   accountStatus: string
   image: string | null
 }
-
 export default function EditUserPage() {
   const router = useRouter()
   const params = useParams()
   const userId = params.id as string
   const { showToast } = useToast()
-
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-
   useEffect(() => {
     fetchUser()
   }, [userId])
-
   const fetchUser = async () => {
     try {
       const response = await fetch(`/api/admin/users/${userId}`)
       const data = await response.json()
-
       if (data.success) {
         setUser(data.data)
       } else {
@@ -47,11 +42,9 @@ export default function EditUserPage() {
       setLoading(false)
     }
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
-
     setSaving(true)
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
@@ -64,9 +57,7 @@ export default function EditUserPage() {
           accountStatus: user.accountStatus
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('User updated successfully', 'success')
         router.push('/admin/users')
@@ -80,7 +71,6 @@ export default function EditUserPage() {
       setSaving(false)
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -88,7 +78,6 @@ export default function EditUserPage() {
       </div>
     )
   }
-
   if (!user) {
     return (
       <div className="text-center py-12">
@@ -99,7 +88,6 @@ export default function EditUserPage() {
       </div>
     )
   }
-
   return (
     <div className="max-w-2xl space-y-6">
       {/* Header */}
@@ -115,7 +103,6 @@ export default function EditUserPage() {
           <p className="text-muted-foreground">Update user information and permissions</p>
         </div>
       </div>
-
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-card rounded-2xl border border-border p-6 space-y-6">
         {/* Name */}
@@ -131,7 +118,6 @@ export default function EditUserPage() {
             required
           />
         </div>
-
         {/* Email */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -145,7 +131,6 @@ export default function EditUserPage() {
             required
           />
         </div>
-
         {/* Role */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -172,7 +157,6 @@ export default function EditUserPage() {
             {user.role === 'OWNER' && 'Highest level of access'}
           </p>
         </div>
-
         {/* Account Status */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -195,7 +179,6 @@ export default function EditUserPage() {
             {user.accountStatus === 'BANNED' && 'User is permanently banned'}
           </p>
         </div>
-
         {/* Actions */}
         <div className="flex gap-3">
           <button

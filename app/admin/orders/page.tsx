@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Package, Clock, CheckCircle, DollarSign, Eye, User } from 'lucide-react'
@@ -7,34 +8,27 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/Toast'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
-
 export default function AdminOrdersPage() {
   const { showToast } = useToast()
-
   const [orders, setOrders] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('')
-
   useEffect(() => {
     fetchOrders()
   }, [statusFilter, paymentStatusFilter])
-
   async function fetchOrders() {
     try {
       setIsLoading(true)
       const params = new URLSearchParams()
       if (statusFilter) params.append('status', statusFilter)
       if (paymentStatusFilter) params.append('paymentStatus', paymentStatusFilter)
-
       const response = await fetch(`/api/admin/orders?${params.toString()}`)
       const data = await response.json()
-
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch orders')
       }
-
       setOrders(data.orders || [])
       setStats(data.stats)
     } catch (error: any) {
@@ -43,30 +37,24 @@ export default function AdminOrdersPage() {
       setIsLoading(false)
     }
   }
-
   async function handleFulfillOrder(orderNumber: string) {
     if (!confirm(`Fulfill order ${orderNumber}? This will issue licenses.`)) {
       return
     }
-
     try {
       const response = await fetch(`/api/orders/${orderNumber}/fulfill`, {
         method: 'POST',
       })
-
       const data = await response.json()
-
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fulfill order')
       }
-
       showToast('Order fulfilled successfully!', 'success')
       fetchOrders()
     } catch (error: any) {
       showToast(error.message || 'Failed to fulfill order', 'error')
     }
   }
-
   function getStatusColor(status: string) {
     switch (status) {
       case 'COMPLETED':
@@ -79,7 +67,6 @@ export default function AdminOrdersPage() {
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -87,7 +74,6 @@ export default function AdminOrdersPage() {
       </div>
     )
   }
-
   return (
     <div className="min-h-screen py-16">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -101,7 +87,6 @@ export default function AdminOrdersPage() {
             View as User
           </Link>
         </div>
-
         {/* Stats */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -112,7 +97,6 @@ export default function AdminOrdersPage() {
               </div>
               <p className="text-3xl font-bold text-foreground">{stats.totalOrders}</p>
             </div>
-
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Clock className="w-5 h-5 text-yellow-600" />
@@ -120,7 +104,6 @@ export default function AdminOrdersPage() {
               </div>
               <p className="text-3xl font-bold text-foreground">{stats.pendingOrders}</p>
             </div>
-
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-center gap-3 mb-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
@@ -128,7 +111,6 @@ export default function AdminOrdersPage() {
               </div>
               <p className="text-3xl font-bold text-foreground">{stats.completedOrders}</p>
             </div>
-
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-center gap-3 mb-2">
                 <DollarSign className="w-5 h-5 text-green-600" />
@@ -140,7 +122,6 @@ export default function AdminOrdersPage() {
             </div>
           </div>
         )}
-
         {/* Filters */}
         <div className="mb-6 flex gap-4">
           <select
@@ -154,7 +135,6 @@ export default function AdminOrdersPage() {
             <option value="COMPLETED">Completed</option>
             <option value="CANCELLED">Cancelled</option>
           </select>
-
           <select
             value={paymentStatusFilter}
             onChange={(e) => setPaymentStatusFilter(e.target.value)}
@@ -166,7 +146,6 @@ export default function AdminOrdersPage() {
             <option value="FAILED">Failed</option>
           </select>
         </div>
-
         {/* Orders Table */}
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
@@ -238,7 +217,6 @@ export default function AdminOrdersPage() {
               </tbody>
             </table>
           </div>
-
           {orders.length === 0 && (
             <div className="text-center py-12">
               <Package className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />

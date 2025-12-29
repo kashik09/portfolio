@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -7,27 +8,23 @@ import { Download, FileText, ArrowRight, Package, Clock } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
 import { ProgressBar } from '@/components/ui/ProgressBar'
-
 interface DashboardStats {
   totalDownloads: number
   totalRequests: number
   pendingRequests: number
 }
-
 interface RecentDownload {
   slug: string
   name: string
   category: string
   downloadedAt: string
 }
-
 interface RecentRequest {
   id: string
   projectType: string
   status: string
   createdAt: string
 }
-
 interface MembershipSummary {
   tier: string
   status: string
@@ -38,7 +35,6 @@ interface MembershipSummary {
   endDate: string
   renewalDate?: string | null
 }
-
 interface MeSummaryResponse {
   success: boolean
   data?: {
@@ -57,7 +53,6 @@ interface MeSummaryResponse {
     recentRequests: RecentRequest[]
   }
 }
-
 export default function DashboardPage() {
   const { data: session } = useSession()
   const { showToast } = useToast()
@@ -71,36 +66,28 @@ export default function DashboardPage() {
   const [recentDownloads, setRecentDownloads] = useState<RecentDownload[]>([])
   const [recentRequests, setRecentRequests] = useState<RecentRequest[]>([])
   const [membership, setMembership] = useState<MembershipSummary | null>(null)
-
   useEffect(() => {
     fetchDashboardData()
   }, [])
-
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
       setError(null)
-
       const response = await fetch('/api/me/summary', {
         method: 'GET',
       })
-
       if (!response.ok) {
         throw new Error('Failed to load dashboard summary')
       }
-
       const json = (await response.json()) as MeSummaryResponse
-
       if (!json.success || !json.data) {
         throw new Error('Failed to load dashboard summary')
       }
-
       setStats({
         totalDownloads: json.data.stats.licensesCount,
         totalRequests: json.data.stats.requestsCount,
         pendingRequests: json.data.stats.pendingRequestsCount,
       })
-
       setMembership(json.data.membership)
       setRecentDownloads(json.data.recentDownloads || [])
       setRecentRequests(json.data.recentRequests || [])
@@ -112,7 +99,6 @@ export default function DashboardPage() {
       setLoading(false)
     }
   }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING':
@@ -129,19 +115,16 @@ export default function DashboardPage() {
         return 'bg-primary/20 text-primary'
     }
   }
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     const now = new Date()
     const diffTime = Math.abs(now.getTime() - date.getTime())
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
     if (diffDays === 0) return 'Today'
     if (diffDays === 1) return 'Yesterday'
     if (diffDays < 7) return `${diffDays} days ago`
     return date.toLocaleDateString()
   }
-
   const formatResetsIn = (endDate?: string | null) => {
     if (!endDate) return 'Unknown'
     const end = new Date(endDate)
@@ -154,7 +137,6 @@ export default function DashboardPage() {
     const diffMonths = Math.round(diffDays / 30)
     return `${diffMonths} month${diffMonths !== 1 ? 's' : ''}`
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -162,7 +144,6 @@ export default function DashboardPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8 max-w-7xl">
       {/* Welcome Section */}
@@ -179,7 +160,6 @@ export default function DashboardPage() {
           </p>
         )}
       </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-card rounded-2xl border border-border p-6">
@@ -193,7 +173,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
         <div className="bg-card rounded-2xl border border-border p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-info/10 rounded-lg">
@@ -205,7 +184,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
         <div className="bg-card rounded-2xl border border-border p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-warning/10 rounded-lg">
@@ -218,7 +196,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-
       {/* Usage Limits */}
       <div className="bg-card rounded-2xl border border-border p-6">
         <div className="flex items-center justify-between mb-4">
@@ -237,7 +214,6 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-
         {membership ? (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
@@ -296,7 +272,6 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link
@@ -312,7 +287,6 @@ export default function DashboardPage() {
             Get Started <ArrowRight size={20} />
           </span>
         </Link>
-
         <Link
           href="/services"
           className="bg-card border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/40 hover:shadow-lg transition-all group"
@@ -327,7 +301,6 @@ export default function DashboardPage() {
           </span>
         </Link>
       </div>
-
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Downloads */}
@@ -343,7 +316,6 @@ export default function DashboardPage() {
               </Link>
             )}
           </div>
-
           {recentDownloads.length === 0 ? (
             <div className="text-center py-12">
               <Download className="mx-auto mb-4 text-muted-foreground" size={48} />
@@ -379,7 +351,6 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-
         {/* Recent Requests */}
         <div className="bg-card rounded-2xl border border-border p-6">
           <div className="flex items-center justify-between mb-6">
@@ -393,7 +364,6 @@ export default function DashboardPage() {
               </Link>
             )}
           </div>
-
           {recentRequests.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="mx-auto mb-4 text-muted-foreground" size={48} />

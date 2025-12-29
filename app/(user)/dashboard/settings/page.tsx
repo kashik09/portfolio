@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { usePreferences } from '@/lib/preferences/PreferencesContext'
 import type { Appearance } from '@/lib/preferences/types'
@@ -19,9 +20,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
-
 type UserThemePreference = 'LIGHT' | 'DARK' | 'SYSTEM'
-
 interface UserProfileResponse {
   success: boolean
   data?: {
@@ -33,34 +32,28 @@ interface UserProfileResponse {
     hasPassword: boolean
   }
 }
-
 interface AdConsentResponse {
   success: boolean
   data?: {
     personalizedAds: boolean
   }
 }
-
 interface NotificationsResponse {
   success: boolean
   data?: {
     emailNotifications: boolean
   }
 }
-
 function mapUserThemeToAppearance(theme: UserThemePreference): Appearance {
   if (theme === 'LIGHT') return 'light'
   if (theme === 'DARK') return 'dark'
   return 'system'
 }
-
 export default function SettingsPage() {
   const { preferences, setAppearance } = usePreferences()
   const { showToast } = useToast()
   const { update: updateSession } = useSession()
-
   const [loading, setLoading] = useState(true)
-
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
@@ -69,36 +62,28 @@ export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [personalizedAds, setPersonalizedAds] = useState(false)
   const [hasPassword, setHasPassword] = useState(false)
-
   const [savingProfile, setSavingProfile] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
   const [savingNotifications, setSavingNotifications] = useState(false)
   const [savingAdsConsent, setSavingAdsConsent] = useState(false)
-
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-
   // Avatar upload state
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [selectedAvatarFileName, setSelectedAvatarFileName] = useState('')
   const [avatarPreview, setAvatarPreview] = useState<string>('')
-
   useEffect(() => {
     let cancelled = false
-
     async function load() {
       try {
         setLoading(true)
-
         const [profileRes, adConsentRes] = await Promise.all([
           fetch('/api/me/profile'),
           fetch('/api/me/ad-consent'),
         ])
-
         if (profileRes.ok) {
           const profileJson = (await profileRes.json()) as UserProfileResponse
           if (!cancelled && profileJson.success && profileJson.data) {
@@ -109,7 +94,6 @@ export default function SettingsPage() {
             setThemePreference(data.theme || 'SYSTEM')
             setEmailNotifications(Boolean(data.emailNotifications))
             setHasPassword(Boolean(data.hasPassword))
-
             const preferredAppearance = mapUserThemeToAppearance(data.theme || 'SYSTEM')
             if (preferences.appearance !== preferredAppearance) {
               setAppearance(preferredAppearance)
@@ -118,7 +102,6 @@ export default function SettingsPage() {
         } else {
           throw new Error('Failed to load profile')
         }
-
         if (adConsentRes.ok) {
           const consentJson = (await adConsentRes.json()) as AdConsentResponse
           if (!cancelled && consentJson.success && consentJson.data) {
@@ -136,37 +119,30 @@ export default function SettingsPage() {
         }
       }
     }
-
     load()
-
     return () => {
       cancelled = true
     }
   }, [preferences.appearance, setAppearance, showToast])
-
   useEffect(() => {
     return () => {
       if (avatarPreview) URL.revokeObjectURL(avatarPreview)
     }
   }, [avatarPreview])
-
   const handlePickAvatar = () => {
     fileInputRef.current?.click()
   }
-
   const clearSelectedAvatar = () => {
     if (avatarPreview) URL.revokeObjectURL(avatarPreview)
     setAvatarPreview('')
     setSelectedAvatarFileName('')
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
-
   const handleAvatarFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0]
     if (!file) return
-
     const allowed = [
       'image/png',
       'image/jpeg',
@@ -178,36 +154,28 @@ export default function SettingsPage() {
       showToast('Unsupported image type. Try PNG, JPG, WEBP, or GIF.', 'error')
       return
     }
-
     if (file.size > 5 * 1024 * 1024) {
       showToast('Image too large. Max 5MB.', 'error')
       return
     }
-
     setSelectedAvatarFileName(file.name)
-
     if (avatarPreview) URL.revokeObjectURL(avatarPreview)
     setAvatarPreview(URL.createObjectURL(file))
-
     // Upload immediately and set avatarUrl from response
     try {
       setUploadingAvatar(true)
       const form = new FormData()
       form.append('file', file)
-
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: form,
       })
-
       const body = await res.json().catch(() => null)
-
       if (!res.ok || !body?.url) {
         const msg = body?.error || 'Failed to upload avatar'
         showToast(msg, 'error')
         return
       }
-
       setAvatarUrl(body.url as string)
       showToast('Avatar uploaded. Save profile to apply.', 'success')
     } catch (err) {
@@ -217,7 +185,6 @@ export default function SettingsPage() {
       setUploadingAvatar(false)
     }
   }
-
   const handleSaveProfile = async () => {
     try {
       setSavingProfile(true)
@@ -232,19 +199,16 @@ export default function SettingsPage() {
           theme: themePreference,
         }),
       })
-
       if (!res.ok) {
         const body = await res.json().catch(() => null)
         const message = (body && body.error) || 'Failed to save profile'
         showToast(message, 'error')
         return
       }
-
       const preferredAppearance = mapUserThemeToAppearance(themePreference)
       if (preferences.appearance !== preferredAppearance) {
         setAppearance(preferredAppearance)
       }
-
       // Refresh NextAuth session so Header shows new avatar/name immediately
       try {
         await updateSession({
@@ -256,7 +220,6 @@ export default function SettingsPage() {
       } catch (e) {
         // Not fatal, just means UI might need a refresh
       }
-
       showToast('Profile updated successfully', 'success')
     } catch (error) {
       console.error('Error saving profile:', error)
@@ -265,23 +228,19 @@ export default function SettingsPage() {
       setSavingProfile(false)
     }
   }
-
   const handleChangePassword = async () => {
     if (!hasPassword) {
       showToast('Password change is not available for this account.', 'info')
       return
     }
-
     if (!currentPassword || !newPassword || !confirmPassword) {
       showToast('Please fill in all password fields', 'error')
       return
     }
-
     if (newPassword !== confirmPassword) {
       showToast('New passwords do not match', 'error')
       return
     }
-
     try {
       setSavingPassword(true)
       const res = await fetch('/api/me/password/change', {
@@ -294,15 +253,12 @@ export default function SettingsPage() {
           newPassword,
         }),
       })
-
       const body = await res.json().catch(() => null)
-
       if (!res.ok || !body?.success) {
         const message = (body && body.error) || 'Failed to change password'
         showToast(message, 'error')
         return
       }
-
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
@@ -314,7 +270,6 @@ export default function SettingsPage() {
       setSavingPassword(false)
     }
   }
-
   const handleSaveNotifications = async () => {
     try {
       setSavingNotifications(true)
@@ -327,7 +282,6 @@ export default function SettingsPage() {
           emailNotifications,
         }),
       })
-
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as
           | NotificationsResponse
@@ -338,7 +292,6 @@ export default function SettingsPage() {
         showToast(message, 'error')
         return
       }
-
       showToast('Notification preferences updated', 'success')
     } catch (error) {
       console.error('Error saving notifications:', error)
@@ -347,12 +300,10 @@ export default function SettingsPage() {
       setSavingNotifications(false)
     }
   }
-
   const handleToggleAdsConsent = async () => {
     const nextValue = !personalizedAds
     setPersonalizedAds(nextValue)
     setSavingAdsConsent(true)
-
     try {
       const res = await fetch('/api/me/ad-consent', {
         method: 'PATCH',
@@ -363,7 +314,6 @@ export default function SettingsPage() {
           personalizedAds: nextValue,
         }),
       })
-
       if (!res.ok) {
         const body = await res.json().catch(() => null)
         const message = (body && body.error) || 'Failed to update ads preference'
@@ -378,20 +328,17 @@ export default function SettingsPage() {
       setSavingAdsConsent(false)
     }
   }
-
   const handleDeleteAccount = async () => {
     try {
       const res = await fetch('/api/me/profile', {
         method: 'DELETE',
       })
-
       if (!res.ok) {
         const body = await res.json().catch(() => null)
         const message = (body && body.error) || 'Failed to delete your account'
         showToast(message, 'error')
         return
       }
-
       showToast('Your account has been scheduled for deletion.', 'success')
       window.location.href = '/'
     } catch (error) {
@@ -399,7 +346,6 @@ export default function SettingsPage() {
       showToast('Failed to delete your account', 'error')
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -407,9 +353,7 @@ export default function SettingsPage() {
       </div>
     )
   }
-
   const effectivePreview = avatarPreview || avatarUrl
-
   return (
     <div className="space-y-8">
       <Link
@@ -419,14 +363,12 @@ export default function SettingsPage() {
         <ArrowLeft size={20} />
         Back to Dashboard
       </Link>
-
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Settings</h1>
         <p className="text-muted-foreground">
           Manage your profile, preferences, and account.
         </p>
       </div>
-
       {/* Profile */}
       <section className="bg-card rounded-2xl border border-border p-6 space-y-4">
         <div className="flex items-center gap-3 mb-2">
@@ -440,7 +382,6 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
-
         {/* Avatar uploader */}
         <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 items-start">
           <div className="flex flex-col items-center gap-3">
@@ -457,7 +398,6 @@ export default function SettingsPage() {
                 <ImageIcon className="text-muted-foreground" size={28} />
               )}
             </div>
-
             <input
               ref={fileInputRef}
               type="file"
@@ -465,7 +405,6 @@ export default function SettingsPage() {
               className="hidden"
               onChange={handleAvatarFileChange}
             />
-
             <div className="flex gap-2">
               <button
                 type="button"
@@ -476,7 +415,6 @@ export default function SettingsPage() {
                 <Upload size={16} />
                 {uploadingAvatar ? 'Uploading...' : 'Upload'}
               </button>
-
               {(avatarPreview || selectedAvatarFileName) && (
                 <button
                   type="button"
@@ -488,18 +426,15 @@ export default function SettingsPage() {
                 </button>
               )}
             </div>
-
             {selectedAvatarFileName && (
               <p className="text-xs text-muted-foreground text-center break-all">
                 {selectedAvatarFileName}
               </p>
             )}
-
             <p className="text-xs text-muted-foreground text-center">
               Max 5MB. PNG, JPG, WEBP, GIF.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Name</label>
@@ -510,7 +445,6 @@ export default function SettingsPage() {
                 className="w-full px-3 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Email</label>
               <input
@@ -520,7 +454,6 @@ export default function SettingsPage() {
                 className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-muted-foreground cursor-not-allowed"
               />
             </div>
-
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm text-muted-foreground">Avatar URL</label>
               <input
@@ -536,7 +469,6 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-
         <button
           type="button"
           onClick={handleSaveProfile}
@@ -546,7 +478,6 @@ export default function SettingsPage() {
           {savingProfile ? 'Saving...' : 'Save profile'}
         </button>
       </section>
-
       {/* Security */}
       <section className="bg-card rounded-2xl border border-border p-6 space-y-4">
         <div className="flex items-center gap-3 mb-2">
@@ -560,7 +491,6 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
-
         {hasPassword ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -601,7 +531,6 @@ export default function SettingsPage() {
             changes are not available here.
           </p>
         )}
-
         <button
           type="button"
           onClick={handleChangePassword}
@@ -611,7 +540,6 @@ export default function SettingsPage() {
           {savingPassword ? 'Updating...' : 'Update password'}
         </button>
       </section>
-
       {/* Preferences */}
       <section className="bg-card rounded-2xl border border-border p-6 space-y-6">
         <div className="flex items-center gap-3 mb-2">
@@ -625,7 +553,6 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
-
         <div className="space-y-2">
           <p className="text-sm font-medium text-foreground">Appearance preference</p>
           <p className="text-sm text-muted-foreground mb-2">
@@ -652,7 +579,6 @@ export default function SettingsPage() {
             ))}
           </div>
         </div>
-
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-foreground">
@@ -675,7 +601,6 @@ export default function SettingsPage() {
             {emailNotifications ? 'On' : 'Off'}
           </button>
         </div>
-
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-foreground">
@@ -700,7 +625,6 @@ export default function SettingsPage() {
             {personalizedAds ? 'On' : 'Off'}
           </button>
         </div>
-
         <button
           type="button"
           onClick={handleSaveNotifications}
@@ -710,7 +634,6 @@ export default function SettingsPage() {
           {savingNotifications ? 'Saving...' : 'Save preferences'}
         </button>
       </section>
-
       {/* Danger zone */}
       <section className="bg-destructive/5 rounded-2xl border-2 border-destructive/20 p-6 space-y-4">
         <div className="flex items-center gap-3 mb-2">
@@ -725,7 +648,6 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
-
         <button
           type="button"
           onClick={() => setShowDeleteModal(true)}
@@ -733,7 +655,6 @@ export default function SettingsPage() {
         >
           Delete my account
         </button>
-
         {showDeleteModal && (
           <ConfirmModal
             isOpen={showDeleteModal}

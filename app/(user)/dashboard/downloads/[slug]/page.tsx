@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -7,13 +8,11 @@ import { Download, Package, ArrowLeft, FileText, Calendar, Shield, Clock, CheckC
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface DownloadHistory {
   id: string
   downloadedAt: string
   successful: boolean
 }
-
 interface ProductDownload {
   slug: string
   name: string
@@ -33,19 +32,15 @@ interface ProductDownload {
   licenseStatus: 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'SUSPENDED' | 'RESTRICTED'
   downloadWindowDays: number
 }
-
-
 interface DownloadDetailPageProps {
   params: {
     slug: string
   }
 }
-
 interface MeDownloadDetailResponse {
   success: boolean
   data?: ProductDownload
 }
-
 export default function DownloadDetailPage({ params }: DownloadDetailPageProps) {
   const { showToast } = useToast()
   const router = useRouter()
@@ -53,29 +48,22 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
   const [downloading, setDownloading] = useState(false)
   const [product, setProduct] = useState<ProductDownload | null>(null)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
-
   useEffect(() => {
     fetchProductDetails()
   }, [params.slug])
-
   const fetchProductDetails = async () => {
     try {
       setLoading(true)
-
       const response = await fetch(`/api/me/downloads/${params.slug}`, {
         method: 'GET',
       })
-
       if (!response.ok) {
         throw new Error('Failed to load product details')
       }
-
       const json = (await response.json()) as MeDownloadDetailResponse
-
       if (!json.success || !json.data) {
         throw new Error('Failed to load product details')
       }
-
       setProduct(json.data)
     } catch (error) {
       console.error('Error fetching product details:', error)
@@ -85,18 +73,14 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
       setLoading(false)
     }
   }
-
   const handleDownload = async () => {
     if (!product) return
-
     if (product.downloadsUsed >= product.downloadLimit) {
       showToast('Download limit reached for this period', 'error')
       return
     }
-
     setShowConfirmModal(false)
     setDownloading(true)
-
     try {
       const tokenResponse = await fetch(
         `/api/digital-products/${product.slug}/download`,
@@ -107,7 +91,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           },
         }
       )
-
       if (!tokenResponse.ok) {
         const errorBody = await tokenResponse.json().catch(() => null)
         const message =
@@ -115,24 +98,19 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
         showToast(message, 'error')
         return
       }
-
       const tokenJson = await tokenResponse.json()
       const downloadToken = tokenJson?.data?.downloadToken as
         | string
         | undefined
-
       if (!downloadToken) {
         showToast('Invalid download token received', 'error')
         return
       }
-
       const fileUrl = `/api/digital-products/${product.slug}/file?token=${encodeURIComponent(
         downloadToken
       )}`
-
       window.location.href = fileUrl
       showToast('Download started successfully', 'success')
-
       // Refresh details to update remaining downloads
       fetchProductDetails()
     } catch (error) {
@@ -142,17 +120,14 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
       setDownloading(false)
     }
   }
-
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return bytes + ' B'
     if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
     return (bytes / 1048576).toFixed(1) + ' MB'
   }
-
   const formatCategory = (category: string) => {
     return category.replace(/_/g, ' ')
   }
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -160,7 +135,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
       day: 'numeric'
     })
   }
-
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -170,10 +144,8 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
       minute: '2-digit'
     })
   }
-
   const isExpired = product?.expiresAt && new Date(product.expiresAt) < new Date()
   const canDownload = product && product.downloadsUsed < product.downloadLimit && !isExpired
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -181,7 +153,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
       </div>
     )
   }
-
   if (!product) {
     return (
       <div className="max-w-4xl">
@@ -202,7 +173,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
       </div>
     )
   }
-
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Back Button */}
@@ -213,7 +183,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
         <ArrowLeft size={20} />
         Back to Downloads
       </Link>
-
       {/* Product Header */}
       <div className="bg-card rounded-2xl border border-border overflow-hidden">
         {/* Thumbnail */}
@@ -230,7 +199,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
             <Package className="text-primary" size={64} />
           </div>
         )}
-
         {/* Content */}
         <div className="p-8">
           <div className="flex items-start justify-between mb-4">
@@ -241,11 +209,9 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
               </span>
             </div>
           </div>
-
           <p className="text-muted-foreground leading-relaxed mb-6">
             {product.description}
           </p>
-
           {/* Download Info Bar */}
           <div className="flex items-center justify-between p-4 bg-muted rounded-lg mb-6">
             <div className="flex items-center gap-4">
@@ -265,14 +231,12 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
                 <p className="text-xl font-bold text-foreground">{formatFileSize(product.fileSize)}</p>
               </div>
             </div>
-
             {isExpired && (
               <div className="px-4 py-2 bg-red-500/20 text-red-700 dark:text-red-300 rounded-lg font-medium">
                 License Expired
               </div>
             )}
           </div>
-
           {/* Download Progress */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm mb-2">
@@ -294,7 +258,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
               />
             </div>
           </div>
-
           {/* Download Button */}
           <button
             onClick={() => setShowConfirmModal(true)}
@@ -320,7 +283,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           </button>
         </div>
       </div>
-
       {/* Product Info Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* File Information */}
@@ -331,7 +293,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
             </div>
             <h2 className="text-xl font-bold text-foreground">File Information</h2>
           </div>
-
           <div className="space-y-3">
             <div>
               <p className="text-sm text-muted-foreground mb-1">File Type</p>
@@ -347,7 +308,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
             </div>
           </div>
         </div>
-
         {/* License Information */}
         <div className="bg-card rounded-2xl border border-border p-6">
           <div className="flex items-center gap-3 mb-4">
@@ -356,7 +316,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
             </div>
             <h2 className="text-xl font-bold text-foreground">License Information</h2>
           </div>
-
           <div className="space-y-3">
             <div>
               <p className="text-sm text-muted-foreground mb-1">License Type</p>
@@ -385,7 +344,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           </div>
         </div>
       </div>
-
       {/* Download History */}
       {product.downloadHistory.length > 0 && (
         <div className="bg-card rounded-2xl border border-border p-6">
@@ -395,7 +353,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
             </div>
             <h2 className="text-xl font-bold text-foreground">Download History</h2>
           </div>
-
           <div className="space-y-3">
             {product.downloadHistory.map((download) => (
               <div
@@ -416,7 +373,6 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           </div>
         </div>
       )}
-
       {/* Confirm Download Modal */}
       {showConfirmModal && (
         <ConfirmModal

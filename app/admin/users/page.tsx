@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { Search, UserPlus, Edit, Trash2, Shield, User, Lock, Unlock } from 'lucide-react'
 import Link from 'next/link'
@@ -7,7 +8,6 @@ import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { Spinner } from '@/components/ui/Spinner'
-
 interface UserType {
   id: string
   name: string | null
@@ -21,14 +21,12 @@ interface UserType {
     serviceProjects: number
   }
 }
-
 interface StatsType {
   total: number
   admins: number
   editors: number
   users: number
 }
-
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [users, setUsers] = useState<UserType[]>([])
@@ -39,19 +37,15 @@ export default function AdminUsersPage() {
     userId: null
   })
   const { showToast } = useToast()
-
   useEffect(() => {
     fetchUsers()
   }, [searchQuery])
-
   const fetchUsers = async () => {
     try {
       const params = new URLSearchParams()
       if (searchQuery) params.append('search', searchQuery)
-
       const response = await fetch(`/api/admin/users?${params}`)
       const data = await response.json()
-
       if (data.success) {
         setUsers(data.data)
         setStats(data.stats)
@@ -65,17 +59,13 @@ export default function AdminUsersPage() {
       setLoading(false)
     }
   }
-
   const handleDelete = async () => {
     if (!deleteModal.userId) return
-
     try {
       const response = await fetch(`/api/admin/users/${deleteModal.userId}`, {
         method: 'DELETE'
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('User deleted successfully', 'success')
         fetchUsers()
@@ -89,11 +79,9 @@ export default function AdminUsersPage() {
       setDeleteModal({ isOpen: false, userId: null })
     }
   }
-
   const handleToggleLock = async (userId: string, currentStatus: string) => {
     try {
       const newStatus = currentStatus === 'LOCKED' ? 'ACTIVE' : 'LOCKED'
-
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -102,9 +90,7 @@ export default function AdminUsersPage() {
           lockReason: newStatus === 'LOCKED' ? 'Locked by admin' : undefined
         })
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast(`User ${newStatus === 'LOCKED' ? 'locked' : 'unlocked'} successfully`, 'success')
         fetchUsers()
@@ -116,7 +102,6 @@ export default function AdminUsersPage() {
       showToast('Failed to update user', 'error')
     }
   }
-
   const getRoleBadge = (role: string) => {
     const styles = {
       OWNER: 'bg-purple-500/20 text-purple-700 dark:text-purple-300',
@@ -126,10 +111,8 @@ export default function AdminUsersPage() {
       VIEWER: 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300',
       USER: 'bg-muted text-foreground'
     }
-
     return styles[role as keyof typeof styles] || styles.USER
   }
-
   const getStatusBadge = (status: string) => {
     const styles = {
       ACTIVE: 'bg-blue-500/20 text-blue-700 dark:text-blue-300',
@@ -137,10 +120,8 @@ export default function AdminUsersPage() {
       BANNED: 'bg-red-500/30 text-red-800 dark:text-red-200',
       SUSPENDED: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
     }
-
     return styles[status as keyof typeof styles] || styles.ACTIVE
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -148,7 +129,6 @@ export default function AdminUsersPage() {
       </div>
     )
   }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -165,7 +145,6 @@ export default function AdminUsersPage() {
           Add User
         </Link>
       </div>
-
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
@@ -177,7 +156,6 @@ export default function AdminUsersPage() {
           className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
         />
       </div>
-
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl border border-border p-6">
@@ -209,7 +187,6 @@ export default function AdminUsersPage() {
           <p className="text-2xl font-bold text-foreground">{stats.users}</p>
         </div>
       </div>
-
       {/* Users Table */}
       <div className="bg-card rounded-2xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
@@ -300,7 +277,6 @@ export default function AdminUsersPage() {
           </table>
         </div>
       </div>
-
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}

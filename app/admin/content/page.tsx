@@ -1,4 +1,6 @@
 /*
+
+export const dynamic = 'force-dynamic'
  * DEPRECATED: This CMS is no longer actively used
  *
  * This was the original About page editor with full resume structure.
@@ -7,12 +9,9 @@
  * For editing landing page content, use /admin/content/landing instead.
  * This page is kept for backward compatibility with existing API endpoints.
  */
-
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, RefreshCw } from 'lucide-react'
-
 interface HeroData {
   name: string
   nickname: string
@@ -21,18 +20,15 @@ interface HeroData {
   tagline: string
   avatarUrl: string
 }
-
 interface StoryParagraph {
   id: string
   content: string
 }
-
 interface SkillCategory {
   category: string
   icon: string
   items: string[]
 }
-
 interface TimelineItem {
   id: string
   title: string
@@ -41,13 +37,11 @@ interface TimelineItem {
   description: string
   type: string
 }
-
 interface SocialLinks {
   github: string
   linkedin: string
   email: string
 }
-
 interface AboutContent {
   hero: HeroData
   story: StoryParagraph[]
@@ -55,18 +49,15 @@ interface AboutContent {
   timeline: TimelineItem[]
   social: SocialLinks
 }
-
 export default function ContentEditorPage() {
   const [content, setContent] = useState<AboutContent | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
   useEffect(() => {
     fetchContent()
   }, [])
-
   const fetchContent = async () => {
     try {
       setLoading(true)
@@ -80,22 +71,17 @@ export default function ContentEditorPage() {
       setLoading(false)
     }
   }
-
   const saveContent = async () => {
     if (!content) return
-
     try {
       setSaving(true)
       setMessage(null)
-
       const res = await fetch('/api/content/about', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(content)
       })
-
       const response = await res.json()
-
       if (response.success && response.data) {
         setMessage({ type: 'success', text: 'Content saved successfully!' })
         setContent(response.data)
@@ -110,7 +96,6 @@ export default function ContentEditorPage() {
       setSaving(false)
     }
   }
-
   const addStoryParagraph = () => {
     if (!content) return
     const newParagraph: StoryParagraph = {
@@ -122,7 +107,6 @@ export default function ContentEditorPage() {
       story: [...content.story, newParagraph]
     })
   }
-
   const removeStoryParagraph = (id: string) => {
     if (!content) return
     setContent({
@@ -130,7 +114,6 @@ export default function ContentEditorPage() {
       story: content.story.filter(p => p.id !== id)
     })
   }
-
   const updateStoryParagraph = (id: string, newContent: string) => {
     if (!content) return
     setContent({
@@ -138,7 +121,6 @@ export default function ContentEditorPage() {
       story: content.story.map(p => p.id === id ? { ...p, content: newContent } : p)
     })
   }
-
   const addSkillCategory = () => {
     if (!content) return
     const newCategory: SkillCategory = {
@@ -151,7 +133,6 @@ export default function ContentEditorPage() {
       skills: [...content.skills, newCategory]
     })
   }
-
   const removeSkillCategory = (index: number) => {
     if (!content) return
     setContent({
@@ -159,7 +140,6 @@ export default function ContentEditorPage() {
       skills: content.skills.filter((_, i) => i !== index)
     })
   }
-
   const updateSkillCategory = (index: number, field: keyof SkillCategory, value: any) => {
     if (!content) return
     setContent({
@@ -169,7 +149,6 @@ export default function ContentEditorPage() {
       )
     })
   }
-
   const addTimelineItem = () => {
     if (!content) return
     const newItem: TimelineItem = {
@@ -185,7 +164,6 @@ export default function ContentEditorPage() {
       timeline: [...content.timeline, newItem]
     })
   }
-
   const removeTimelineItem = (id: string) => {
     if (!content) return
     setContent({
@@ -193,7 +171,6 @@ export default function ContentEditorPage() {
       timeline: content.timeline.filter(item => item.id !== id)
     })
   }
-
   const updateTimelineItem = (id: string, field: keyof TimelineItem, value: string) => {
     if (!content) return
     setContent({
@@ -203,25 +180,19 @@ export default function ContentEditorPage() {
       )
     })
   }
-
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file || !content) return
-
     try {
       setUploading(true)
       setMessage(null)
-
       const formData = new FormData()
       formData.append('file', file)
-
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })
-
       const response = await res.json()
-
       if (response.success && response.url) {
         setContent({
           ...content,
@@ -237,7 +208,6 @@ export default function ContentEditorPage() {
       setUploading(false)
     }
   }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -248,7 +218,6 @@ export default function ContentEditorPage() {
       </div>
     )
   }
-
   if (!content) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -256,7 +225,6 @@ export default function ContentEditorPage() {
       </div>
     )
   }
-
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       {/* Deprecation Warning */}
@@ -267,7 +235,6 @@ export default function ContentEditorPage() {
           For editing landing page content, use <strong>/admin/content/landing</strong> instead.
         </p>
       </div>
-
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Content Editor (Deprecated)</h1>
@@ -292,7 +259,6 @@ export default function ContentEditorPage() {
           </button>
         </div>
       </div>
-
       {message && (
         <div
           className={`p-4 rounded-lg border ${
@@ -304,7 +270,6 @@ export default function ContentEditorPage() {
           {message.text}
         </div>
       )}
-
       {/* Hero Section */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <h2 className="text-2xl font-bold text-foreground mb-4">Hero Section</h2>
@@ -391,7 +356,6 @@ export default function ContentEditorPage() {
           </div>
         </div>
       </section>
-
       {/* Story Section */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <div className="flex items-center justify-between mb-4">
@@ -428,7 +392,6 @@ export default function ContentEditorPage() {
           ))}
         </div>
       </section>
-
       {/* Skills Section */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <div className="flex items-center justify-between mb-4">
@@ -487,7 +450,6 @@ export default function ContentEditorPage() {
           ))}
         </div>
       </section>
-
       {/* Timeline Section */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <div className="flex items-center justify-between mb-4">
@@ -566,7 +528,6 @@ export default function ContentEditorPage() {
           ))}
         </div>
       </section>
-
       {/* Social Links */}
       <section className="bg-secondary p-6 rounded-2xl border border-border">
         <h2 className="text-2xl font-bold text-foreground mb-4">Social Links</h2>
@@ -600,7 +561,6 @@ export default function ContentEditorPage() {
           </div>
         </div>
       </section>
-
       {/* Save Button (Bottom) */}
       <div className="flex justify-end">
         <button

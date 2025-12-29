@@ -1,12 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Spinner } from '@/components/ui/Spinner'
-
 export default function DashboardLayout({
   children,
 }: {
@@ -17,23 +17,19 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [maintenanceMode, setMaintenanceMode] = useState(false)
-
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
     { href: '/dashboard/downloads', icon: Download, label: 'My Downloads' },
     { href: '/dashboard/requests', icon: FileText, label: 'My Requests' },
     { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
   ]
-
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/dashboard')
     }
   }, [status, router])
-
   useEffect(() => {
     let cancelled = false
-
     async function loadSiteStatus() {
       try {
         const res = await fetch('/api/site/status')
@@ -46,14 +42,11 @@ export default function DashboardLayout({
         // Ignore errors – dashboard should remain usable
       }
     }
-
     loadSiteStatus()
-
     return () => {
       cancelled = true
     }
   }, [])
-
   if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -61,11 +54,9 @@ export default function DashboardLayout({
       </div>
     )
   }
-
   if (!session) {
     return null
   }
-
   return (
     <div className="min-h-screen bg-background">
         {/* Header */}
@@ -84,7 +75,6 @@ export default function DashboardLayout({
                   </div>
                 </Link>
               </div>
-
               {/* Right Actions */}
               <div className="flex items-center gap-3">
                 {/* User Info */}
@@ -94,7 +84,6 @@ export default function DashboardLayout({
                     {session.user.name || session.user.email}
                   </span>
                 </div>
-
                 {/* Mobile Menu Toggle */}
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -107,7 +96,6 @@ export default function DashboardLayout({
             </div>
           </div>
         </header>
-
         <div className="flex">
           {/* Sidebar - Desktop */}
           <aside className="hidden md:block w-64 min-h-[calc(100vh-73px)] bg-card border-r border-border sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto">
@@ -131,7 +119,6 @@ export default function DashboardLayout({
                   )
                 })}
               </nav>
-
               <div className="mt-8 pt-8 border-t border-border">
                 <Link
                   href="/"
@@ -143,7 +130,6 @@ export default function DashboardLayout({
               </div>
             </div>
           </aside>
-
           {/* Mobile Sidebar */}
           {sidebarOpen && (
             <div className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)}>
@@ -171,7 +157,6 @@ export default function DashboardLayout({
                     )
                   })}
                 </nav>
-
                 <div className="mt-8 pt-8 border-t border-border">
                   <Link
                     href="/"
@@ -185,7 +170,6 @@ export default function DashboardLayout({
               </aside>
             </div>
           )}
-
           {/* Main Content */}
           <main className="flex-1 p-4 md:p-8 bg-background">
             {maintenanceMode && (

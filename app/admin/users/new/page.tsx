@@ -1,15 +1,14 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserPlus, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
-
 export default function NewUserPage() {
   const router = useRouter()
   const { showToast } = useToast()
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,10 +16,8 @@ export default function NewUserPage() {
     password: ''
   })
   const [saving, setSaving] = useState(false)
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     setSaving(true)
     try {
       const response = await fetch('/api/admin/users', {
@@ -28,9 +25,7 @@ export default function NewUserPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       })
-
       const data = await response.json()
-
       if (data.success) {
         showToast('User created successfully', 'success')
         router.push('/admin/users')
@@ -44,7 +39,6 @@ export default function NewUserPage() {
       setSaving(false)
     }
   }
-
   return (
     <div className="max-w-2xl space-y-6">
       {/* Header */}
@@ -60,7 +54,6 @@ export default function NewUserPage() {
           <p className="text-muted-foreground">Create a new user account</p>
         </div>
       </div>
-
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-card rounded-2xl border border-border p-6 space-y-6">
         {/* Name */}
@@ -76,7 +69,6 @@ export default function NewUserPage() {
             required
           />
         </div>
-
         {/* Email */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -90,7 +82,6 @@ export default function NewUserPage() {
             required
           />
         </div>
-
         {/* Password */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -107,7 +98,6 @@ export default function NewUserPage() {
             Leave blank if the user will sign in using OAuth (Google, GitHub, etc.)
           </p>
         </div>
-
         {/* Role */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -132,7 +122,6 @@ export default function NewUserPage() {
             {formData.role === 'ADMIN' && 'Full administrative access'}
           </p>
         </div>
-
         {/* Actions */}
         <div className="flex gap-3">
           <button
