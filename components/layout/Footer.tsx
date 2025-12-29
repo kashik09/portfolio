@@ -82,7 +82,7 @@ export default function Footer() {
                 href="https://github.com/kashik09"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
+                className="p-3 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
                 aria-label="GitHub"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@ export default function Footer() {
                 href="https://linkedin.com/in/kashi-kweyu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
+                className="p-3 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@ export default function Footer() {
                 href="https://instagram.com/kashi_kweyu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
+                className="p-3 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@ export default function Footer() {
                 href="https://wa.me/256760637783"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
+                className="p-3 bg-primary rounded-lg border border-primary hover:opacity-90 transition text-primary-content"
                 aria-label="WhatsApp"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

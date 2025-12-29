@@ -72,22 +72,22 @@ export default function ConfirmModal({
         className="bg-card rounded-2xl border border-border max-w-lg w-full animate-in zoom-in-95 duration-200 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {/* Icon and Title */}
-          <div className="flex items-start gap-4 mb-6">
-            <div className={`w-14 h-14 ${currentStyle.iconBg} rounded-2xl flex items-center justify-center flex-shrink-0`}>
+          <div className="flex items-start gap-3 md:gap-4 mb-4 md:mb-6">
+            <div className={`w-12 h-12 md:w-14 md:h-14 ${currentStyle.iconBg} rounded-2xl flex items-center justify-center flex-shrink-0`}>
               <div className={currentStyle.iconColor}>
                 {currentStyle.icon}
               </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-foreground mb-1">{title}</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1">{title}</h2>
               <p className="text-sm text-muted-foreground">This action cannot be undone</p>
             </div>
           </div>
 
           {/* Message */}
-          <div className="text-foreground mb-8 leading-relaxed">
+          <div className="text-foreground mb-6 md:mb-8 leading-relaxed">
             {message}
           </div>
 
@@ -95,7 +95,7 @@ export default function ConfirmModal({
           <div className="flex flex-col-reverse sm:flex-row gap-3">
             <button
               onClick={onClose}
-              className="flex-1 px-6 py-3.5 bg-background-secondary hover:bg-muted border border-border text-foreground rounded-xl transition-all font-semibold hover:scale-[1.02] active:scale-[0.98]"
+              className="flex-1 px-4 md:px-6 py-3 md:py-3.5 bg-background-secondary hover:bg-muted border border-border text-foreground rounded-xl transition-all font-semibold hover:scale-[1.02] active:scale-[0.98]"
             >
               {cancelText}
             </button>
@@ -104,7 +104,7 @@ export default function ConfirmModal({
                 onConfirm()
                 onClose()
               }}
-              className={`flex-1 px-6 py-3.5 rounded-xl transition-all font-semibold hover:scale-[1.02] active:scale-[0.98] ${currentStyle.button}`}
+              className={`flex-1 px-4 md:px-6 py-3 md:py-3.5 rounded-xl transition-all font-semibold hover:scale-[1.02] active:scale-[0.98] ${currentStyle.button}`}
             >
               {confirmText}
             </button>

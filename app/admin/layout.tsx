@@ -42,7 +42,7 @@ export default function AdminLayout({
 
         <div className="flex">
           {/* Sidebar */}
-          <aside className="w-64 min-h-[calc(100vh-65px)] surface-app border-r border-app sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto backdrop-blur-sm">
+          <aside className="hidden md:block md:w-64 min-h-[calc(100vh-65px)] surface-app border-r border-app sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto backdrop-blur-sm">
             <div className="p-5">
               <h2 className="text-xs font-bold text-muted-app uppercase tracking-wider mb-4 px-3">Navigation</h2>
 
@@ -72,7 +72,7 @@ export default function AdminLayout({
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 p-6 bg-app max-w-[1600px]">
+          <main className="flex-1 p-4 md:p-6 bg-app max-w-[1600px]">
             <div className="pointer-events-auto space-y-6">
               {children}
             </div>

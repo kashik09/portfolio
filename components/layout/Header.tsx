@@ -42,14 +42,21 @@ export default function Header() {
       if (!dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false)
     }
 
+    const onTouchStart = (e: TouchEvent) => {
+      if (!dropdownRef.current) return
+      if (!dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false)
+    }
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setDropdownOpen(false)
     }
 
     document.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('touchstart', onTouchStart)
     document.addEventListener('keydown', onKeyDown)
     return () => {
       document.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('touchstart', onTouchStart)
       document.removeEventListener('keydown', onKeyDown)
     }
   }, [])
@@ -151,7 +158,7 @@ export default function Header() {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg surface-app border border-app hover:bg-app transition text-app"
+              className="md:hidden p-3 rounded-lg surface-app border border-app hover:bg-app transition text-app"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
