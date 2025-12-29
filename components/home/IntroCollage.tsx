@@ -176,18 +176,18 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
     <section ref={sectionRef} className="relative min-h-[100dvh]" data-cinema-intro>
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <div className="relative min-h-[100dvh] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-transparent to-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-br from-base-content/30 via-transparent to-base-content/55" />
           <div className="absolute -left-16 top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
           <div className="absolute bottom-[-20%] right-[-10%] h-64 w-64 rounded-full bg-primary/15 blur-[120px]" />
 
           <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[64rem] flex-col justify-center px-6 pb-10 pt-16 sm:px-8">
             <div
-              className={`flex items-center gap-4 text-white/90 ${
+              className={`flex items-center gap-4 text-base-100/90 ${
                 shouldAnimate ? 'animate-sticker-in' : ''
               } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
               style={profileDelay}
             >
-              <div className="relative flex size-12 sm:size-14 lg:size-16 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg font-semibold">
+              <div className="relative flex size-12 sm:size-14 lg:size-16 items-center justify-center rounded-full border border-base-100/20 bg-base-100/10 text-lg font-semibold">
                 {hasAvatar ? (
                   <img
                     src={avatarSrc}
@@ -196,24 +196,24 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                     onError={() => setHasAvatar(false)}
                   />
                 ) : (
-                  <span className="text-white">K</span>
+                  <span className="text-base-100">K</span>
                 )}
-                <div className="absolute inset-0 rounded-full ring-2 ring-base-300/60 ring-offset-2 ring-offset-black/30" />
+                <div className="absolute inset-0 rounded-full ring-2 ring-base-300/60 ring-offset-2 ring-offset-base-content/30" />
               </div>
               <p className="text-xs uppercase tracking-[0.4em]">hey, i&apos;m kashi</p>
             </div>
 
             <div
-              className={`mt-5 space-y-4 text-white ${
+              className={`mt-5 space-y-4 text-base-100 ${
                 shouldAnimate ? 'animate-sticker-in' : ''
               } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
               style={headlineDelay}
             >
               <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
                 i notice friction,
-                <span className="block text-white/70">then i build fixes.</span>
+                <span className="block text-base-100/70">then i build fixes.</span>
               </h1>
-              <p className="max-w-prose text-base leading-relaxed text-white/80 sm:text-lg">
+              <p className="max-w-prose text-base leading-relaxed text-base-100/80 sm:text-lg">
                 calm, premium experiences that keep momentum without the noise.
               </p>
             </div>
@@ -241,7 +241,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
               </Link>
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em] text-white/80">
+            <div className="mt-4 flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em] text-base-100/80">
               {navPills.map((pill) =>
                 pill.external ? (
                   <a
@@ -249,7 +249,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                     href={pill.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:bg-white/10"
+                    className="rounded-full border border-base-100/15 bg-base-100/5 px-3 py-1 transition hover:bg-base-100/10"
                   >
                     {pill.label}
                   </a>
@@ -257,7 +257,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                   <Link
                     key={pill.label}
                     href={pill.href}
-                    className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:bg-white/10"
+                    className="rounded-full border border-base-100/15 bg-base-100/5 px-3 py-1 transition hover:bg-base-100/10"
                   >
                     {pill.label}
                   </Link>
@@ -269,7 +269,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
               {proofItems.map((item, index) => (
                 <span
                   key={item}
-                  className={`inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/70 ${
+                  className={`inline-flex items-center rounded-full border border-base-100/10 bg-base-100/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-100/70 ${
                     shouldAnimate ? 'animate-sticker-in' : ''
                   } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
                   style={!reduceMotion ? { animationDelay: `${chipBaseDelay + index * 80}ms` } : undefined}
@@ -294,7 +294,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
               setMenuOpen(true)
               setShowPreferences(false)
             }}
-            className={`fixed bottom-6 right-6 z-[60] flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-md ${
+            className={`fixed bottom-6 right-6 z-[60] flex items-center gap-2 rounded-full border border-base-100/20 bg-base-content/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-base-100 backdrop-blur-md ${
               reduceMotion ? '' : 'transition-opacity duration-200'
             }`}
             aria-haspopup="dialog"
@@ -307,9 +307,9 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
 
           {menuOpen && (
             <div
-              className={`fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-lg ${
-                reduceMotion ? '' : 'transition-opacity duration-200'
-              }`}
+                className={`fixed inset-0 z-[70] flex items-center justify-center bg-base-content/70 backdrop-blur-lg ${
+                  reduceMotion ? '' : 'transition-opacity duration-200'
+                }`}
               role="dialog"
               aria-modal="true"
               id="cinema-menu"
@@ -317,13 +317,13 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
             >
               <div
                 ref={overlayRef}
-                className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-black/70 px-8 py-10 text-white shadow-2xl"
+                className="relative w-full max-w-xl rounded-3xl border border-base-100/10 bg-base-content/70 px-8 py-10 text-base-100 shadow-2xl"
                 onClick={(event) => event.stopPropagation()}
               >
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="absolute right-5 top-5 rounded-full border border-white/20 p-2 text-white hover:bg-white/10"
+                  className="absolute right-5 top-5 rounded-full border border-base-100/20 p-2 text-base-100 hover:bg-base-100/10"
                   aria-label="Close menu"
                 >
                   <X size={16} />
@@ -334,7 +334,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="block text-2xl font-semibold tracking-tight text-white/90 hover:text-white"
+                      className="block text-2xl font-semibold tracking-tight text-base-100/90 hover:text-base-100"
                       onClick={() => setMenuOpen(false)}
                     >
                       {link.label}
@@ -342,7 +342,7 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                   ))}
                   <button
                     type="button"
-                    className="block w-full text-2xl font-semibold tracking-tight text-white/90 hover:text-white"
+                    className="block w-full text-2xl font-semibold tracking-tight text-base-100/90 hover:text-base-100"
                     onClick={() => setShowPreferences((prev) => !prev)}
                   >
                     Preferences
@@ -350,8 +350,8 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
                 </nav>
 
                 {showPreferences && (
-                  <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5 text-left">
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">Preferences</p>
+                  <div className="mt-8 rounded-2xl border border-base-100/10 bg-base-100/5 p-5 text-left">
+                    <p className="text-xs uppercase tracking-[0.3em] text-base-100/60">Preferences</p>
                     <div className="mt-4">
                       <PreferencesPanel />
                     </div>

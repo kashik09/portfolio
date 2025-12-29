@@ -144,7 +144,7 @@ export function FeaturedWorkStory({ projects }: FeaturedWorkStoryProps) {
                       className={`absolute inset-0 bg-cover bg-center ${
                         backgroundUrl
                           ? ''
-                          : 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
+                          : 'bg-gradient-to-br from-base-content via-base-content/90 to-base-content/80'
                       }`}
                       style={
                         backgroundUrl
@@ -152,20 +152,20 @@ export function FeaturedWorkStory({ projects }: FeaturedWorkStoryProps) {
                           : undefined
                       }
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/70" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.12)_1px,transparent_0)] opacity-30 [background-size:3px_3px]" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-base-content/40 via-base-content/10 to-base-content/70" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,oklch(var(--b1)/0.12)_1px,transparent_0)] opacity-30 [background-size:3px_3px]" />
 
                     <div className="absolute inset-x-4 bottom-10 z-10 sm:left-10 sm:right-auto sm:bottom-14">
-                      <div className="w-full max-w-[26rem] space-y-3 rounded-2xl border border-white/10 bg-black/45 p-4 text-white backdrop-blur-lg sm:p-5">
+                      <div className="w-full max-w-[26rem] space-y-3 rounded-2xl border border-base-100/10 bg-base-content/45 p-4 text-base-100 backdrop-blur-lg sm:p-5">
                         <h3 className="text-2xl font-semibold sm:text-3xl">
                           {project.title}
                         </h3>
-                        <p className="text-sm leading-relaxed text-white/85 sm:text-base">
+                        <p className="text-sm leading-relaxed text-base-100/85 sm:text-base">
                           {project.summary}
                         </p>
                         <Link
                           href={project.href}
-                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:text-white"
+                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-base-100/80 transition hover:text-base-100"
                         >
                           open →
                           <ArrowRight size={12} />

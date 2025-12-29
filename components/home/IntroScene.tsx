@@ -90,18 +90,18 @@ export function IntroScene({ hero, projects }: IntroSceneProps) {
     <section ref={sectionRef} className="relative min-h-[100dvh]" data-cinema-intro>
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <div className="relative min-h-[100dvh] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-base-content/25 via-transparent to-base-content/40" />
           <div className="absolute -left-16 top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
           <div className="absolute bottom-[-20%] right-[-10%] h-64 w-64 rounded-full bg-primary/15 blur-[120px]" />
 
           <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[64rem] flex-col justify-center px-6 pb-10 pt-16 sm:px-8">
             <div
-              className={`flex items-center gap-4 text-white/90 ${
+              className={`flex items-center gap-4 text-base-100/90 ${
                 !reduceMotion && isVisible ? 'animate-sticker-in' : ''
               } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
               style={!reduceMotion ? { animationDelay: '0ms' } : undefined}
             >
-              <div className="relative flex size-12 sm:size-14 lg:size-16 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg font-semibold">
+              <div className="relative flex size-12 sm:size-14 lg:size-16 items-center justify-center rounded-full border border-base-100/20 bg-base-100/10 text-lg font-semibold">
                 {hasAvatar ? (
                   <img
                     src="/avatar.png"
@@ -110,24 +110,24 @@ export function IntroScene({ hero, projects }: IntroSceneProps) {
                     onError={() => setHasAvatar(false)}
                   />
                 ) : (
-                  <span className="text-white">K</span>
+                  <span className="text-base-100">K</span>
                 )}
-                <div className="absolute inset-0 rounded-full ring-2 ring-base-300/60 ring-offset-2 ring-offset-black/30" />
+                <div className="absolute inset-0 rounded-full ring-2 ring-base-300/60 ring-offset-2 ring-offset-base-content/30" />
               </div>
               <p className="text-xs uppercase tracking-[0.4em]">hey, i&apos;m kashi</p>
             </div>
 
             <div
-              className={`mt-4 space-y-4 text-white ${
+              className={`mt-4 space-y-4 text-base-100 ${
                 !reduceMotion && isVisible ? 'animate-sticker-in' : ''
               } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
               style={!reduceMotion ? { animationDelay: '120ms' } : undefined}
             >
               <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
                 i notice friction,
-                <span className="block text-white/70">then i build fixes.</span>
+                <span className="block text-base-100/70">then i build fixes.</span>
               </h1>
-              <p className="max-w-prose text-base leading-relaxed text-white/80 sm:text-lg">
+              <p className="max-w-prose text-base leading-relaxed text-base-100/80 sm:text-lg">
                 {hero.subtitle}
               </p>
             </div>
@@ -159,7 +159,7 @@ export function IntroScene({ hero, projects }: IntroSceneProps) {
               {proofItems.map((item, index) => (
                 <span
                   key={item}
-                  className={`inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/70 ${
+                  className={`inline-flex items-center rounded-full border border-base-100/10 bg-base-100/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-100/70 ${
                     !reduceMotion && isVisible ? 'animate-sticker-in' : ''
                   } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
                   style={!reduceMotion ? { animationDelay: `${260 + index * 80}ms` } : undefined}

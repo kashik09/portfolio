@@ -150,7 +150,7 @@ export function CinemaNav({ enabled, active }: CinemaNavProps) {
           setIsOpen(true)
           setIsVisible(true)
         }}
-        className={`fixed bottom-6 right-6 z-[60] flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-md ${
+        className={`fixed bottom-6 right-6 z-[60] flex items-center gap-2 rounded-full border border-base-100/20 bg-base-content/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-base-100 backdrop-blur-md ${
           reduceMotion ? '' : 'transition-opacity duration-200'
         } ${buttonClass}`}
         aria-haspopup="dialog"
@@ -163,7 +163,7 @@ export function CinemaNav({ enabled, active }: CinemaNavProps) {
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-lg"
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-base-content/70 backdrop-blur-lg"
           role="dialog"
           aria-modal="true"
           id="cinema-nav"
@@ -171,13 +171,13 @@ export function CinemaNav({ enabled, active }: CinemaNavProps) {
         >
           <div
             ref={overlayRef}
-            className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-black/70 px-8 py-10 text-white shadow-2xl"
+            className="relative w-full max-w-xl rounded-3xl border border-base-100/10 bg-base-content/70 px-8 py-10 text-base-100 shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="absolute right-5 top-5 rounded-full border border-white/20 p-2 text-white hover:bg-white/10"
+              className="absolute right-5 top-5 rounded-full border border-base-100/20 p-2 text-base-100 hover:bg-base-100/10"
               aria-label="Close menu"
             >
               <X size={16} />
@@ -188,7 +188,7 @@ export function CinemaNav({ enabled, active }: CinemaNavProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block text-2xl font-semibold tracking-tight text-white/90 hover:text-white"
+                  className="block text-2xl font-semibold tracking-tight text-base-100/90 hover:text-base-100"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}

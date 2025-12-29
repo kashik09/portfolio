@@ -176,7 +176,7 @@ export function StickerField({ projects, notes, isVisible, reduceMotion }: Stick
             }}
           >
             <div
-              className={`pointer-events-auto rounded-3xl border border-white/10 bg-black/35 p-3 text-white shadow-lg shadow-black/30 backdrop-blur-lg ${
+              className={`pointer-events-auto rounded-3xl border border-base-100/10 bg-base-content/35 p-3 text-base-100 shadow-lg shadow-base-content/30 backdrop-blur-lg ${
                 shouldAnimate ? 'animate-float' : ''
               }`}
               style={{
@@ -187,7 +187,7 @@ export function StickerField({ projects, notes, isVisible, reduceMotion }: Stick
             >
               {item.kind === 'project' ? (
                 <div className="space-y-2">
-                  <div className="h-20 w-full overflow-hidden rounded-2xl bg-white/10">
+                  <div className="h-20 w-full overflow-hidden rounded-2xl bg-base-100/10">
                     {item.imageUrl ? (
                       <img
                         src={item.imageUrl}
@@ -195,26 +195,26 @@ export function StickerField({ projects, notes, isVisible, reduceMotion }: Stick
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-white/60">
+                      <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-base-100/60">
                         {item.title.slice(0, 1)}
                       </div>
                     )}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-base-100">
                       {item.title}
                     </p>
-                    <p className="text-xs text-white/70">{item.note}</p>
+                    <p className="text-xs text-base-100/70">{item.note}</p>
                     <Link
                       href={item.href}
-                      className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80 hover:text-white"
+                      className="text-xs font-semibold uppercase tracking-[0.2em] text-base-100/80 hover:text-base-100"
                     >
                       open →
                     </Link>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-base-100/80">
                   {item.title}
                 </p>
               )}
