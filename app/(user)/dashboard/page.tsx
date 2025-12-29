@@ -200,15 +200,15 @@ export default function DashboardPage() {
       <div className="bg-card rounded-2xl border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-xl font-bold text-app">Usage Limits</h2>
-            <p className="text-sm text-muted">
+            <h2 className="text-xl font-bold text-base-content">Usage Limits</h2>
+            <p className="text-sm text-muted-foreground">
               Current period credit usage for your membership
             </p>
           </div>
           {membership && (
             <div className="text-right">
-              <p className="text-sm text-muted">Membership</p>
-              <p className="font-medium text-app">
+              <p className="text-sm text-muted-foreground">Membership</p>
+              <p className="font-medium text-base-content">
                 {membership.tier} · {membership.status}
               </p>
             </div>
@@ -217,8 +217,8 @@ export default function DashboardPage() {
         {membership ? (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-              <span className="text-muted">Credits used this period</span>
-              <span className="font-medium text-app">
+              <span className="text-muted-foreground">Credits used this period</span>
+              <span className="font-medium text-base-content">
                 {membership.usedCredits} / {membership.totalCredits} (
                 {membership.totalCredits > 0
                   ? Math.round(
@@ -236,22 +236,22 @@ export default function DashboardPage() {
                   : 0
               }
             />
-            <div className="flex flex-wrap gap-4 text-sm text-muted mt-2">
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
               <span>
                 Credits remaining:{' '}
-                <span className="font-medium text-app">
+                <span className="font-medium text-base-content">
                   {membership.remainingCredits}
                 </span>
               </span>
               <span>
                 Resets in{' '}
-                <span className="font-medium text-app">
+                <span className="font-medium text-base-content">
                   {formatResetsIn(membership.endDate)}
                 </span>
               </span>
               <span>
                 Weekly limits:{' '}
-                <span className="font-medium text-app">
+                <span className="font-medium text-base-content">
                   Not enforced yet
                 </span>
               </span>
@@ -259,7 +259,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-muted">
+            <p className="text-sm text-muted-foreground">
               You don&apos;t have an active membership yet. Credits and usage limits will appear here once a membership is assigned to your account.
             </p>
             <Link
@@ -276,14 +276,14 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link
           href="/request"
-          className="bg-gradient-to-br from-primary via-primary to-primary/80 rounded-2xl p-8 text-white hover:shadow-xl transition-shadow group"
+          className="bg-card border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/40 hover:shadow-lg transition-all group"
         >
-          <FileText size={32} className="mb-4" />
-          <h3 className="text-xl font-bold mb-2">Request a Service</h3>
-          <p className="text-white mb-4">
+          <FileText size={32} className="mb-4 text-primary" />
+          <h3 className="text-xl font-bold text-foreground mb-2">Request a Service</h3>
+          <p className="text-muted-foreground mb-4">
             Need help with a project? Submit a service request and I'll get back to you.
           </p>
-          <span className="inline-flex items-center gap-2 text-white font-medium group-hover:gap-3 transition-all">
+          <span className="inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
             Get Started <ArrowRight size={20} />
           </span>
         </Link>
