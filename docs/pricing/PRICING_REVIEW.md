@@ -1,0 +1,108 @@
+# Pricing Review Document
+
+**Generated:** 2025-12-24T06:14:03.612Z
+
+---
+
+## Overview
+
+This document provides a comprehensive review of all pricing information across the portfolio site.
+It includes services, memberships, budget ranges, and any pricing-related text in CTAs and FAQs.
+
+**Total Pricing Items:** 12
+
+- Services: 4
+- Memberships: 3
+- Budget Ranges: 4
+- FAQ Items: 1
+
+---
+
+## Services Pricing
+
+| Service | Current Price | Location | Notes |
+|---------|---------------|----------|-------|
+| Web Development | From $500 | `services.json → services[web-dev].pricing` | Displayed on services page |
+| Mobile Development | From $1,500 | `services.json → services[mobile-dev].pricing` | Displayed on services page |
+| UI/UX Design | From $300 | `services.json → services[ui-ux].pricing` | Displayed on services page |
+| Consulting | From $100/hr | `services.json → services[consulting].pricing` | Displayed on services page |
+
+## Membership Pricing
+
+| Membership Plan | Current Price | Location | Notes |
+|-----------------|---------------|----------|-------|
+| Membership: Basic Access | $299 | `lib/membership-plans.ts → MEMBERSHIP_PLANS[BASIC_ACCESS].price` | Includes 750 credits |
+| Membership: Pro | $1499 | `lib/membership-plans.ts → MEMBERSHIP_PLANS[PRO].price` | Includes 1500 credits |
+| Membership: Managed | $499 | `lib/membership-plans.ts → MEMBERSHIP_PLANS[MANAGED].price` | Includes 500 credits |
+
+## Request Form Budget Ranges
+
+| Budget Range | Location | Notes |
+|--------------|----------|-------|
+| Under $500 | `request-form.json → fields.budgetRanges[<500]` | User-selectable budget range in request form |
+| $500 - $1,000 | `request-form.json → fields.budgetRanges[500-1000]` | User-selectable budget range in request form |
+| $1,000 - $2,500 | `request-form.json → fields.budgetRanges[1000-2500]` | User-selectable budget range in request form |
+| $2,500+ | `request-form.json → fields.budgetRanges[2500+]` | User-selectable budget range in request form |
+
+## Pricing-Related FAQ Items
+
+| FAQ Question | Answer/Content | Location | Notes |
+|--------------|----------------|----------|-------|
+| FAQ: What payment methods do you accept? | I accept bank transfers, PayPal, and most major credit cards. Payment terms are typically 50% upfron... | `services.json → faq[payment]` | Contains payment/pricing information |
+
+---
+
+## Complete Pricing Reference Table
+
+| Service | Current Price | Location | Type | Notes |
+|---------|---------------|----------|------|-------|
+| Web Development | From $500 | `services.json → services[web-dev].pricing` | service | Displayed on services page |
+| Mobile Development | From $1,500 | `services.json → services[mobile-dev].pricing` | service | Displayed on services page |
+| UI/UX Design | From $300 | `services.json → services[ui-ux].pricing` | service | Displayed on services page |
+| Consulting | From $100/hr | `services.json → services[consulting].pricing` | service | Displayed on services page |
+| FAQ: What payment methods do you accept? | I accept bank transfers, PayPal, and most major cr... | `services.json → faq[payment]` | faq | Contains payment/pricing information |
+| Request Form Budget Range | Under $500 | `request-form.json → fields.budgetRanges[<500]` | budget-range | User-selectable budget range in request form |
+| Request Form Budget Range | $500 - $1,000 | `request-form.json → fields.budgetRanges[500-1000]` | budget-range | User-selectable budget range in request form |
+| Request Form Budget Range | $1,000 - $2,500 | `request-form.json → fields.budgetRanges[1000-2500]` | budget-range | User-selectable budget range in request form |
+| Request Form Budget Range | $2,500+ | `request-form.json → fields.budgetRanges[2500+]` | budget-range | User-selectable budget range in request form |
+| Membership: Basic Access | $299 | `lib/membership-plans.ts → MEMBERSHIP_PLANS[BASIC_ACCESS].price` | membership | Includes 750 credits |
+| Membership: Pro | $1499 | `lib/membership-plans.ts → MEMBERSHIP_PLANS[PRO].price` | membership | Includes 1500 credits |
+| Membership: Managed | $499 | `lib/membership-plans.ts → MEMBERSHIP_PLANS[MANAGED].price` | membership | Includes 500 credits |
+
+---
+
+## Currency Analysis
+
+**Currencies Used:**
+- USD ($)
+
+**Pricing Patterns:**
+- "From" pricing: 4 occurrence(s)
+- Fixed price (e.g., $500): 3 occurrence(s)
+
+---
+
+## How to Update Pricing
+
+### Option 1: Admin Interface (Recommended)
+
+Navigate to `/admin/content/pricing` to update all pricing in a structured interface.
+
+### Option 2: Update Script
+
+Run the pricing update script with a JSON pricing map:
+
+```bash
+npx tsx scripts/update-prices.ts pricing-map.json
+```
+
+### Option 3: Manual File Editing
+
+Edit the JSON/TypeScript files directly:
+- Services: `public/content/services.json`
+- Request Form: `public/content/request-form.json`
+- Memberships: `lib/membership-plans.ts`
+
+---
+
+*Document generated by `scripts/generate-pricing-review.ts`*
