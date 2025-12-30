@@ -1,4 +1,17 @@
 /** @type {import('next').NextConfig} */
+const ContentSecurityPolicy = `
+  default-src 'self';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'self';
+  object-src 'none';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob: https:;
+  font-src 'self' data:;
+  connect-src 'self' https://vitals.vercel-analytics.com;
+`
+
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -8,6 +21,10 @@ const nextConfig = {
       {
         source: '/:path*',
         headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim()
+          },
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on'
@@ -30,11 +47,23 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
           },
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()'
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin'
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-origin'
+          },
+          {
+            key: 'X-Permitted-Cross-Domain-Policies',
+            value: 'none'
           }
         ]
       }
