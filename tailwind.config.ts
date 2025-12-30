@@ -79,13 +79,17 @@ const config: Config = {
   plugins: [daisyui],
   // @ts-ignore
   daisyui: {
-    themes: ['forest', 'dracula', 'obsidian', 'synthwave', 'night', 'cyberpunk', 'black', 'pearl', 'aurora', 'skyline', 'prism', 'moss', 'white'],
+    // Only include themes actually used by the app (reduced from 13 to 6 for better performance)
+    // forest → Forest (dark) / Moss (light)
+    // night → Night (dark) / Skyline (light)
+    // charcoal → Obsidian (dark) / Pearl (light)
+    themes: ['forest', 'moss', 'night', 'skyline', 'obsidian', 'pearl'],
     darkTheme: 'obsidian',
     base: true,
     styled: true,
     utils: true,
     prefix: '',
-    logs: true,
+    logs: false, // Disable logs for production
   },
 }
 

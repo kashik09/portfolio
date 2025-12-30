@@ -9,10 +9,11 @@ type ResolvedAppearance = 'light' | 'dark'
 const getSystemAppearance = (media: MediaQueryList): ResolvedAppearance =>
   media.matches ? 'dark' : 'light'
 
+// Theme pairs map app theme keys to actual DaisyUI theme names
 export const THEME_PAIRS = {
   forest:   { dark: 'forest',   light: 'moss' },
   night:    { dark: 'night',    light: 'skyline' },
-  charcoal: { dark: 'charcoal', light: 'linen' },
+  charcoal: { dark: 'obsidian', light: 'pearl' }, // Map to existing themes (charcoal/linen don't exist)
 } as const
 
 const DARK_THEME_MAP: Record<ThemeKey, string> = {

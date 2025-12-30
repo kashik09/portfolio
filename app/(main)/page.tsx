@@ -1,9 +1,23 @@
-export const dynamic = 'force-dynamic'
+// Use ISR with 1-hour revalidation instead of force-dynamic for better performance
+// This reduces server load and improves TTFB while keeping content relatively fresh
+export const revalidate = 3600 // Revalidate every 1 hour
 
 import { prisma } from '@/lib/prisma'
 import { HomeCanvas } from '@/components/features/home'
 import { normalizePublicPath } from '@/lib/utils'
 import type { ProjectCardData } from '@/components/shared/ProjectCard'
+import type { Metadata } from 'next'
+
+// Add static metadata for better SEO
+export const metadata: Metadata = {
+  title: 'Kashi - Full-Stack Developer & Product Builder',
+  description: 'I notice friction, then I build fixes. Creating calm, premium experiences that keep momentum without the noise. Full-stack developer building products with Next.js, React, and TypeScript.',
+  openGraph: {
+    title: 'Kashi - Full-Stack Developer & Product Builder',
+    description: 'I notice friction, then I build fixes. Creating calm, premium experiences.',
+    type: 'website',
+  },
+}
 
 export default async function HomePage() {
   const siteSettings = await prisma.siteSettings.findUnique({
