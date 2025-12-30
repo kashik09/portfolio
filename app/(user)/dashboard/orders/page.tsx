@@ -54,7 +54,7 @@ export default function OrdersPage() {
       case 'CANCELLED':
         return <XCircle className="w-5 h-5 text-red-600" />
       default:
-        return <Package className="w-5 h-5 text-gray-600" />
+        return <Package className="w-5 h-5 text-muted-foreground" />
     }
   }
   function getStatusColor(status: string) {
@@ -69,7 +69,7 @@ export default function OrdersPage() {
       case 'CANCELLED':
         return 'bg-red-100 text-red-800 border-red-200'
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return 'bg-muted text-foreground border-border'
     }
   }
   if (status === 'loading' || isLoading) {
