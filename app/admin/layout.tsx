@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { LayoutDashboard, FolderKanban, FileText, Users, Settings, LogOut, Shield, Megaphone, ArrowUp, Package, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, FileText, Users, Settings, LogOut, Shield, Megaphone, ArrowUp, Package, ShoppingBag, Menu } from 'lucide-react'
 import AdminHeader from '@/components/features/admin/AdminHeader'
+import MobileNav from '@/components/admin/MobileNav'
 
 export default function AdminLayout({
   children,
@@ -11,6 +12,7 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const [showScrollButton, setShowScrollButton] = useState(false)
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,8 +42,20 @@ export default function AdminLayout({
     <div className="min-h-screen bg-base-100 text-base-content">
       <AdminHeader />
 
+      {/* Mobile Navigation */}
+      <MobileNav isOpen={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} navItems={navItems} />
+
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={() => setIsMobileNavOpen(true)}
+        className="fixed top-4 left-4 z-30 md:hidden p-2 bg-card border border-border rounded-lg shadow-lg hover:bg-muted transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu size={24} className="text-foreground" />
+      </button>
+
         <div className="flex">
-          {/* Sidebar */}
+          {/* Sidebar - Desktop Only */}
           <aside className="hidden md:block md:w-64 min-h-[calc(100vh-65px)] surface-app border-r border-app sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto backdrop-blur-sm">
             <div className="p-5">
               <h2 className="text-xs font-bold text-muted-app uppercase tracking-wider mb-4 px-3">Navigation</h2>
