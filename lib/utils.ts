@@ -48,3 +48,7 @@ export function normalizePublicPath(input?: string | null): string | null {
 
   return `/${normalized}`
 }
+
+export function isLocalImageUrl(src?: string | null): boolean {
+  return typeof src === 'string' && src.startsWith('/')
+}

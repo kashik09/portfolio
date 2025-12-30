@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn, isLocalImageUrl } from "@/lib/utils";
 
 function getInitials(name?: string | null, email?: string | null) {
   const base = (name?.trim() || "").length ? name!.trim() : (email?.split("@")[0] || "");
@@ -28,6 +29,8 @@ export function UserAvatar({
 }) {
   const initials = getInitials(name, email);
   const [imgError, setImgError] = useState(false);
+  const resolvedImageUrl = imageUrl ?? "";
+  const imageIsLocal = isLocalImageUrl(imageUrl);
 
   // Reset error state when imageUrl changes
   useEffect(() => {
@@ -47,12 +50,17 @@ export function UserAvatar({
       title={name ?? email ?? "User"}
     >
       {showImage ? (
-        <img
-          src={imageUrl}
+        <Image
+          src={resolvedImageUrl}
           alt={name ?? "User avatar"}
+          width={size}
+          height={size}
+          sizes={`${size}px`}
           className="h-full w-full object-cover"
           referrerPolicy="no-referrer"
           onError={() => setImgError(true)}
+          unoptimized={!imageIsLocal}
+          loader={imageIsLocal ? undefined : ({ src }) => src}
         />
       ) : (
         <span className="select-none text-sm font-semibold">{initials}</span>
