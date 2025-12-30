@@ -245,7 +245,7 @@ export function HomeCanvas({
                   <span className="text-base-content">K</span>
                 )}
               </div>
-              <p className="text-sm sm:text-base uppercase tracking-[0.4em] text-base-content/70">
+              <p className="text-sm sm:text-base uppercase tracking-[0.4em] text-base-content/90">
                 hey 👋🏾
                 <br />
                 i&apos;m kashi ✨
@@ -255,11 +255,11 @@ export function HomeCanvas({
             <div className="space-y-4">
               <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
                 i notice friction,
-                <span className="block text-base-content/70">
+                <span className="block text-base-content/85">
                   then i build fixes.
                 </span>
               </h1>
-              <p className="max-w-prose text-base leading-relaxed text-base-content/70 sm:text-lg">
+              <p className="max-w-prose text-base leading-relaxed text-base-content/85 sm:text-lg">
                 calm, premium experiences that keep momentum without the noise.
               </p>
             </div>
@@ -283,10 +283,10 @@ export function HomeCanvas({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center rounded-full border border-base-300 bg-base-100/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-content/70">
+              <span className="inline-flex items-center rounded-full border border-base-300 bg-base-100/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-content/80">
                 component-driven
               </span>
-              <span className="inline-flex items-center rounded-full border border-base-300 bg-base-100/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-content/70">
+              <span className="inline-flex items-center rounded-full border border-base-300 bg-base-100/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-base-content/80">
                 calm delivery
               </span>
             </div>
@@ -299,13 +299,13 @@ export function HomeCanvas({
           }`}
         >
           <div className="rounded-3xl border border-base-300 bg-base-200/60 p-6 text-base-content shadow-2xl shadow-base-300/40 backdrop-blur-xl">
-            <p className="text-xs uppercase tracking-[0.3em] text-base-content/60">
+            <p className="text-xs uppercase tracking-[0.3em] text-base-content/75">
               contact
             </p>
             <h2 className="mt-3 text-2xl font-semibold">
               let&apos;s build the calm version.
             </h2>
-            <p className="mt-2 text-sm text-base-content/70">
+            <p className="mt-2 text-sm text-base-content/85">
               share the scope, timeline, and what feels broken. i&apos;ll reply
               with the cleanest next step.
             </p>
