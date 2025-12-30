@@ -40,7 +40,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const router = useRouter()
   const { showToast } = useToast()
 
-  const [selectedLicense, setSelectedLicense] = useState(
+  const [selectedLicense, setSelectedLicense] = useState<'PERSONAL' | 'COMMERCIAL' | 'TEAM'>(
     product.licenseOptions?.[0]?.type || 'PERSONAL'
   )
   const [addingToCart, setAddingToCart] = useState(false)
@@ -93,7 +93,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           <LicenseSelector
             options={product.licenseOptions}
             selected={selectedLicense}
-            onChange={setSelectedLicense}
+            onChange={(type) => setSelectedLicense(type as 'PERSONAL' | 'COMMERCIAL' | 'TEAM')}
           />
         </div>
       )}

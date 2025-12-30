@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Download, FileText, Package, ShieldCheck, Headphones, Zap } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { convertPrice } from '@/lib/currency'
-import { normalizePublicPath } from '@/lib/utils'
+import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
 import { ProductPurchasePanel } from './ProductPurchasePanel'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || ''
@@ -65,6 +65,7 @@ export async function generateMetadata({
   const description = product.description || product.name
   const imagePath = normalizePublicPath(product.thumbnailUrl)
   const imageUrl = imagePath && SITE_URL ? `${SITE_URL}${imagePath}` : imagePath
+  const isLocalImage = isLocalImageUrl(imagePath)
 
   return {
     title: `${product.name} | Products`,
@@ -75,7 +76,7 @@ export async function generateMetadata({
     openGraph: {
       title: product.name,
       description,
-      type: 'product',
+      type: 'website',
       images: imageUrl ? [imageUrl] : undefined,
     },
   }
@@ -94,8 +95,8 @@ export default async function ProductDetailPage({
 
   const basePrice = Number(product.usdPrice || product.price || 0)
   const prices = {
-    usd: product.usdPrice || product.price,
-    ugx: product.ugxPrice || convertPrice(basePrice, 'USD', 'UGX'),
+    usd: Number(product.usdPrice || product.price || 0),
+    ugx: Number(product.ugxPrice || convertPrice(basePrice, 'USD', 'UGX')),
     credits: product.creditPrice || null,
   }
 
@@ -158,6 +159,7 @@ export default async function ProductDetailPage({
     : `/products/${product.slug}`
   const imagePath = normalizePublicPath(product.thumbnailUrl)
   const imageUrl = imagePath && SITE_URL ? `${SITE_URL}${imagePath}` : imagePath
+  const isLocalImage = isLocalImageUrl(imagePath)
 
   const productJsonLd: Record<string, any> = {
     '@context': 'https://schema.org',
@@ -184,14 +186,24 @@ export default async function ProductDetailPage({
           {/* Images */}
           <div className="space-y-4">
             <div className="relative aspect-video rounded-xl overflow-hidden bg-muted border border-border">
-              {product.thumbnailUrl ? (
-                <Image
-                  src={product.thumbnailUrl}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  priority
-                />
+              {imagePath ? (
+                isLocalImage ? (
+                  <Image
+                    src={imagePath}
+                    alt={product.name}
+                    fill
+                    sizes="(min-width: 1024px) 560px, 100vw"
+                    className="object-cover"
+                    priority
+                  />
+                ) : (
+                  <img
+                    src={imagePath}
+                    alt={product.name}
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                  />
+                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <Package className="w-24 h-24 text-muted-foreground/20" />

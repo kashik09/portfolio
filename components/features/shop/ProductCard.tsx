@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Star, Download, ShoppingCart } from 'lucide-react'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
+import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
 
 interface ProductCardProps {
   product: {
@@ -31,6 +32,8 @@ interface ProductCardProps {
 export function ProductCard({ product, onAddToCart, showQuickAdd = true }: ProductCardProps) {
   const price = product.displayPrice || Number(product.usdPrice || product.price)
   const currency = (product.displayCurrency || 'USD') as SupportedCurrency
+  const thumbnailSrc = normalizePublicPath(product.thumbnailUrl)
+  const isLocalThumbnail = isLocalImageUrl(thumbnailSrc)
 
   return (
     <div className="group relative bg-card rounded-xl border border-border overflow-hidden transition-all hover:shadow-xl hover:border-primary/50">
@@ -46,14 +49,23 @@ export function ProductCard({ product, onAddToCart, showQuickAdd = true }: Produ
 
       {/* Thumbnail */}
       <Link href={`/products/${product.slug}`} className="block relative aspect-video bg-muted overflow-hidden">
-        {product.thumbnailUrl ? (
-          <Image
-            src={product.thumbnailUrl}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+        {thumbnailSrc ? (
+          isLocalThumbnail ? (
+            <Image
+              src={thumbnailSrc}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          ) : (
+            <img
+              src={thumbnailSrc}
+              alt={product.name}
+              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+              loading="lazy"
+            />
+          )
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted">
             <ShoppingCart className="w-16 h-16 text-muted-foreground/20" />
