@@ -34,7 +34,7 @@ yarn-error.log*
 # Claude Code
 .claude
 .claude-preferences
-# docs/ - keeping documentation in version control
+docs/
 sh-files/
 backups/
 
