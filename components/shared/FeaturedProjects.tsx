@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Star, ArrowRight } from 'lucide-react'
 import { ProjectCard, ProjectCardData } from './ProjectCard'
+import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
 
 interface FeaturedProjectsProps {
   projects: ProjectCardData[]
@@ -165,11 +167,28 @@ export function FeaturedProjectsList({
                     {/* Thumbnail */}
                     <div className="w-full sm:w-32 h-32 flex-shrink-0 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl overflow-hidden ring-1 ring-border/50">
                       {project.image ? (
-                        <img
-                          src={project.image}
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
+                        (() => {
+                          const imageSrc = normalizePublicPath(project.image)
+                          if (!imageSrc) return null
+
+                          return isLocalImageUrl(imageSrc) ? (
+                            <Image
+                              src={imageSrc}
+                              alt={project.title}
+                              width={128}
+                              height={128}
+                              sizes="128px"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                          ) : (
+                            <img
+                              src={imageSrc}
+                              alt={project.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                              loading="lazy"
+                            />
+                          )
+                        })()
                       ) : (
                         <div className="flex items-center justify-center h-full">
                           <span className="text-4xl font-bold text-primary/20">

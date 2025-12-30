@@ -1,5 +1,6 @@
-import Link from 'next/link'
+import Image from 'next/image'
 import { ExternalLink, Github } from 'lucide-react'
+import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
 
 export interface ProjectCardData {
   id: string
@@ -23,16 +24,23 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, variant = 'public', onEdit }: ProjectCardProps) {
   const isPublic = variant === 'public'
+  const imageSrc = normalizePublicPath(project.image)
+  const isLocalImage = isLocalImageUrl(imageSrc)
 
   return (
     <div className="group vibey-card bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-accent-2 transition-all">
       {/* Image */}
       <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 relative overflow-hidden">
-        {project.image ? (
-          <img
-            src={project.image}
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
             alt={project.title}
+            width={800}
+            height={450}
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            unoptimized={!isLocalImage}
+            loader={isLocalImage ? undefined : ({ src }) => src}
           />
         ) : (
           <div className="flex items-center justify-center h-full">
