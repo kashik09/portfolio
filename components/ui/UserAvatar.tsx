@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { cn, isLocalImageUrl } from "@/lib/utils";
+import { cn, isLocalImageUrl, normalizePublicPath } from "@/lib/utils";
 
 function getInitials(name?: string | null, email?: string | null) {
   const base = (name?.trim() || "").length ? name!.trim() : (email?.split("@")[0] || "");
@@ -29,15 +29,18 @@ export function UserAvatar({
 }) {
   const initials = getInitials(name, email);
   const [imgError, setImgError] = useState(false);
-  const resolvedImageUrl = imageUrl ?? "";
-  const imageIsLocal = isLocalImageUrl(imageUrl);
+  const resolvedImageUrl =
+    imageUrl && (imageUrl.startsWith("blob:") || imageUrl.startsWith("data:"))
+      ? imageUrl
+      : normalizePublicPath(imageUrl) ?? "";
+  const imageIsLocal = isLocalImageUrl(resolvedImageUrl);
 
   // Reset error state when imageUrl changes
   useEffect(() => {
     setImgError(false);
   }, [imageUrl]);
 
-  const showImage = imageUrl && !imgError;
+  const showImage = Boolean(resolvedImageUrl) && !imgError;
 
   return (
     <div
@@ -50,18 +53,27 @@ export function UserAvatar({
       title={name ?? email ?? "User"}
     >
       {showImage ? (
-        <Image
-          src={resolvedImageUrl}
-          alt={name ?? "User avatar"}
-          width={size}
-          height={size}
-          sizes={`${size}px`}
-          className="h-full w-full object-cover"
-          referrerPolicy="no-referrer"
-          onError={() => setImgError(true)}
-          unoptimized={!imageIsLocal}
-          loader={imageIsLocal ? undefined : ({ src }) => src}
-        />
+        imageIsLocal ? (
+          <Image
+            src={resolvedImageUrl}
+            alt={name ?? "User avatar"}
+            width={size}
+            height={size}
+            sizes={`${size}px`}
+            className="h-full w-full object-cover"
+            referrerPolicy="no-referrer"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <img
+            src={resolvedImageUrl}
+            alt={name ?? "User avatar"}
+            className="h-full w-full object-cover"
+            referrerPolicy="no-referrer"
+            onError={() => setImgError(true)}
+            loading="lazy"
+          />
+        )
       ) : (
         <span className="select-none text-sm font-semibold">{initials}</span>
       )}

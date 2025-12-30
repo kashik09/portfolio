@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { X, Package } from 'lucide-react'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
+import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
 
 interface CartItemProps {
   item: {
@@ -25,19 +26,31 @@ interface CartItemProps {
 
 export function CartItem({ item, currency = 'USD', onRemove }: CartItemProps) {
   const price = Number(item.product.price)
+  const thumbnailSrc = normalizePublicPath(item.product.thumbnailUrl)
+  const isLocalThumbnail = isLocalImageUrl(thumbnailSrc)
 
   return (
     <div className="flex gap-4 p-4 bg-card rounded-lg border border-border">
       {/* Thumbnail */}
       <Link href={`/products/${item.product.slug}`} className="flex-shrink-0">
         <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted border border-border">
-          {item.product.thumbnailUrl ? (
-            <Image
-              src={item.product.thumbnailUrl}
-              alt={item.product.name}
-              fill
-              className="object-cover"
-            />
+          {thumbnailSrc ? (
+            isLocalThumbnail ? (
+              <Image
+                src={thumbnailSrc}
+                alt={item.product.name}
+                fill
+                sizes="96px"
+                className="object-cover"
+              />
+            ) : (
+              <img
+                src={thumbnailSrc}
+                alt={item.product.name}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Package className="w-8 h-8 text-muted-foreground/20" />

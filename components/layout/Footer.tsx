@@ -1,12 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { PreferencesPanel } from '@/components/features/preferences/PreferencesPanel'
 
-export default function Footer() {
+export default function Footer({ pathname }: { pathname?: string }) {
   const currentYear = new Date().getFullYear()
-  const pathname = usePathname()
   const showPreferences = !pathname?.startsWith('/admin')
   const isActive = (href: string) =>
     pathname === href || (href !== '/' && pathname?.startsWith(href))

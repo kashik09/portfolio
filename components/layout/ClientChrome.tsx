@@ -21,7 +21,7 @@ export default function ClientChrome({
     <VibeyBackdrop className="min-h-screen flex flex-col bg-base-100 text-base-content">
       {!cinemaActive && <Header />}
       <main className={mainClassName}>{children}</main>
-      {!cinemaActive && <Footer />}
+      {!cinemaActive && <Footer pathname={pathname} />}
     </VibeyBackdrop>
   )
 }
