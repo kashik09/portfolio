@@ -36,15 +36,15 @@ function StatCard({
   sub?: string
 }) {
   return (
-    <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
+    <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center gap-3">
-        <div className="rounded-lg border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b1))] p-2 text-[color:hsl(var(--p))]">
+        <div className="rounded-lg border border-border bg-background p-2 text-primary">
           {icon}
         </div>
         <div className="min-w-0">
-          <div className="text-sm text-[color:hsl(var(--bc)/0.7)]">{label}</div>
-          <div className="text-2xl font-semibold text-[color:hsl(var(--bc))]">{value}</div>
-          {sub ? <div className="text-xs text-[color:hsl(var(--bc)/0.7)]">{sub}</div> : null}
+          <div className="text-sm text-muted-foreground">{label}</div>
+          <div className="text-2xl font-semibold text-foreground">{value}</div>
+          {sub ? <div className="text-xs text-muted-foreground">{sub}</div> : null}
         </div>
       </div>
     </div>
@@ -64,10 +64,10 @@ function PillButton({
       onClick={onClick}
       className={[
         'rounded-full px-4 py-2 text-sm font-medium transition',
-        'border border-[color:hsl(var(--b3))]',
+        'border border-border',
         active
-          ? 'bg-[color:hsl(var(--p))] text-white border-[color:hsl(var(--p))]'
-          : 'bg-[color:hsl(var(--b2))] text-[color:hsl(var(--bc))] hover:bg-[color:hsl(var(--b1))]',
+          ? 'bg-primary text-primary-content border-primary'
+          : 'bg-card text-foreground hover:bg-background',
       ].join(' ')}
       type="button"
     >
@@ -145,12 +145,12 @@ export default function AnalyticsPage() {
   }
   if (error) {
     return (
-      <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-4 rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-6">
-        <p className="text-center text-lg font-semibold text-[color:hsl(var(--bc))]">Analytics failed to load</p>
-        <p className="text-center text-sm text-[color:hsl(var(--bc)/0.7)]">{error}</p>
+      <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-4 rounded-xl border border-border bg-card p-6">
+        <p className="text-center text-lg font-semibold text-foreground">Analytics failed to load</p>
+        <p className="text-center text-sm text-muted-foreground">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="rounded-full bg-[color:hsl(var(--p))] px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+          className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-content transition hover:opacity-90"
           type="button"
         >
           Retry
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
   if (!analytics) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-[color:hsl(var(--bc)/0.7)]">No analytics data available</p>
+        <p className="text-muted-foreground">No analytics data available</p>
       </div>
     )
   }
@@ -169,8 +169,8 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[color:hsl(var(--bc))]">Analytics</h1>
-          <p className="text-sm text-[color:hsl(var(--bc)/0.7)]">Range: {rangeLabel}</p>
+          <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Range: {rangeLabel}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {(['24h', '7d', '30d', 'all'] as const).map((r) => (
@@ -187,84 +187,84 @@ export default function AnalyticsPage() {
         <StatCard icon={<TrendingUp size={20} />} label="Signal" value="OK" sub="Basic telemetry" />
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
-          <div className="mb-3 flex items-center gap-2 text-[color:hsl(var(--bc))]">
-            <BarChart3 size={18} className="text-[color:hsl(var(--p))]" />
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="mb-3 flex items-center gap-2 text-foreground">
+            <BarChart3 size={18} className="text-primary" />
             <h2 className="text-lg font-semibold">Top pages</h2>
           </div>
           <div className="space-y-2">
             {(analytics.topPages || []).slice(0, 8).map((p) => (
               <div
                 key={p.page}
-                className="flex items-center justify-between rounded-lg border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b1))] px-3 py-2"
+                className="flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2"
               >
-                <div className="truncate text-sm text-[color:hsl(var(--bc))]">{p.page}</div>
-                <div className="text-sm font-semibold text-[color:hsl(var(--bc))]">{p.views}</div>
+                <div className="truncate text-sm text-foreground">{p.page}</div>
+                <div className="text-sm font-semibold text-foreground">{p.views}</div>
               </div>
             ))}
             {!analytics.topPages?.length ? (
-              <p className="text-sm text-[color:hsl(var(--bc)/0.7)]">No page data.</p>
+              <p className="text-sm text-muted-foreground">No page data.</p>
             ) : null}
           </div>
         </div>
-        <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
-          <div className="mb-3 flex items-center gap-2 text-[color:hsl(var(--bc))]">
-            <MousePointer size={18} className="text-[color:hsl(var(--p))]" />
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="mb-3 flex items-center gap-2 text-foreground">
+            <MousePointer size={18} className="text-primary" />
             <h2 className="text-lg font-semibold">Devices</h2>
           </div>
           <div className="space-y-2">
             {(analytics.devices || []).slice(0, 8).map((d) => (
               <div
                 key={d.type}
-                className="flex items-center justify-between rounded-lg border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b1))] px-3 py-2"
+                className="flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2"
               >
-                <div className="flex items-center gap-2 text-sm text-[color:hsl(var(--bc))]">
-                  <span className="text-[color:hsl(var(--p))]">{deviceIcon(d.type)}</span>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <span className="text-primary">{deviceIcon(d.type)}</span>
                   <span className="capitalize">{d.type}</span>
                 </div>
-                <div className="text-sm font-semibold text-[color:hsl(var(--bc))]">{d.count}</div>
+                <div className="text-sm font-semibold text-foreground">{d.count}</div>
               </div>
             ))}
             {!analytics.devices?.length ? (
-              <p className="text-sm text-[color:hsl(var(--bc)/0.7)]">No device data.</p>
+              <p className="text-sm text-muted-foreground">No device data.</p>
             ) : null}
           </div>
         </div>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
-          <h2 className="mb-3 text-lg font-semibold text-[color:hsl(var(--bc))]">Popular projects</h2>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="mb-3 text-lg font-semibold text-foreground">Popular projects</h2>
           <div className="space-y-2">
             {(analytics.popularProjects || []).slice(0, 8).map((p) => (
               <div
                 key={p.title}
-                className="flex items-center justify-between rounded-lg border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b1))] px-3 py-2"
+                className="flex items-center justify-between rounded-lg border border-border bg-background px-3 py-2"
               >
-                <div className="truncate text-sm text-[color:hsl(var(--bc))]">{p.title}</div>
-                <div className="text-sm font-semibold text-[color:hsl(var(--bc))]">{p.views}</div>
+                <div className="truncate text-sm text-foreground">{p.title}</div>
+                <div className="text-sm font-semibold text-foreground">{p.views}</div>
               </div>
             ))}
             {!analytics.popularProjects?.length ? (
-              <p className="text-sm text-[color:hsl(var(--bc)/0.7)]">No project data.</p>
+              <p className="text-sm text-muted-foreground">No project data.</p>
             ) : null}
           </div>
         </div>
-        <div className="rounded-xl border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b2))] p-4">
-          <h2 className="mb-3 text-lg font-semibold text-[color:hsl(var(--bc))]">Recent events</h2>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="mb-3 text-lg font-semibold text-foreground">Recent events</h2>
           <div className="space-y-2">
             {(analytics.recentEvents || []).slice(0, 10).map((e, idx) => (
               <div
                 key={`${e.action}-${e.timestamp}-${idx}`}
-                className="rounded-lg border border-[color:hsl(var(--b3))] bg-[color:hsl(var(--b1))] px-3 py-2"
+                className="rounded-lg border border-border bg-background px-3 py-2"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <div className="truncate text-sm font-medium text-[color:hsl(var(--bc))]">{e.action}</div>
-                  <div className="shrink-0 text-xs text-[color:hsl(var(--bc)/0.7)]">{e.timestamp}</div>
+                  <div className="truncate text-sm font-medium text-foreground">{e.action}</div>
+                  <div className="shrink-0 text-xs text-muted-foreground">{e.timestamp}</div>
                 </div>
               </div>
             ))}
             {!analytics.recentEvents?.length ? (
-              <p className="text-sm text-[color:hsl(var(--bc)/0.7)]">No recent events.</p>
+              <p className="text-sm text-muted-foreground">No recent events.</p>
             ) : null}
           </div>
         </div>
