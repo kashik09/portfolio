@@ -6,12 +6,18 @@ export const THEME_KEYS: ThemeKey[] = [
   'charcoal'
 ]
 
-const THEME_LABELS: Record<ThemeKey, string> = {
+const THEME_LABELS_DARK: Record<ThemeKey, string> = {
   forest: 'Forest',
   night: 'Night',
   charcoal: 'Charcoal'
 }
 
-export function getThemeLabel(_appearance: ResolvedAppearance, key: ThemeKey) {
-  return THEME_LABELS[key]
+const THEME_LABELS_LIGHT: Record<ThemeKey, string> = {
+  forest: 'Moss',
+  night: 'Skyline',
+  charcoal: 'Linen'
+}
+
+export function getThemeLabel(appearance: ResolvedAppearance, key: ThemeKey) {
+  return appearance === 'light' ? THEME_LABELS_LIGHT[key] : THEME_LABELS_DARK[key]
 }
