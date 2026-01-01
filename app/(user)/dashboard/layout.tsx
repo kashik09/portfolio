@@ -4,15 +4,17 @@ export const dynamic = 'force-dynamic'
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTriangle } from 'lucide-react'
+import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTriangle, Palette } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Spinner } from '@/components/ui/Spinner'
+import { usePreferences } from '@/lib/preferences/PreferencesContext'
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const { data: session, status } = useSession()
+  const { openModal } = usePreferences()
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -77,6 +79,15 @@ export default function DashboardLayout({
               </div>
               {/* Right Actions */}
               <div className="flex items-center gap-3">
+                {/* Preferences Button */}
+                <button
+                  onClick={openModal}
+                  className="p-2 rounded-lg bg-muted border border-border hover:bg-muted/70 transition"
+                  aria-label="Open preferences"
+                >
+                  <Palette size={20} />
+                </button>
+
                 {/* User Info */}
                 <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
                   <User size={16} className="text-primary" />
