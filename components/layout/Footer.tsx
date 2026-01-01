@@ -149,7 +149,7 @@ export default function Footer({ pathname }: { pathname?: string }) {
             <span className="font-semibold text-app">
               Kashi Kweyu
             </span>
-            . Built with Next.js & Tailwind CSS.{' '}
+            . Built with Next.js & Tailwind CSS.
           </p>
         </div>
       </div>
