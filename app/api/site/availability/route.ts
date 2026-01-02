@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { calculateEffectiveAvailability } from '@/lib/availability'
 
 // GET /api/site/availability - Fetch public availability status
 export async function GET() {
@@ -28,15 +29,20 @@ export async function GET() {
       })
     }
 
-    // Return the raw settings for now
-    // Phase 4 will add the effective status calculation
+    // Calculate effective availability based on rules
+    const effective = calculateEffectiveAvailability({
+      availabilityStatus: settings.availabilityStatus,
+      availabilityMessage: settings.availabilityMessage,
+      leaveStart: settings.leaveStart,
+      leaveEnd: settings.leaveEnd,
+      manualOverride: settings.manualOverride,
+    })
+
     return NextResponse.json({
       success: true,
       data: {
-        status: settings.availabilityStatus,
-        message: settings.availabilityMessage,
-        leaveStart: settings.leaveStart,
-        leaveEnd: settings.leaveEnd,
+        status: effective.status,
+        message: effective.message,
       },
     })
   } catch (error) {

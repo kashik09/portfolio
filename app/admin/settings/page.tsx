@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Save, AlertTriangle, Mail, Shield, Settings as SettingsIcon, Megaphone, Calendar } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
+import { calculateEffectiveAvailability } from '@/lib/availability'
 interface AdminSiteSettings {
   maintenanceMode: boolean
   availableForBusiness: boolean
@@ -564,6 +565,35 @@ export default function AdminSettingsPage() {
               className="w-5 h-5 rounded border-border"
             />
           </label>
+        </div>
+        {/* Effective Status Preview */}
+        <div className="bg-muted/50 border border-border rounded-lg p-4">
+          <p className="text-sm font-medium text-foreground mb-2">Currently Effective Status:</p>
+          {(() => {
+            const effective = calculateEffectiveAvailability({
+              availabilityStatus: availabilitySettings.availabilityStatus,
+              availabilityMessage: availabilitySettings.availabilityMessage || null,
+              leaveStart: availabilitySettings.leaveStart ? new Date(availabilitySettings.leaveStart) : null,
+              leaveEnd: availabilitySettings.leaveEnd ? new Date(availabilitySettings.leaveEnd) : null,
+              manualOverride: availabilitySettings.manualOverride,
+            })
+            return (
+              <div className="flex items-center gap-3">
+                <div className={`badge badge-sm ${
+                  effective.status === 'UNAVAILABLE'
+                    ? 'badge-error'
+                    : effective.status === 'LIMITED'
+                    ? 'badge-warning'
+                    : 'badge-success'
+                }`}>
+                  {effective.status}
+                </div>
+                {effective.message && (
+                  <p className="text-sm text-muted-foreground">{effective.message}</p>
+                )}
+              </div>
+            )
+          })()}
         </div>
         <button
           onClick={handleSaveAvailability}
