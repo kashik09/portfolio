@@ -14,19 +14,29 @@ type Service = {
   features: string[]
 }
 
+type AvailabilityData = {
+  status: string
+  message: string | null
+}
+
 export default function ServicesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [pricing, setPricing] = useState<any>(null)
   const [isAvailable, setIsAvailable] = useState(true)
+  const [availability, setAvailability] = useState<AvailabilityData | null>(null)
 
   useEffect(() => {
     Promise.all([
       fetch('/api/content/pricing').then((r) => r.json()),
       fetch('/api/site/status').then((r) => r.json()),
+      fetch('/api/site/availability').then((r) => r.json()),
     ])
-      .then(([pricingData, statusData]) => {
+      .then(([pricingData, statusData, availabilityData]) => {
         setPricing(pricingData)
         setIsAvailable(statusData.data?.availableForBusiness !== false)
+        if (availabilityData.success && availabilityData.data) {
+          setAvailability(availabilityData.data)
+        }
       })
       .catch((error) => {
         console.error('Error fetching data:', error)
@@ -114,20 +124,43 @@ export default function ServicesPage() {
           </p>
         </div>
 
-        {/* Availability Banner */}
-        {!isAvailable && (
+        {/* Availability Status */}
+        {availability && availability.status !== 'AVAILABLE' && (
           <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-              <div className="flex items-start gap-3">
-                <MessageSquare className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-semibold text-yellow-900 mb-1">
-                    Currently Unavailable for New Projects
-                  </h3>
-                  <p className="text-sm text-yellow-800">
-                    I'm currently at capacity with existing client work. Feel free to reach out, and I'll let you know when availability opens up.
-                  </p>
+            <div className={`rounded-xl p-4 border ${
+              availability.status === 'UNAVAILABLE'
+                ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/50'
+                : 'bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-900/50'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`badge badge-sm ${
+                  availability.status === 'UNAVAILABLE'
+                    ? 'badge-error'
+                    : 'badge-warning'
+                }`}>
+                  {availability.status === 'UNAVAILABLE' ? 'Unavailable' : 'Limited Availability'}
                 </div>
+                {availability.message && (
+                  <p className={`text-sm ${
+                    availability.status === 'UNAVAILABLE'
+                      ? 'text-red-800 dark:text-red-200'
+                      : 'text-yellow-800 dark:text-yellow-200'
+                  }`}>
+                    {availability.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {availability && availability.status === 'AVAILABLE' && availability.message && (
+          <div className="max-w-4xl mx-auto mb-12">
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/50 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="badge badge-sm badge-success">Available</div>
+                <p className="text-sm text-green-800 dark:text-green-200">
+                  {availability.message}
+                </p>
               </div>
             </div>
           </div>

@@ -6,6 +6,11 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useSession } from 'next-auth/react'
 
+type AvailabilityData = {
+  status: string
+  message: string | null
+}
+
 export default function ContactPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
@@ -15,6 +20,7 @@ export default function ContactPage() {
   const [error, setError] = useState('')
   const [isAvailable, setIsAvailable] = useState(true)
   const [checkingAvailability, setCheckingAvailability] = useState(true)
+  const [availability, setAvailability] = useState<AvailabilityData | null>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -26,10 +32,15 @@ export default function ContactPage() {
   })
 
   useEffect(() => {
-    fetch('/api/site/status')
-      .then((r) => r.json())
-      .then((data) => {
-        setIsAvailable(data.data?.availableForBusiness !== false)
+    Promise.all([
+      fetch('/api/site/status').then((r) => r.json()),
+      fetch('/api/site/availability').then((r) => r.json()),
+    ])
+      .then(([statusData, availabilityData]) => {
+        setIsAvailable(statusData.data?.availableForBusiness !== false)
+        if (availabilityData.success && availabilityData.data) {
+          setAvailability(availabilityData.data)
+        }
       })
       .catch((error) => {
         console.error('Error checking availability:', error)
@@ -105,14 +116,38 @@ export default function ContactPage() {
           </p>
         </div>
 
-        {!checkingAvailability && !isAvailable && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-sm text-yellow-900 font-medium mb-1">
-              Currently at capacity
+        {!checkingAvailability && availability && availability.status !== 'AVAILABLE' && (
+          <div className={`rounded-lg p-4 border ${
+            availability.status === 'UNAVAILABLE'
+              ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/50'
+              : 'bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-900/50'
+          }`}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className={`badge badge-sm ${
+                availability.status === 'UNAVAILABLE'
+                  ? 'badge-error'
+                  : 'badge-warning'
+              }`}>
+                {availability.status === 'UNAVAILABLE' ? 'Unavailable' : 'Limited Availability'}
+              </div>
+            </div>
+            <p className={`text-sm ${
+              availability.status === 'UNAVAILABLE'
+                ? 'text-red-800 dark:text-red-200'
+                : 'text-yellow-800 dark:text-yellow-200'
+            }`}>
+              {availability.message || "I'm not accepting new projects right now, but feel free to send your inquiry. I'll reach out when availability opens up."}
             </p>
-            <p className="text-sm text-yellow-800">
-              I'm not accepting new projects right now, but feel free to send your inquiry. I'll reach out when availability opens up.
-            </p>
+          </div>
+        )}
+        {!checkingAvailability && availability && availability.status === 'AVAILABLE' && availability.message && (
+          <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/50 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="badge badge-sm badge-success">Available</div>
+              <p className="text-sm text-green-800 dark:text-green-200">
+                {availability.message}
+              </p>
+            </div>
           </div>
         )}
 
