@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,59 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// USER & AUTHENTICATION MODELS
-// ============================================
-
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  image         String?
-  role          Role      @default(USER)
-
-  // Theme preferences
-  theme Theme @default(SYSTEM)
-
-  // Account status
-  accountStatus       AccountStatus @default(ACTIVE)
-  accountLockedAt     DateTime?
-  accountLockedReason String?       @db.Text
-
-  // Age verification (for minors)
-  birthDate     DateTime?
-  guardianEmail String?
-  isMinor       Boolean   @default(false)
-
-  // Security
-  password          String? // For credentials-based auth
-  twoFactorEnabled  Boolean @default(false)
-  twoFactorSecret   String?
-  twoFactorVerified Boolean @default(false)
-  backupCodes       Json?
-
-  // Membership
-  membershipId String?
-  membership   Membership? @relation(fields: [membershipId], references: [id])
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  emailVerified           DateTime?
+  name                    String?
+  image                   String?
+  role                    Role                     @default(USER)
+  theme                   Theme                    @default(SYSTEM)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  accountLockedAt         DateTime?
+  accountLockedReason     String?
+  accountStatus           AccountStatus            @default(ACTIVE)
+  birthDate               DateTime?
+  guardianEmail           String?
+  isMinor                 Boolean                  @default(false)
+  membershipId            String?
+  twoFactorEnabled        Boolean                  @default(false)
+  twoFactorSecret         String?
+  password                String?
+  backupCodes             Json?
+  twoFactorVerified       Boolean                  @default(false)
   accounts                Account[]
-  sessions                Session[]
-  projectRequests         ProjectRequest[]
-  digitalProductPurchases DigitalProductPurchase[]
-  licenses                License[]
-  downloads               Download[]
-  serviceProjects         ServiceProject[]
-  creditTransactions      CreditTransaction[]
   auditLogs               AuditLog[]
-  adConsent               UserAdConsent?
   cart                    Cart?
+  creditTransactions      CreditTransaction[]
+  digitalProductPurchases DigitalProductPurchase[]
+  downloads               Download[]
+  licenses                License[]
   orders                  Order[]
+  projectRequests         ProjectRequest[]
+  serviceProjects         ServiceProject[]
+  sessions                Session[]
+  adConsent               UserAdConsent?
+  membership              Membership?              @relation(fields: [membershipId], references: [id])
   wishlistItems           WishlistItem[]
 
   @@index([email])
@@ -77,15 +56,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -97,8 +75,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("sessions")
@@ -113,45 +90,27 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// ============================================
-// PROJECT REQUEST MODEL
-// ============================================
-
 model ProjectRequest {
-  id String @id @default(cuid())
-
-  // User relation (optional - can be null for non-authenticated requests)
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  // Contact information
-  name    String
-  email   String
-  phone   String?
-  company String?
-
-  // Project details
-  projectType String
-  budget      String
-  timeline    String
-  description String @db.Text
-
-  // Additional details
-  requirements String?  @db.Text
-  attachments  String[] // URLs to uploaded files
-
-  // Status tracking
-  status   RequestStatus @default(PENDING)
-  priority Priority      @default(MEDIUM)
-
-  // Admin notes
-  adminNotes String? @db.Text
-  assignedTo String? // Admin user ID
-
-  // Timestamps
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  respondedAt DateTime?
+  id           String        @id @default(cuid())
+  userId       String?
+  name         String
+  email        String
+  phone        String?
+  company      String?
+  description  String
+  requirements String?
+  attachments  String[]
+  status       RequestStatus @default(PENDING)
+  priority     Priority      @default(MEDIUM)
+  adminNotes   String?
+  assignedTo   String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  respondedAt  DateTime?
+  projectType  String
+  budget       String
+  timeline     String
+  user         User?         @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([email])
@@ -161,52 +120,30 @@ model ProjectRequest {
   @@map("project_requests")
 }
 
-// ============================================
-// PORTFOLIO PROJECT MODEL
-// ============================================
-
 model Project {
-  id String @id @default(cuid())
-
-  // SEO & Identification
-  slug        String @unique
-  title       String
-  description String @db.Text
-
-  // Categorization
-  category ProjectCategory
-  tags     String[]
-
-  // Technical details
-  techStack String[]
-  features  String[]
-
-  // Media
-  images    String[] // Array of image URLs
-  thumbnail String? // Main thumbnail image
-
-  // Links
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  description  String
+  category     ProjectCategory
+  tags         String[]
+  techStack    String[]
+  features     String[]
+  images       String[]
+  thumbnail    String?
   githubUrl    String?
   liveUrl      String?
   demoUrl      String?
   caseStudyUrl String?
-
-  // Additional content
-  content String? @db.Text // Markdown content for detailed case study
-  problem String? @db.Text // What problem this project solves / purpose
-
-  // Metrics
-  featured  Boolean @default(false)
-  viewCount Int     @default(0)
-  likeCount Int     @default(0)
-
-  // Publishing
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  content      String?
+  featured     Boolean         @default(false)
+  viewCount    Int             @default(0)
+  likeCount    Int             @default(0)
+  published    Boolean         @default(false)
+  publishedAt  DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  problem      String?
 
   @@index([slug])
   @@index([category])
@@ -216,45 +153,25 @@ model Project {
   @@map("projects")
 }
 
-// ============================================
-// ANALYTICS MODEL
-// ============================================
-
 model Visit {
-  id String @id @default(cuid())
-
-  // Page information
-  pagePath  String
-  pageTitle String?
-
-  // Visitor information
-  visitorId String // Anonymous ID or user ID
-
-  // Referrer information
+  id          String   @id @default(cuid())
+  pagePath    String
+  pageTitle   String?
+  visitorId   String
   referrer    String?
   utmSource   String?
   utmMedium   String?
   utmCampaign String?
-
-  // Device & Browser information
-  userAgent String? @db.Text
-  device    String? // mobile, tablet, desktop
-  browser   String?
-  os        String?
-
-  // Location (if available)
-  country String?
-  city    String?
-
-  // Session information
-  sessionId String?
-  duration  Int? // Time spent on page in seconds
-
-  // Additional metadata
-  metadata Json? // Flexible field for additional data
-
-  // Timestamp
-  timestamp DateTime @default(now())
+  userAgent   String?
+  device      String?
+  browser     String?
+  os          String?
+  country     String?
+  city        String?
+  sessionId   String?
+  duration    Int?
+  metadata    Json?
+  timestamp   DateTime @default(now())
 
   @@index([pagePath])
   @@index([visitorId])
@@ -264,26 +181,17 @@ model Visit {
 }
 
 model AnalyticsEvent {
-  id String @id @default(cuid())
-
-  // Event details
-  action   String
-  page     String?
-  category String?
-  label    String?
-  value    Int?
-
-  // Device information
-  device   String?
-  referrer String?
-
-  // Flexible data storage
-  data Json?
-
-  // Timestamp
+  id        String   @id @default(cuid())
+  action    String
+  page      String?
+  category  String?
+  label     String?
+  value     Int?
+  device    String?
+  referrer  String?
+  data      Json?
   createdAt DateTime @default(now())
 
-  // Indexes for efficient queries
   @@index([action])
   @@index([page])
   @@index([createdAt])
@@ -292,64 +200,42 @@ model AnalyticsEvent {
   @@map("analytics_events")
 }
 
-// ============================================
-// DIGITAL PRODUCTS MODELS
-// ============================================
-
 model DigitalProduct {
-  id String @id @default(cuid())
-
-  // Product info
-  name        String
-  slug        String          @unique
-  description String          @db.Text
-  category    ProductCategory
-  tags        String[]
-
-  // Pricing
-  price       Decimal  @db.Decimal(10, 2)
-  currency    String   @default("USD")
-  usdPrice    Decimal? @db.Decimal(10, 2) // USD price (base currency)
-  ugxPrice    Decimal? @db.Decimal(10, 2) // UGX price
-  creditPrice Int? // Credits required for this product
-
-  // Files
-  fileUrl       String // Secure download URL
-  fileSize      Int // in bytes
-  fileType      String // zip, pdf, etc.
-  thumbnailUrl  String?
-  previewImages String[] // Array of preview image URLs
-
-  // License types offered
-  personalLicense   Boolean @default(true)
-  commercialLicense Boolean @default(true)
-  teamLicense       Boolean @default(false)
-
-  // Metadata
-  version       String  @default("1.0.0")
-  changelog     String? @db.Text
-  documentation String? @db.Text
-
-  // Publishing
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-  featured    Boolean   @default(false)
-
-  // Stats
-  downloadCount Int @default(0)
-  purchaseCount Int @default(0)
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  purchases  DigitalProductPurchase[]
-  licenses   License[]
-  downloads  Download[]
-  cartItems  CartItem[]
-  orderItems OrderItem[]
-  wishlistItems WishlistItem[]
+  id                String                   @id @default(cuid())
+  name              String
+  slug              String                   @unique
+  description       String
+  category          ProductCategory
+  tags              String[]
+  price             Decimal                  @db.Decimal(10, 2)
+  currency          String                   @default("USD")
+  fileUrl           String
+  fileSize          Int
+  fileType          String
+  thumbnailUrl      String?
+  previewImages     String[]
+  personalLicense   Boolean                  @default(true)
+  commercialLicense Boolean                  @default(true)
+  teamLicense       Boolean                  @default(false)
+  version           String                   @default("1.0.0")
+  changelog         String?
+  documentation     String?
+  published         Boolean                  @default(false)
+  publishedAt       DateTime?
+  featured          Boolean                  @default(false)
+  downloadCount     Int                      @default(0)
+  purchaseCount     Int                      @default(0)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  creditPrice       Int?
+  ugxPrice          Decimal?                 @db.Decimal(10, 2)
+  usdPrice          Decimal?                 @db.Decimal(10, 2)
+  cartItems         CartItem[]
+  purchases         DigitalProductPurchase[]
+  downloads         Download[]
+  licenses          License[]
+  orderItems        OrderItem[]
+  wishlistItems     WishlistItem[]
 
   @@index([slug])
   @@index([category])
@@ -363,9 +249,8 @@ model WishlistItem {
   userId    String
   productId String
   createdAt DateTime       @default(now())
-
-  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
   @@index([userId])
@@ -374,28 +259,18 @@ model WishlistItem {
 }
 
 model DigitalProductPurchase {
-  id String @id @default(cuid())
-
-  // Buyer
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Product
-  productId String
-  product   DigitalProduct @relation(fields: [productId], references: [id])
-
-  // Purchase details
-  licenseType LicenseType
-  price       Decimal     @db.Decimal(10, 2)
-  currency    String
-
-  // Payment
-  paymentStatus PaymentStatus @default(PENDING)
+  id            String         @id @default(cuid())
+  userId        String
+  productId     String
+  licenseType   LicenseType
+  price         Decimal        @db.Decimal(10, 2)
+  currency      String
+  paymentStatus PaymentStatus  @default(PENDING)
   paymentMethod String?
-  transactionId String?       @unique
-
-  // Timestamps
-  purchasedAt DateTime @default(now())
+  transactionId String?        @unique
+  purchasedAt   DateTime       @default(now())
+  product       DigitalProduct @relation(fields: [productId], references: [id])
+  user          User           @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([productId])
@@ -404,41 +279,27 @@ model DigitalProductPurchase {
 }
 
 model License {
-  id String @id @default(cuid())
-
-  // Owner
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Product
-  productId String
-  product   DigitalProduct @relation(fields: [productId], references: [id])
-
-  // License details
-  licenseKey  String        @unique
-  licenseType LicenseType
-  status      LicenseStatus @default(ACTIVE)
-
-  // Usage limits (for team licenses)
-  maxUsers     Int @default(1)
-  currentUsers Int @default(0)
-
-  // Abuse tracking
-  abuseDetected  Boolean   @default(false)
-  abuseReason    String?   @db.Text
-  abuseFlagged   Boolean   @default(false)
-  abuseFlaggedAt DateTime?
-  abuseFlaggedBy String?
-  revokedAt      DateTime?
-  revokedReason  String?   @db.Text
-
-  // Timestamps
-  issuedAt  DateTime  @default(now())
-  expiresAt DateTime? // null = lifetime
-
-  // Relations
+  id              String                  @id @default(cuid())
+  userId          String
+  productId       String
+  licenseKey      String                  @unique
+  licenseType     LicenseType
+  status          LicenseStatus           @default(ACTIVE)
+  maxUsers        Int                     @default(1)
+  currentUsers    Int                     @default(0)
+  abuseDetected   Boolean                 @default(false)
+  abuseReason     String?
+  revokedAt       DateTime?
+  revokedReason   String?
+  issuedAt        DateTime                @default(now())
+  expiresAt       DateTime?
+  abuseFlagged    Boolean                 @default(false)
+  abuseFlaggedAt  DateTime?
+  abuseFlaggedBy  String?
   downloads       Download[]
   seatAssignments LicenseSeatAssignment[]
+  product         DigitalProduct          @relation(fields: [productId], references: [id])
+  user            User                    @relation(fields: [userId], references: [id])
   orderItem       OrderItem?
 
   @@index([userId])
@@ -450,26 +311,18 @@ model License {
 }
 
 model LicenseSeatAssignment {
-  id String @id @default(cuid())
-
-  // License
-  licenseId String
-  license   License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
-
-  // Assigned user
+  id                String    @id @default(cuid())
+  licenseId         String
   assignedUserId    String
   assignedUserEmail String
-
-  // Assignment details
-  assignedBy String // Admin or license owner user ID
-  assignedAt DateTime  @default(now())
-  revokedAt  DateTime?
-  revokedBy  String?
-  active     Boolean   @default(true)
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  assignedBy        String
+  assignedAt        DateTime  @default(now())
+  revokedAt         DateTime?
+  revokedBy         String?
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  license           License   @relation(fields: [licenseId], references: [id], onDelete: Cascade)
 
   @@unique([licenseId, assignedUserEmail])
   @@index([licenseId])
@@ -479,26 +332,18 @@ model LicenseSeatAssignment {
 }
 
 model Download {
-  id String @id @default(cuid())
-
-  // User & Product
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  productId String
-  product   DigitalProduct @relation(fields: [productId], references: [id])
-
-  licenseId String
-  license   License @relation(fields: [licenseId], references: [id])
-
-  // Download tracking
-  successful        Boolean @default(false)
-  ipHash            String // Hashed IP for security
+  id                String         @id @default(cuid())
+  userId            String
+  productId         String
+  licenseId         String
+  successful        Boolean        @default(false)
+  ipHash            String
   deviceFingerprint String?
-  userAgent         String? @db.Text
-
-  // Download window tracking (3 downloads in 14 days)
-  downloadedAt DateTime @default(now())
+  userAgent         String?
+  downloadedAt      DateTime       @default(now())
+  license           License        @relation(fields: [licenseId], references: [id])
+  product           DigitalProduct @relation(fields: [productId], references: [id])
+  user              User           @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([productId])
@@ -508,39 +353,28 @@ model Download {
 }
 
 model DownloadResetRequest {
-  id String @id @default(cuid())
-
-  userId    String
-  productId String
-
-  // Request details
-  reason String             @db.Text
-  status ResetRequestStatus @default(PENDING)
-
-  // Admin review
+  id          String             @id @default(cuid())
+  userId      String
+  productId   String
+  reason      String
+  status      ResetRequestStatus @default(PENDING)
   reviewedBy  String?
   reviewedAt  DateTime?
-  reviewNotes String?   @db.Text
-
-  // Timestamps
-  createdAt DateTime @default(now())
+  reviewNotes String?
+  createdAt   DateTime           @default(now())
 
   @@index([userId])
   @@index([status])
   @@map("download_reset_requests")
 }
 
-// ============================================
-// CART & ORDER MODELS
-// ============================================
-
 model Cart {
   id        String     @id @default(cuid())
   userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("carts")
 }
@@ -548,12 +382,12 @@ model Cart {
 model CartItem {
   id          String         @id @default(cuid())
   cartId      String
-  cart        Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId   String
-  product     DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
   licenseType LicenseType
   quantity    Int            @default(1)
   createdAt   DateTime       @default(now())
+  cart        Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product     DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId, licenseType])
   @@index([cartId])
@@ -562,44 +396,31 @@ model CartItem {
 }
 
 model Order {
-  id          String @id @default(cuid())
-  orderNumber String @unique // Format: ORD-YYYYMMDD-XXXXX
-  userId      String
-  user        User   @relation(fields: [userId], references: [id])
-
-  // Financials
-  subtotal Decimal @db.Decimal(10, 2)
-  tax      Decimal @default(0) @db.Decimal(10, 2)
-  total    Decimal @db.Decimal(10, 2)
-  currency String  @default("USD")
-
-  // Payment
-  paymentStatus   PaymentStatus @default(PENDING)
+  id              String            @id @default(cuid())
+  orderNumber     String            @unique
+  userId          String
+  subtotal        Decimal           @db.Decimal(10, 2)
+  tax             Decimal           @default(0) @db.Decimal(10, 2)
+  total           Decimal           @db.Decimal(10, 2)
+  currency        String            @default("USD")
+  paymentStatus   PaymentStatus     @default(PENDING)
   paymentMethod   String?
   paymentProvider String?
   transactionId   String?
-
-  // Purchase type
-  purchaseType OrderPurchaseType
-  creditsUsed  Int?
-  membershipId String?
-  membership   Membership?       @relation(fields: [membershipId], references: [id])
-
-  // Status
-  status      OrderStatus @default(PENDING)
-  fulfilledAt DateTime?
-
-  // Legal
-  termsAccepted Boolean @default(false)
-  termsVersion  String?
-
-  // Contact snapshot
-  customerEmail String
-  customerName  String?
-
-  items     OrderItem[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  purchaseType    OrderPurchaseType
+  creditsUsed     Int?
+  membershipId    String?
+  status          OrderStatus       @default(PENDING)
+  fulfilledAt     DateTime?
+  termsAccepted   Boolean           @default(false)
+  termsVersion    String?
+  customerEmail   String
+  customerName    String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  items           OrderItem[]
+  membership      Membership?       @relation(fields: [membershipId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([orderNumber])
@@ -609,77 +430,50 @@ model Order {
 }
 
 model OrderItem {
-  id        String         @id @default(cuid())
-  orderId   String
-  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   DigitalProduct @relation(fields: [productId], references: [id])
-
-  // Product snapshot
+  id          String         @id @default(cuid())
+  orderId     String
+  productId   String
   productName String
   productSlug String
   licenseType LicenseType
-  price       Decimal     @db.Decimal(10, 2)
+  price       Decimal        @db.Decimal(10, 2)
   currency    String
-
-  // Issued license
-  licenseId String?  @unique
-  license   License? @relation(fields: [licenseId], references: [id])
-
-  createdAt DateTime @default(now())
+  licenseId   String?        @unique
+  createdAt   DateTime       @default(now())
+  license     License?       @relation(fields: [licenseId], references: [id])
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     DigitalProduct @relation(fields: [productId], references: [id])
 
   @@index([orderId])
   @@index([productId])
   @@map("order_items")
 }
 
-// ============================================
-// SERVICES MODELS
-// ============================================
-
 model ServiceProject {
-  id String @id @default(cuid())
-
-  // Client
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Project info
-  name        String
-  description String          @db.Text
-  category    ServiceCategory
-
-  // Current phase
-  currentPhase ProjectPhase @default(DESIGN)
-
-  // Revisions tracking
-  designRevisions    Int @default(0)
-  designRevisionsMax Int @default(2)
-  buildRevisions     Int @default(0)
-  buildRevisionsMax  Int @default(1)
-
-  // Scope
-  approvedFeatures String[] // List of approved features
-  scope            String?  @db.Text
-
-  // Timeline
-  startDate   DateTime?
-  deadline    DateTime?
-  isPaused    Boolean   @default(false)
-  pauseReason String?   @db.Text
-  pausedAt    DateTime?
-
-  // Status
-  status ServiceStatus @default(ACTIVE)
-
-  // Timestamps
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  completedAt DateTime?
-
-  // Relations
-  phases ProjectPhaseHistory[]
-  addOns ServiceAddOn[]
+  id                 String                @id @default(cuid())
+  userId             String
+  name               String
+  description        String
+  category           ServiceCategory
+  currentPhase       ProjectPhase          @default(DESIGN)
+  designRevisions    Int                   @default(0)
+  designRevisionsMax Int                   @default(2)
+  buildRevisions     Int                   @default(0)
+  buildRevisionsMax  Int                   @default(1)
+  approvedFeatures   String[]
+  scope              String?
+  startDate          DateTime?
+  deadline           DateTime?
+  isPaused           Boolean               @default(false)
+  pauseReason        String?
+  pausedAt           DateTime?
+  status             ServiceStatus         @default(ACTIVE)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  completedAt        DateTime?
+  phases             ProjectPhaseHistory[]
+  addOns             ServiceAddOn[]
+  user               User                  @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([currentPhase])
@@ -688,105 +482,70 @@ model ServiceProject {
 }
 
 model ProjectPhaseHistory {
-  id String @id @default(cuid())
-
-  projectId String
-  project   ServiceProject @relation(fields: [projectId], references: [id])
-
+  id          String         @id @default(cuid())
+  projectId   String
   phase       ProjectPhase
-  startedAt   DateTime     @default(now())
+  startedAt   DateTime       @default(now())
   completedAt DateTime?
-
-  notes String? @db.Text
+  notes       String?
+  project     ServiceProject @relation(fields: [projectId], references: [id])
 
   @@index([projectId])
   @@map("project_phase_history")
 }
 
 model ServiceAddOn {
-  id String @id @default(cuid())
-
-  projectId String
-  project   ServiceProject @relation(fields: [projectId], references: [id])
-
-  // Add-on details
+  id          String         @id @default(cuid())
+  projectId   String
   type        AddOnType
-  description String    @db.Text
+  description String
   creditCost  Int
-
-  // Status
-  status AddOnStatus @default(PENDING)
-
-  // Timestamps
-  requestedAt DateTime  @default(now())
+  status      AddOnStatus    @default(PENDING)
+  requestedAt DateTime       @default(now())
   approvedAt  DateTime?
   completedAt DateTime?
+  project     ServiceProject @relation(fields: [projectId], references: [id])
 
   @@index([projectId])
   @@index([status])
   @@map("service_add_ons")
 }
 
-// ============================================
-// CREDIT & MEMBERSHIP MODELS
-// ============================================
-
 model Membership {
-  id String @id @default(cuid())
-
-  // Tier
-  tier MembershipTier
-
-  // Credits
-  totalCredits     Int // Total credits for this period
-  usedCredits      Int @default(0)
-  remainingCredits Int // Computed: totalCredits - usedCredits
-  rolloverCredits  Int @default(0)
-  rolloverCap      Int // Max credits that can roll over
-
-  // Validity
-  startDate   DateTime  @default(now())
-  endDate     DateTime
-  renewalDate DateTime?
-  autoRenew   Boolean   @default(false)
-
-  // Status
-  status MembershipStatus @default(ACTIVE)
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  users        User[]
-  transactions CreditTransaction[]
-  orders       Order[]
+  id               String              @id @default(cuid())
+  tier             MembershipTier
+  totalCredits     Int
+  usedCredits      Int                 @default(0)
+  remainingCredits Int
+  rolloverCredits  Int                 @default(0)
+  rolloverCap      Int
+  startDate        DateTime            @default(now())
+  endDate          DateTime
+  renewalDate      DateTime?
+  autoRenew        Boolean             @default(false)
+  status           MembershipStatus    @default(ACTIVE)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  transactions     CreditTransaction[]
+  orders           Order[]
+  users            User[]
 
   @@index([status])
   @@map("memberships")
 }
 
 model CreditTransaction {
-  id String @id @default(cuid())
-
-  // User & Membership
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
+  id           String                @id @default(cuid())
+  userId       String
   membershipId String
-  membership   Membership @relation(fields: [membershipId], references: [id])
-
-  // Transaction details
-  type    CreditTransactionType
-  amount  Int // Positive = added, Negative = spent
-  balance Int // Credits remaining after transaction
-
-  // Description
-  description String
-  reference   String? // Related entity ID (project, add-on, etc.)
-
-  // Timestamp
-  createdAt DateTime @default(now())
+  type         CreditTransactionType
+  amount       Int
+  balance      Int
+  description  String
+  reference    String?
+  createdAt    DateTime              @default(now())
+  membership   Membership            @relation(fields: [membershipId], references: [id])
+  user         User                  @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([membershipId])
@@ -794,29 +553,17 @@ model CreditTransaction {
   @@map("credit_transactions")
 }
 
-// ============================================
-// SECURITY & AUDIT MODELS
-// ============================================
-
 model AuditLog {
-  id String @id @default(cuid())
-
-  // Actor
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id])
-
-  // Action
+  id         String      @id @default(cuid())
+  userId     String?
   action     AuditAction
-  resource   String // e.g., "License", "Download", "ServiceProject"
+  resource   String
   resourceId String
-
-  // Details
-  details   Json? // Additional context
-  ipHash    String?
-  userAgent String? @db.Text
-
-  // Timestamp
-  createdAt DateTime @default(now())
+  details    Json?
+  ipHash     String?
+  userAgent  String?
+  createdAt  DateTime    @default(now())
+  user       User?       @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([action])
@@ -826,48 +573,30 @@ model AuditLog {
 }
 
 model DeviceSession {
-  id String @id @default(cuid())
-
-  userId String
-
+  id                String   @id @default(cuid())
+  userId            String
   deviceFingerprint String
   ipHash            String
-  userAgent         String? @db.Text
-
-  // Status
-  blocked       Boolean @default(false)
-  blockedReason String? @db.Text
-
-  // Timestamps
-  firstSeen DateTime @default(now())
-  lastSeen  DateTime @default(now())
+  userAgent         String?
+  blocked           Boolean  @default(false)
+  blockedReason     String?
+  firstSeen         DateTime @default(now())
+  lastSeen          DateTime @default(now())
 
   @@index([userId])
   @@index([blocked])
   @@map("device_sessions")
 }
 
-// ============================================
-// CONTENT MANAGEMENT MODELS
-// ============================================
-
 model ContentPage {
-  id String @id @default(cuid())
-
-  // Page identification
-  slug  String          @unique
-  title String
-  type  ContentPageType
-
-  // Content
-  content String @db.Text
-
-  // Publishing
-  published Boolean @default(true)
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String          @id @default(cuid())
+  slug      String          @unique
+  title     String
+  type      ContentPageType
+  content   String
+  published Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
   @@index([slug])
   @@index([type])
@@ -875,18 +604,10 @@ model ContentPage {
 }
 
 model PageContent {
-  id String @id @default(cuid())
-
-  // Page identification
-  slug String @unique // 'services', 'request-form', etc.
-
-  // Content stored as JSON
-  data Json
-
-  // Metadata
-  version String @default("1.0")
-
-  // Timestamps
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  data      Json
+  version   String   @default("1.0")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -894,51 +615,38 @@ model PageContent {
   @@map("page_contents")
 }
 
-// ============================================
-// SYSTEM CONFIGURATION MODELS
-// ============================================
-
 model SiteSettings {
-  id String @id @default("site_settings_singleton")
-
-  maintenanceMode      Boolean @default(false)
-  availableForBusiness Boolean @default(true)
-  adsEnabled           Boolean @default(false)
-  adsProvider          String  @default("")
+  id                   String    @id @default("site_settings_singleton")
+  maintenanceMode      Boolean   @default(false)
+  availableForBusiness Boolean   @default(true)
+  adsEnabled           Boolean   @default(false)
+  adsProvider          String    @default("")
   adsClientId          String?
   adsPlacements        Json?
+  updatedAt            DateTime  @updatedAt
   smtpHost             String?
-  smtpPort             Int?
-  smtpUsername         String?
   smtpPassword         String?
-  smtpSecure           Boolean @default(false)
+  smtpPort             Int?
+  smtpSecure           Boolean   @default(false)
+  smtpUsername         String?
   avatarUrl            String?
-
-  // Service availability settings
-  availabilityStatus  String   @default("AVAILABLE")
-  availabilityMessage String?
-  leaveStart          DateTime?
-  leaveEnd            DateTime?
-  manualOverride      Boolean  @default(false)
-
-  updatedAt DateTime @updatedAt
+  availabilityMessage  String?
+  availabilityStatus   String    @default("AVAILABLE")
+  leaveEnd             DateTime?
+  leaveStart           DateTime?
+  manualOverride       Boolean   @default(false)
 
   @@map("site_settings")
 }
 
 model FeatureFlag {
-  id String @id @default(cuid())
-
-  name        String  @unique
-  description String? @db.Text
-  enabled     Boolean @default(false)
-
-  // Environment-specific
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  enabled     Boolean     @default(false)
   environment Environment @default(PRODUCTION)
-
-  // Metadata
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([name])
   @@index([environment])
@@ -946,28 +654,18 @@ model FeatureFlag {
 }
 
 model SystemBackup {
-  id String @id @default(cuid())
-
-  // Backup info
-  type        BackupType
-  description String?
-
-  // Storage
-  storageUrl String // Backup file location
-  size       Int // Size in bytes
-
-  // What's included
-  includesDatabase  Boolean @default(true)
-  includesFiles     Boolean @default(false)
-  includesConfig    Boolean @default(false)
-  includesAuditLogs Boolean @default(false)
-
-  // Status
-  status BackupStatus @default(PENDING)
-
-  // Timestamps
-  createdAt   DateTime  @default(now())
-  completedAt DateTime?
+  id                String       @id @default(cuid())
+  type              BackupType
+  description       String?
+  storageUrl        String
+  size              Int
+  includesDatabase  Boolean      @default(true)
+  includesFiles     Boolean      @default(false)
+  includesConfig    Boolean      @default(false)
+  includesAuditLogs Boolean      @default(false)
+  status            BackupStatus @default(PENDING)
+  createdAt         DateTime     @default(now())
+  completedAt       DateTime?
 
   @@index([status])
   @@index([createdAt])
@@ -975,31 +673,23 @@ model SystemBackup {
 }
 
 model UserAdConsent {
-  id String @id @default(cuid())
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
+  id              String    @id @default(cuid())
+  userId          String    @unique
   personalizedAds Boolean   @default(false)
   consentedAt     DateTime?
   updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id])
 
   @@map("user_ad_consents")
 }
 
-// ============================================
-// PAGES CMS MODELS
-// ============================================
-// ENUMS
-// ============================================
-
 enum Role {
   USER
-  VIEWER // Can view data
-  EDITOR // Can edit content
   ADMIN
   MODERATOR
-  OWNER // Full control
+  VIEWER
+  EDITOR
+  OWNER
 }
 
 enum Theme {
@@ -1032,10 +722,10 @@ enum BudgetRange {
 }
 
 enum Timeline {
-  URGENT // Less than 1 month
-  SHORT // 1-3 months
-  MEDIUM // 3-6 months
-  LONG // 6+ months
+  URGENT
+  SHORT
+  MEDIUM
+  LONG
   FLEXIBLE
 }
 
@@ -1067,14 +757,10 @@ enum ProjectCategory {
   MACHINE_LEARNING
   BLOCKCHAIN
   GAME_DEVELOPMENT
+  OTHER
   PERSONAL
   CLASS
-  OTHER
 }
-
-// ============================================
-// PLATFORM ENUMS
-// ============================================
 
 enum AccountStatus {
   ACTIVE
@@ -1204,31 +890,31 @@ enum AuditAction {
   USER_LOGOUT
   LICENSE_ISSUED
   LICENSE_REVOKED
+  DOWNLOAD_ATTEMPTED
+  DOWNLOAD_SUCCEEDED
+  DOWNLOAD_FAILED
+  ABUSE_DETECTED
+  ACCOUNT_LOCKED
+  ACCOUNT_UNLOCKED
+  CREDIT_USED
+  MEMBERSHIP_CREATED
+  MEMBERSHIP_RENEWED
+  PROJECT_CREATED
+  PROJECT_PHASE_CHANGED
+  ADD_ON_REQUESTED
+  SETTINGS_CHANGED
   LICENSE_SUSPENDED
   LICENSE_REACTIVATED
   LICENSE_SEAT_ASSIGNED
   LICENSE_SEAT_REVOKED
   LICENSE_ABUSE_FLAGGED
   LICENSE_ABUSE_CLEARED
-  DOWNLOAD_ATTEMPTED
-  DOWNLOAD_SUCCEEDED
-  DOWNLOAD_FAILED
   DOWNLOAD_ABUSE_DETECTED
   DOWNLOAD_RESET_REQUESTED
   DOWNLOAD_RESET_APPROVED
   DOWNLOAD_RESET_REJECTED
-  ABUSE_DETECTED
-  ACCOUNT_LOCKED
-  ACCOUNT_UNLOCKED
-  CREDIT_USED
   CREDIT_ADJUSTED
-  MEMBERSHIP_CREATED
-  MEMBERSHIP_RENEWED
   MEMBERSHIP_SUSPENDED
-  PROJECT_CREATED
-  PROJECT_PHASE_CHANGED
-  ADD_ON_REQUESTED
-  SETTINGS_CHANGED
   FEATURE_FLAG_TOGGLED
 }
 
