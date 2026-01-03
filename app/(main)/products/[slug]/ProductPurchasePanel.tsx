@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Heart } from 'lucide-react'
 import { LicenseSelector } from '@/components/features/shop/LicenseSelector'
 import { PriceDisplay } from '@/components/features/shop/PriceDisplay'
 import { useToast } from '@/components/ui/Toast'
@@ -44,6 +44,23 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
     product.licenseOptions?.[0]?.type || 'PERSONAL'
   )
   const [addingToCart, setAddingToCart] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false)
+
+  // Check if product is in wishlist on mount
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch('/api/me/wishlist')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            const isInWishlist = data.items.some((item: any) => item.productId === product.id)
+            setIsSaved(isInWishlist)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [session?.user?.id, product.id])
 
   async function handleAddToCart() {
     if (!session) {
@@ -78,6 +95,44 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
     }
   }
 
+  async function handleWishlistToggle() {
+    if (!session?.user?.id) {
+      showToast('Please login to save items to wishlist', 'error')
+      router.push(`/login?callbackUrl=/products/${product.slug}`)
+      return
+    }
+
+    setIsLoadingWishlist(true)
+    const newSavedState = !isSaved
+    setIsSaved(newSavedState) // Optimistic update
+
+    try {
+      if (newSavedState) {
+        // Add to wishlist
+        const res = await fetch('/api/me/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id }),
+        })
+        if (!res.ok) throw new Error()
+        showToast('Added to wishlist!', 'success')
+      } else {
+        // Remove from wishlist
+        const res = await fetch(`/api/me/wishlist/${product.id}`, {
+          method: 'DELETE',
+        })
+        if (!res.ok) throw new Error()
+        showToast('Removed from wishlist', 'success')
+      }
+    } catch (error) {
+      // Revert on error
+      setIsSaved(!newSavedState)
+      showToast('Failed to update wishlist', 'error')
+    } finally {
+      setIsLoadingWishlist(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="pt-6 border-t border-border">
@@ -98,23 +153,47 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         </div>
       )}
 
-      <button
-        onClick={handleAddToCart}
-        disabled={addingToCart}
-        className="w-full py-4 px-6 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {addingToCart ? (
-          <>
-            <Spinner size="sm" />
-            Adding to Cart...
-          </>
-        ) : (
-          <>
-            <ShoppingCart className="w-5 h-5" />
-            Add to Cart
-          </>
-        )}
-      </button>
+      <div className="space-y-3">
+        <button
+          onClick={handleWishlistToggle}
+          disabled={isLoadingWishlist}
+          className={`w-full py-3 px-6 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+            isSaved
+              ? 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
+              : 'bg-muted text-foreground hover:bg-muted/80 border border-border'
+          }`}
+        >
+          {isLoadingWishlist ? (
+            <>
+              <Spinner size="sm" />
+              Updating...
+            </>
+          ) : (
+            <>
+              <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+              {isSaved ? 'Saved to Wishlist' : 'Save to Wishlist'}
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={handleAddToCart}
+          disabled={addingToCart}
+          className="w-full py-4 px-6 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {addingToCart ? (
+            <>
+              <Spinner size="sm" />
+              Adding to Cart...
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-5 h-5" />
+              Add to Cart
+            </>
+          )}
+        </button>
+      </div>
     </div>
   )
 }

@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/Badge'
-import { Star, Download, ShoppingCart } from 'lucide-react'
+import { Star, Download, ShoppingCart, Heart } from 'lucide-react'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
 import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
+import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 
 interface ProductCardProps {
   product: {
@@ -30,10 +32,60 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAddToCart, showQuickAdd = true }: ProductCardProps) {
+  const { data: session } = useSession()
+  const [isSaved, setIsSaved] = useState(false)
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false)
+
   const price = product.displayPrice || Number(product.usdPrice || product.price)
   const currency = (product.displayCurrency || 'USD') as SupportedCurrency
   const thumbnailSrc = normalizePublicPath(product.thumbnailUrl)
   const isLocalThumbnail = isLocalImageUrl(thumbnailSrc)
+
+  // Check if product is in wishlist on mount
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch('/api/me/wishlist')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            const isInWishlist = data.items.some((item: any) => item.productId === product.id)
+            setIsSaved(isInWishlist)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [session?.user?.id, product.id])
+
+  const handleWishlistToggle = async () => {
+    if (!session?.user?.id) return
+
+    setIsLoadingWishlist(true)
+    const newSavedState = !isSaved
+    setIsSaved(newSavedState) // Optimistic update
+
+    try {
+      if (newSavedState) {
+        // Add to wishlist
+        const res = await fetch('/api/me/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id }),
+        })
+        if (!res.ok) throw new Error()
+      } else {
+        // Remove from wishlist
+        const res = await fetch(`/api/me/wishlist/${product.id}`, {
+          method: 'DELETE',
+        })
+        if (!res.ok) throw new Error()
+      }
+    } catch (error) {
+      // Revert on error
+      setIsSaved(!newSavedState)
+    } finally {
+      setIsLoadingWishlist(false)
+    }
+  }
 
   return (
     <div className="group relative bg-card rounded-xl border border-border overflow-hidden transition-all hover:shadow-xl hover:border-primary/50">
@@ -120,6 +172,21 @@ export function ProductCard({ product, onAddToCart, showQuickAdd = true }: Produ
           </div>
 
           <div className="flex gap-2">
+            {/* Wishlist button - only for logged-in users */}
+            {session?.user && (
+              <button
+                onClick={handleWishlistToggle}
+                disabled={isLoadingWishlist}
+                className={`p-2 rounded-lg transition-colors ${
+                  isSaved
+                    ? 'bg-primary/10 text-primary'
+                    : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
+                }`}
+                title={isSaved ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <Heart className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+              </button>
+            )}
             {showQuickAdd && onAddToCart && (
               <button
                 onClick={() => onAddToCart(product.id)}
