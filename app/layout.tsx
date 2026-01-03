@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
-import { Analytics } from '@vercel/analytics/next'
+import { AnalyticsGate } from '@/components/shared/AnalyticsGate'
 import { CookieNotice } from '@/components/shared/CookieNotice'
 import './globals.css'
 import { Providers } from './Providers'
@@ -100,7 +100,7 @@ export default function RootLayout({
       </head>
       <body className="bg-base-100 text-base-content" style={{ fontFamily: systemFontStack }}>
         <Providers>{children}</Providers>
-        <Analytics />
+        <AnalyticsGate />
         <CookieNotice />
       </body>
     </html>

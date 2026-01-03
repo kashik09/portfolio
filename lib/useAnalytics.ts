@@ -24,6 +24,13 @@ declare global {
   }
 }
 
+const ANALYTICS_STORAGE_KEY = 'cookieConsentAnalytics'
+
+const hasAnalyticsConsent = () => {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem(ANALYTICS_STORAGE_KEY) === 'true'
+}
+
 const getDeviceType = () => {
   if (typeof navigator === 'undefined') return 'desktop'
 
@@ -49,7 +56,7 @@ const ensureVercelQueue = () => {
 }
 
 const trackVercelEvent = (name: string, data?: VercelEventData) => {
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined' || !hasAnalyticsConsent()) return
 
   ensureVercelQueue()
   if (!window.va) return
@@ -63,6 +70,8 @@ const trackVercelEvent = (name: string, data?: VercelEventData) => {
 
 // Helper function to send analytics to our database (non-blocking)
 const sendToDatabase = async (eventData: any) => {
+  if (!hasAnalyticsConsent()) return
+
   try {
     await fetch('/api/analytics/track', {
       method: 'POST',
@@ -80,6 +89,8 @@ const sendToDatabase = async (eventData: any) => {
 export function useAnalytics() {
   // Track page view
   const trackPageView = (data: PageViewData) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: 'page_view',
       page: data.page,
@@ -102,6 +113,8 @@ export function useAnalytics() {
 
   // Track custom events
   const trackEvent = (data: EventData) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: data.action,
       category: data.category,
@@ -125,6 +138,8 @@ export function useAnalytics() {
 
   // Track project view
   const trackProjectView = (projectId: string, projectTitle: string) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: 'project_view',
       category: 'projects',
@@ -147,6 +162,8 @@ export function useAnalytics() {
 
   // Track button clicks
   const trackClick = (buttonName: string, location: string) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: 'button_click',
       category: 'interaction',
@@ -168,6 +185,8 @@ export function useAnalytics() {
 
   // Track form submissions
   const trackFormSubmit = (formName: string, success: boolean) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: 'form_submit',
       category: 'forms',
@@ -190,6 +209,8 @@ export function useAnalytics() {
 
   // Track downloads
   const trackDownload = (fileName: string, fileType: string) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: 'download',
       category: 'downloads',
@@ -211,6 +232,8 @@ export function useAnalytics() {
 
   // Track theme changes
   const trackThemeChange = (themeName: string) => {
+    if (!hasAnalyticsConsent()) return
+
     const eventData = {
       action: 'theme_change',
       category: 'settings',
@@ -245,6 +268,8 @@ export function usePageTracking(pageName: string) {
   const { trackPageView } = useAnalytics()
 
   useEffect(() => {
+    if (!hasAnalyticsConsent()) return
+
     trackPageView({
       page: pageName,
       referrer: document.referrer,
