@@ -63,6 +63,7 @@ model User {
   adConsent               UserAdConsent?
   cart                    Cart?
   orders                  Order[]
+  wishlistItems           WishlistItem[]
 
   @@index([email])
   @@index([accountStatus])
@@ -348,12 +349,28 @@ model DigitalProduct {
   downloads  Download[]
   cartItems  CartItem[]
   orderItems OrderItem[]
+  wishlistItems WishlistItem[]
 
   @@index([slug])
   @@index([category])
   @@index([published])
   @@index([featured])
   @@map("digital_products")
+}
+
+model WishlistItem {
+  id        String         @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime       @default(now())
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+  @@map("wishlist_items")
 }
 
 model DigitalProductPurchase {
