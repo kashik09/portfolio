@@ -181,3 +181,27 @@ site_settings:    1 (configured)
 ✅ **Production safe:** Remote data untouched
 
 Your app now runs fully offline with local Docker Postgres! 🎉
+
+---
+
+## Importing Production Data
+
+If you need to sync your local database with production Supabase data:
+
+```bash
+# Quick import script (one-time use)
+SUPABASE_URL="<your-supabase-url>" \
+LOCAL_URL="postgresql://postgres:postgres@localhost:5432/myportfolio?schema=public" \
+node -e "
+  const { PrismaClient } = require('@prisma/client');
+  // ... see import-data.mjs for full script
+"
+```
+
+**Note:** Your production data on Supabase is never modified. Imports are one-way: Supabase → Local Docker.
+
+To re-import latest data, clear local and import again:
+```bash
+docker exec myportfolio-pg psql -U postgres -d myportfolio -c "TRUNCATE TABLE projects CASCADE;"
+# Then run import script again
+```

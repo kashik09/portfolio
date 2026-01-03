@@ -1,5 +1,10 @@
 import type { NextRequest } from 'next/server'
 
+type RequestLike = {
+  headers: Headers
+  ip?: string | null
+}
+
 type RateLimitEntry = {
   count: number
   reset: number
@@ -15,7 +20,7 @@ export type RateLimitResult = {
 // Best-effort in-memory limiter; resets on deploy and per instance.
 const store = new Map<string, RateLimitEntry>()
 
-export function getClientIp(request: NextRequest): string {
+export function getClientIp(request: RequestLike): string {
   const forwardedFor = request.headers.get('x-forwarded-for')
   if (forwardedFor) {
     const first = forwardedFor.split(',')[0]?.trim()
@@ -28,7 +33,7 @@ export function getClientIp(request: NextRequest): string {
   return request.ip ?? 'unknown'
 }
 
-export function getRateLimitKey(request: NextRequest, scope: string): string {
+export function getRateLimitKey(request: RequestLike, scope: string): string {
   return `${scope}:${getClientIp(request)}`
 }
 

@@ -104,6 +104,11 @@ export default function SecurityPage() {
         <p className="text-muted-foreground mt-1">
           Manage two-factor authentication for your account
         </p>
+        <div className="mt-3 text-sm text-muted-foreground">
+          <p>Auth provider: NextAuth.</p>
+          <p>Login domains: accounts.google.com, github.com.</p>
+          <p>Uploads: stored on this site (no third-party upload domain).</p>
+        </div>
       </div>
       {/* 2FA Status */}
       <div className="bg-card border border-border rounded-lg p-6">

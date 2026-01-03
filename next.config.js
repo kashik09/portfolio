@@ -6,6 +6,7 @@ const nextConfig = {
 
   async headers() {
     const isDev = process.env.NODE_ENV === "development";
+    const isProd = process.env.NODE_ENV === "production";
 
     const ContentSecurityPolicy = isDev
       ? [
@@ -45,10 +46,14 @@ const nextConfig = {
             key: "X-DNS-Prefetch-Control",
             value: "on",
           },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
-          },
+          ...(isProd
+            ? [
+                {
+                  key: "Strict-Transport-Security",
+                  value: "max-age=63072000; includeSubDomains; preload",
+                },
+              ]
+            : []),
           {
             key: "X-Frame-Options",
             value: "SAMEORIGIN",

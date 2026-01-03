@@ -143,7 +143,7 @@ export default function DashboardLayout({
           </aside>
           {/* Mobile Sidebar */}
           {sidebarOpen && (
-            <div className="md:hidden fixed inset-0 z-40 bg-base-content/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)}>
+            <div className="md:hidden fixed inset-0 z-40 bg-base-200/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)}>
               <aside
                 className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border p-6"
                 onClick={(e) => e.stopPropagation()}

@@ -29,7 +29,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
+    const contentType = request.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return NextResponse.json(
+        { success: false, error: 'Content-Type must be application/json' },
+        { status: 415 }
+      )
+    }
+
+    const body = await request.json().catch(() => null)
     const { currentPassword, newPassword } = body as {
       currentPassword?: string
       newPassword?: string

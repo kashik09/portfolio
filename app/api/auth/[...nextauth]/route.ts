@@ -7,7 +7,10 @@ const handler = NextAuth(authOptions)
 
 export { handler as GET }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  context: { params: { nextauth?: string[] } }
+) {
   const rateLimit = checkRateLimit(
     getRateLimitKey(request, "auth:signin"),
     5,
@@ -20,5 +23,5 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  return handler(request)
+  return handler(request, context)
 }

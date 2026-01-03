@@ -26,6 +26,13 @@ function hasSameSiteSignal(req: NextRequest): boolean {
   return secFetchSite === "same-origin" || secFetchSite === "same-site"
 }
 
+function addNoStoreHeaders(response: NextResponse, path: string): NextResponse {
+  if (path.startsWith("/api/auth") || path.startsWith("/api/me")) {
+    response.headers.set("Cache-Control", "no-store")
+  }
+  return response
+}
+
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token
@@ -45,14 +52,15 @@ export default withAuth(
           : false
 
         if (!(originAllowed || refererAllowed || hasSameSite)) {
-          return NextResponse.json(
+          const response = NextResponse.json(
             { error: "Invalid CSRF origin" },
             { status: 403 }
           )
+          return addNoStoreHeaders(response, path)
         }
       }
 
-      return NextResponse.next()
+      return addNoStoreHeaders(NextResponse.next(), path)
     }
 
     // Protect Admin

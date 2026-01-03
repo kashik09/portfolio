@@ -5,10 +5,46 @@ import EmailProvider from "next-auth/providers/email"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { normalizeEmail } from "@/lib/auth-utils"
+import { verifyPassword } from "@/lib/password"
 
 const ONE_DAY_SECONDS = 60 * 60 * 24
 const THIRTY_DAYS_SECONDS = 60 * 60 * 24 * 30
+
+function getEnv(name: string): string | null {
+  const value = process.env[name]
+  if (typeof value !== "string") return null
+  const trimmed = value.trim()
+  return trimmed.length ? trimmed : null
+}
+
+function requireEnv(name: string): string {
+  const value = getEnv(name)
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`)
+  }
+  return value
+}
+
+function ensurePairedEnv(left: string, right: string): void {
+  const leftValue = getEnv(left)
+  const rightValue = getEnv(right)
+
+  if ((leftValue && !rightValue) || (!leftValue && rightValue)) {
+    const missing = leftValue ? right : left
+    throw new Error(`Missing required environment variable: ${missing}`)
+  }
+}
+
+function validateAuthEnv(): void {
+  requireEnv("NEXTAUTH_SECRET")
+  requireEnv("NEXTAUTH_URL")
+  requireEnv("POSTGRES_PRISMA_URL")
+  ensurePairedEnv("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET")
+  ensurePairedEnv("GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET")
+}
+
+validateAuthEnv()
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -21,10 +57,14 @@ export const authOptions: NextAuthOptions = {
         rememberMe: { label: "Remember Me", type: "text" }, // "1" or "0"
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        const email = normalizeEmail(credentials?.email)
+        const password =
+          typeof credentials?.password === "string" ? credentials.password : ""
+
+        if (!email || !password) return null
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email },
         })
 
         // IMPORTANT: if your schema uses passwordHash, swap user.password -> user.passwordHash
@@ -32,13 +72,15 @@ export const authOptions: NextAuthOptions = {
         if (!user || !user.password) return null
 
         // @ts-ignore
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+        const isPasswordValid = await verifyPassword(password, user.password)
         if (!isPasswordValid) return null
 
         // @ts-ignore
         if (user.accountStatus === "LOCKED" || user.accountStatus === "BANNED") return null
+        // @ts-ignore
+        if (user.twoFactorEnabled === true && user.twoFactorVerified !== true) return null
 
-        const rememberMe = credentials.rememberMe === "1"
+        const rememberMe = credentials?.rememberMe === "1"
 
         return {
           id: user.id,
@@ -73,8 +115,8 @@ export const authOptions: NextAuthOptions = {
     }),
 
     GitHubProvider({
-      clientId: process.env.GITHUB_ID || "",
-      clientSecret: process.env.GITHUB_SECRET || "",
+      clientId: process.env.GITHUB_CLIENT_ID || "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
       async profile(profile) {
         // Fetch user role from database instead of hardcoding
         const existingUser = await prisma.user.findUnique({
@@ -106,6 +148,24 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
+    async signIn({ user }) {
+      if (!user?.email) return false
+
+      const dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+        select: {
+          accountStatus: true,
+          twoFactorEnabled: true,
+          twoFactorVerified: true,
+        },
+      })
+
+      if (!dbUser) return true
+      if (dbUser.accountStatus === "LOCKED" || dbUser.accountStatus === "BANNED") return false
+      if (dbUser.twoFactorEnabled && !dbUser.twoFactorVerified) return false
+
+      return true
+    },
     async jwt({ token, user, trigger }) {
       // On first sign-in, we receive `user`
       if (user) {
@@ -143,16 +203,39 @@ export const authOptions: NextAuthOptions = {
         token.twoFactorVerified = dbUser?.twoFactorVerified || false
       }
 
-      // Refresh 2FA status on update trigger
-      if (trigger === 'update' && token.id) {
+      const shouldRefresh =
+        trigger === "update" ||
+        !token.id ||
+        !token.role ||
+        token.twoFactorEnabled === undefined ||
+        token.twoFactorVerified === undefined
+
+      if (shouldRefresh && token.email) {
         const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { twoFactorEnabled: true, twoFactorVerified: true },
+          where: token.id
+            ? { id: token.id as string }
+            : { email: token.email as string },
+          select: {
+            id: true,
+            role: true,
+            image: true,
+            twoFactorEnabled: true,
+            twoFactorVerified: true,
+          },
         })
-        // @ts-ignore
-        token.twoFactorEnabled = dbUser?.twoFactorEnabled || false
-        // @ts-ignore
-        token.twoFactorVerified = dbUser?.twoFactorVerified || false
+
+        if (dbUser) {
+          // @ts-ignore
+          token.id = dbUser.id
+          // @ts-ignore
+          token.role = dbUser.role
+          // @ts-ignore
+          token.image = dbUser.image
+          // @ts-ignore
+          token.twoFactorEnabled = dbUser.twoFactorEnabled || false
+          // @ts-ignore
+          token.twoFactorVerified = dbUser.twoFactorVerified || false
+        }
       }
 
       return token
@@ -166,6 +249,10 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role
         // @ts-ignore
         session.user.image = token.image
+        // @ts-ignore
+        session.user.twoFactorEnabled = token.twoFactorEnabled || false
+        // @ts-ignore
+        session.user.twoFactorVerified = token.twoFactorVerified || false
       }
 
       // Align session expiry with token.exp (so UI shows the right expiry too)
@@ -186,6 +273,34 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     // Cookie expiry can be longer; token.exp is the real enforcement.
     maxAge: THIRTY_DAYS_SECONDS,
+  },
+
+  useSecureCookies: process.env.NODE_ENV === "production",
+  cookies: {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    csrfToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Host-next-auth.csrf-token"
+          : "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
 
   secret: process.env.NEXTAUTH_SECRET,

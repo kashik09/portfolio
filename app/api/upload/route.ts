@@ -3,6 +3,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import { generateSmartFilename, sanitizeFilename } from '@/lib/upload-utils'
 import { getServerSession } from '@/lib/auth'
+import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from '@/lib/rate-limit'
 
 const MAX_BYTES = 5 * 1024 * 1024
 const ALLOWED = new Set(['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'])
@@ -17,6 +18,26 @@ export async function POST(req: Request) {
     const allowedRoles = new Set(['ADMIN', 'OWNER', 'EDITOR'])
     if (!allowedRoles.has(session.user.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const rateLimit = checkRateLimit(
+      getRateLimitKey(req, 'upload'),
+      20,
+      10 * 60 * 1000
+    )
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many uploads' },
+        { status: 429, headers: getRateLimitHeaders(rateLimit) }
+      )
+    }
+
+    const contentType = req.headers.get('content-type') || ''
+    if (!contentType.includes('multipart/form-data')) {
+      return NextResponse.json(
+        { error: 'Content-Type must be multipart/form-data' },
+        { status: 415 }
+      )
     }
 
     const form = await req.formData()

@@ -29,8 +29,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { token } = body
+    const contentType = request.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return NextResponse.json(
+        { success: false, error: 'Content-Type must be application/json' },
+        { status: 415 }
+      )
+    }
+
+    const body = await request.json().catch(() => null)
+    const token = typeof body?.token === 'string' ? body.token.trim() : ''
 
     if (!token) {
       return NextResponse.json(

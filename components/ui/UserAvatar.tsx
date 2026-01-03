@@ -74,7 +74,7 @@ export function UserAvatar({
       )}
 
       {showBadgeInitials && showImage && (
-        <span className="absolute -bottom-0.5 -right-0.5 rounded-full bg-base-content/70 px-1.5 py-0.5 text-[10px] font-semibold text-base-100">
+        <span className="absolute -bottom-0.5 -right-0.5 rounded-full bg-base-200/70 px-1.5 py-0.5 text-[10px] font-semibold text-base-content">
           {initials}
         </span>
       )}

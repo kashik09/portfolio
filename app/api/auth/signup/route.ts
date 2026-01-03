@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hashPassword } from '@/lib/password'
 import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from '@/lib/rate-limit'
+import { normalizeEmail } from '@/lib/auth-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,8 +18,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { name, email, password } = body
+    const contentType = request.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return NextResponse.json(
+        { error: 'Content-Type must be application/json' },
+        { status: 415 }
+      )
+    }
+
+    const body = await request.json().catch(() => null)
+    const name = typeof body?.name === 'string' ? body.name.trim() : ''
+    const email = normalizeEmail(body?.email)
+    const password = typeof body?.password === 'string' ? body.password : ''
 
     if (!name || !email || !password) {
       return NextResponse.json(

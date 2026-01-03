@@ -14,6 +14,8 @@ export interface SessionUser {
   name?: string
   role: UserRole
   image?: string
+  twoFactorEnabled?: boolean
+  twoFactorVerified?: boolean
 }
 
 export interface AuthSession {
