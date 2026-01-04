@@ -60,9 +60,9 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               {isCompleted ? (
-                <CheckCircle className="w-6 h-6 text-green-600" />
+                <CheckCircle className="w-6 h-6 text-success" />
               ) : (
-                <Clock className="w-6 h-6 text-yellow-600" />
+                <Clock className="w-6 h-6 text-warning" />
               )}
               <div>
                 <p className="font-semibold text-foreground">

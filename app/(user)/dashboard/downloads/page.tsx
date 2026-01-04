@@ -183,8 +183,8 @@ export default function DownloadsPage() {
                       </span>
                       <span className={`font-medium ${
                         download.downloadsUsed >= download.downloadLimit
-                          ? 'text-red-600 dark:text-red-400'
-                          : 'text-green-600 dark:text-green-400'
+                          ? 'text-error'
+                          : 'text-success'
                       }`}>
                         {download.downloadLimit - download.downloadsUsed} downloads left (3 per 14 days)
                       </span>
@@ -194,8 +194,8 @@ export default function DownloadsPage() {
                       <div
                         className={`h-full transition-all ${
                           download.downloadsUsed >= download.downloadLimit
-                            ? 'bg-red-500'
-                            : 'bg-green-500'
+                            ? 'bg-error'
+                            : 'bg-success'
                         }`}
                         style={{
                           width: `${(download.downloadsUsed / download.downloadLimit) * 100}%`

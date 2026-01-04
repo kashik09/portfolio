@@ -217,8 +217,8 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
                 <p className="text-sm text-muted-foreground">Downloads Remaining</p>
                 <p className={`text-2xl font-bold ${
                   product.downloadsUsed >= product.downloadLimit
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-green-600 dark:text-green-400'
+                    ? 'text-error'
+                    : 'text-success'
                 }`}>
                   {product.downloadLimit - product.downloadsUsed} / {product.downloadLimit}
                 </p>
@@ -230,7 +230,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
               </div>
             </div>
             {isExpired && (
-              <div className="px-4 py-2 bg-red-500/20 text-red-700 dark:text-red-300 rounded-lg font-medium">
+              <div className="px-4 py-2 bg-error/20 text-error rounded-lg font-medium">
                 License Expired
               </div>
             )}
@@ -247,8 +247,8 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
               <div
                 className={`h-full transition-all ${
                   product.downloadsUsed >= product.downloadLimit
-                    ? 'bg-red-500'
-                    : 'bg-green-500'
+                    ? 'bg-error'
+                    : 'bg-success'
                 }`}
                 style={{
                   width: `${(product.downloadsUsed / product.downloadLimit) * 100}%`
@@ -334,7 +334,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
             {product.expiresAt && (
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Expires</p>
-                <p className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>
+                <p className={`font-medium ${isExpired ? 'text-error' : 'text-foreground'}`}>
                   {formatDate(product.expiresAt)}
                 </p>
               </div>
@@ -358,7 +358,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
                 className="flex items-center justify-between p-4 bg-muted rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="text-green-600 dark:text-green-400" size={20} />
+                  <CheckCircle className="text-success" size={20} />
                   <div>
                     <p className="font-medium text-foreground">Downloaded successfully</p>
                     <p className="text-sm text-muted-foreground">

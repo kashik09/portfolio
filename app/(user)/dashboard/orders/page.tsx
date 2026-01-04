@@ -47,14 +47,14 @@ export default function OrdersPage() {
   function getStatusColor(status: string) {
     switch (status) {
       case 'COMPLETED':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-success/10 text-success border-success/20'
       case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+        return 'bg-warning/10 text-warning border-warning/20'
       case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
+        return 'bg-info/10 text-info border-info/20'
       case 'FAILED':
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800 border-red-200'
+        return 'bg-error/10 text-error border-error/20'
       default:
         return 'bg-muted text-foreground border-border'
     }
