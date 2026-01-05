@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hashPassword } from '@/lib/password'
 import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from '@/lib/rate-limit'
-import { normalizeEmail } from '@/lib/auth-utils'
+import { getNonEmptyString, isValidEmail, isValidPassword, normalizeEmail } from '@/lib/auth-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,13 +27,27 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => null)
-    const name = typeof body?.name === 'string' ? body.name.trim() : ''
+    const name = getNonEmptyString(body?.name)
     const email = normalizeEmail(body?.email)
     const password = typeof body?.password === 'string' ? body.password : ''
 
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: 'All fields are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { error: 'Please enter a valid email address' },
+        { status: 400 }
+      )
+    }
+
+    if (!isValidPassword(password)) {
+      return NextResponse.json(
+        { error: 'Password must be at least 8 characters' },
         { status: 400 }
       )
     }
@@ -72,7 +86,13 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Signup error:', error)
+    if ((error as { code?: string })?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'User with this email already exists' },
+        { status: 400 }
+      )
+    }
+    console.error('Signup error')
     return NextResponse.json(
       { error: 'Failed to create account' },
       { status: 500 }

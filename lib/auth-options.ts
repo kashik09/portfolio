@@ -5,44 +5,14 @@ import EmailProvider from "next-auth/providers/email"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
-import { normalizeEmail } from "@/lib/auth-utils"
+import { isValidEmail, normalizeEmail } from "@/lib/auth-utils"
+import { validateAuthEnv } from "@/lib/auth-env"
 import { verifyPassword } from "@/lib/password"
 
 const ONE_DAY_SECONDS = 60 * 60 * 24
 const THIRTY_DAYS_SECONDS = 60 * 60 * 24 * 30
-
-function getEnv(name: string): string | null {
-  const value = process.env[name]
-  if (typeof value !== "string") return null
-  const trimmed = value.trim()
-  return trimmed.length ? trimmed : null
-}
-
-function requireEnv(name: string): string {
-  const value = getEnv(name)
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
-  }
-  return value
-}
-
-function ensurePairedEnv(left: string, right: string): void {
-  const leftValue = getEnv(left)
-  const rightValue = getEnv(right)
-
-  if ((leftValue && !rightValue) || (!leftValue && rightValue)) {
-    const missing = leftValue ? right : left
-    throw new Error(`Missing required environment variable: ${missing}`)
-  }
-}
-
-function validateAuthEnv(): void {
-  requireEnv("NEXTAUTH_SECRET")
-  requireEnv("NEXTAUTH_URL")
-  requireEnv("POSTGRES_PRISMA_URL")
-  ensurePairedEnv("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET")
-  ensurePairedEnv("GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET")
-}
+const DUMMY_PASSWORD_HASH =
+  "$2b$12$trWG92Qki.b.ii8VzyUn8.Cg0ke1/Xd7GIvNs7zTg9hxWbBmJPKeC"
 
 validateAuthEnv()
 
@@ -62,35 +32,43 @@ export const authOptions: NextAuthOptions = {
           typeof credentials?.password === "string" ? credentials.password : ""
 
         if (!email || !password) return null
+        if (!isValidEmail(email)) return null
 
-        const user = await prisma.user.findUnique({
-          where: { email },
-        })
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email },
+          })
+          const userRecord = user as any
 
-        // IMPORTANT: if your schema uses passwordHash, swap user.password -> user.passwordHash
-        // @ts-ignore
-        if (!user || !user.password) return null
+          // IMPORTANT: if your schema uses passwordHash, swap user.password -> user.passwordHash
+          const storedPassword =
+            typeof userRecord?.password === "string"
+              ? userRecord.password
+              : DUMMY_PASSWORD_HASH
 
-        // @ts-ignore
-        const isPasswordValid = await verifyPassword(password, user.password)
-        if (!isPasswordValid) return null
+          const isPasswordValid = await verifyPassword(password, storedPassword)
+          if (!user || !isPasswordValid) return null
 
-        // @ts-ignore
-        if (user.accountStatus === "LOCKED" || user.accountStatus === "BANNED") return null
-        // @ts-ignore
-        if (user.twoFactorEnabled === true && user.twoFactorVerified !== true) return null
+          if (userRecord?.accountStatus === "LOCKED" || userRecord?.accountStatus === "BANNED") {
+            return null
+          }
+          if (userRecord?.twoFactorEnabled === true && userRecord?.twoFactorVerified !== true) {
+            return null
+          }
 
-        const rememberMe = credentials?.rememberMe === "1"
+          const rememberMe = credentials?.rememberMe === "1"
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          // @ts-ignore
-          role: user.role,
-          image: user.image,
-          rememberMe, // <-- pass through
-        } as any
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: userRecord?.role,
+            image: user.image,
+            rememberMe, // <-- pass through
+          } as any
+        } catch {
+          throw new Error("CredentialsSignin")
+        }
       },
     }),
 
@@ -167,6 +145,10 @@ export const authOptions: NextAuthOptions = {
       return true
     },
     async jwt({ token, user, trigger }) {
+      if (!token.id && token.sub) {
+        token.id = token.sub
+      }
+
       // On first sign-in, we receive `user`
       if (user) {
         // @ts-ignore
@@ -238,15 +220,19 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      if (!token.role) {
+        token.role = "USER"
+      }
+
       return token
     },
 
     async session({ session, token }) {
       if (session?.user) {
         // @ts-ignore
-        session.user.id = token.id
+        session.user.id = token.id || token.sub || ""
         // @ts-ignore
-        session.user.role = token.role
+        session.user.role = token.role || "USER"
         // @ts-ignore
         session.user.image = token.image
         // @ts-ignore

@@ -21,9 +21,14 @@ async function waitForStatus() {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
       const response = await fetch(statusUrl, { cache: 'no-store' })
-      if (response.ok) {
-        const json = await response.json().catch(() => null)
-        if (json?.ok) return json
+      const json = await response.json().catch(() => null)
+      if (
+        json &&
+        typeof json.ok === 'boolean' &&
+        typeof json.envOk === 'boolean' &&
+        typeof json.dbOk === 'boolean'
+      ) {
+        return json
       }
     } catch {
       // Wait and retry while server boots.
@@ -64,8 +69,10 @@ async function main() {
 
   try {
     const status = await waitForStatus()
-    if (!status?.ok) {
-      throw new Error('Auth status check returned failure')
+    if (!status?.ok || !status?.envOk || !status?.dbOk) {
+      throw new Error(
+        `Auth status check failed (ok=${status.ok}, envOk=${status.envOk}, dbOk=${status.dbOk})`
+      )
     }
   } finally {
     shutdown()
