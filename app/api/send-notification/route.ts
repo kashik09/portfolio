@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from "@/lib/rate-limit";
+import { getEmailDomain, getResendConfig } from "@/lib/resend";
+
+export const runtime = "nodejs";
 
 function getEnv(name: string) {
   const v = process.env[name];
   return typeof v === "string" && v.trim().length ? v.trim() : null;
-}
-
-function getResendOrNull() {
-  const key = getEnv("RESEND_API_KEY");
-  if (!key) return null;
-  return new Resend(key);
 }
 
 export async function POST(request: NextRequest) {
@@ -54,12 +50,22 @@ export async function POST(request: NextRequest) {
 
     // 1) Email notification (optional, never hard-fail the request)
     const notificationEmail = getEnv("NOTIFICATION_EMAIL");
-    const resend = getResendOrNull();
+    const resendConfig = getResendConfig();
+    const resend = resendConfig.resend;
+    const fromDomain = resendConfig.fromDomain;
+    const toDomain = getEmailDomain(notificationEmail);
 
-    if (resend && notificationEmail) {
+    console.log("Resend configured:", resendConfig.configured ? "yes" : "no");
+    console.log("Resend from domain:", fromDomain ?? "unknown");
+    console.log("Resend to domain:", toDomain ?? "unknown");
+
+    let emailSent = false;
+    let responseStatus = "skipped";
+
+    if (resend && resendConfig.from && notificationEmail) {
       try {
-        await resend.emails.send({
-          from: "Portfolio Notifications <onboarding@resend.dev>",
+        const { error } = await resend.emails.send({
+          from: resendConfig.from,
           to: notificationEmail,
           replyTo: email,
           subject: `New Service Request: ${serviceType}`,
@@ -90,10 +96,15 @@ export async function POST(request: NextRequest) {
             </p>
           `,
         });
-      } catch (e) {
-        console.error("Email send failed:", e);
+
+        responseStatus = error ? "error" : "ok";
+        emailSent = !error;
+      } catch {
+        responseStatus = "error";
       }
     }
+
+    console.log("Resend response status:", responseStatus);
 
     // 2) WhatsApp deep-link (optional)
     const whatsappNumber = getEnv("WHATSAPP_NUMBER");
@@ -107,7 +118,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: "Notification processed",
       whatsappUrl,
-      emailSent: Boolean(resend && notificationEmail),
+      emailSent,
     });
   } catch (error) {
     console.error("Notification error:", error);

@@ -1,6 +1,23 @@
 import nodemailer from 'nodemailer'
 import { prisma } from './prisma'
 
+function getEnv(name: string): string | null {
+  const value = process.env[name]
+  return typeof value === 'string' && value.trim().length ? value.trim() : null
+}
+
+function getFirstEnv(names: string[]): string | null {
+  for (const name of names) {
+    const value = getEnv(name)
+    if (value) return value
+  }
+  return null
+}
+
+function isEmailLike(value: string) {
+  return value.includes('@')
+}
+
 interface EmailConfig {
   host: string
   port: number
@@ -63,29 +80,36 @@ export async function getEmailConfigFromDB(): Promise<EmailConfig | null> {
  * @throws Error if required environment variables are missing
  */
 export function getEmailConfigFromEnv(): EmailConfig {
+  const host = getFirstEnv(['EMAIL_HOST', 'EMAIL_SERVER_HOST'])
+  const portValue = getFirstEnv(['EMAIL_PORT', 'EMAIL_SERVER_PORT'])
+  const user = getFirstEnv(['EMAIL_USER', 'EMAIL_SERVER_USER'])
+  const pass = getFirstEnv(['EMAIL_PASS', 'EMAIL_SERVER_PASSWORD'])
+  const from = getFirstEnv(['EMAIL_FROM', 'RESEND_FROM']) || undefined
+  const fromName = getEnv('EMAIL_FROM_NAME') || undefined
+
   const missing: string[] = []
 
-  if (!process.env.EMAIL_HOST) missing.push('EMAIL_HOST')
-  if (!process.env.EMAIL_PORT) missing.push('EMAIL_PORT')
-  if (!process.env.EMAIL_USER) missing.push('EMAIL_USER')
-  if (!process.env.EMAIL_PASS) missing.push('EMAIL_PASS')
+  if (!host) missing.push('EMAIL_HOST (or EMAIL_SERVER_HOST)')
+  if (!portValue) missing.push('EMAIL_PORT (or EMAIL_SERVER_PORT)')
+  if (!user) missing.push('EMAIL_USER (or EMAIL_SERVER_USER)')
+  if (!pass) missing.push('EMAIL_PASS (or EMAIL_SERVER_PASSWORD)')
 
-  if (missing.length > 0) {
+  if (missing.length > 0 || !host || !portValue || !user || !pass) {
     throw new Error(`Missing email configuration: ${missing.join(', ')}`)
   }
 
-  const port = Number(process.env.EMAIL_PORT)
+  const port = Number(portValue)
   if (!Number.isFinite(port) || port <= 0) {
-    throw new Error('EMAIL_PORT must be a valid number')
+    throw new Error('EMAIL_PORT (or EMAIL_SERVER_PORT) must be a valid number')
   }
 
   return {
-    host: process.env.EMAIL_HOST!,
+    host,
     port,
-    user: process.env.EMAIL_USER!,
-    pass: process.env.EMAIL_PASS!,
-    from: process.env.EMAIL_FROM,
-    fromName: process.env.EMAIL_FROM_NAME,
+    user,
+    pass,
+    from,
+    fromName,
   }
 }
 
@@ -98,6 +122,10 @@ export async function getEmailConfig(): Promise<EmailConfig> {
   // Try database settings first
   const dbConfig = await getEmailConfigFromDB()
   if (dbConfig) {
+    const envFrom = getFirstEnv(['EMAIL_FROM', 'RESEND_FROM'])
+    const envFromName = getEnv('EMAIL_FROM_NAME')
+    if (envFrom) dbConfig.from = envFrom
+    if (envFromName) dbConfig.fromName = envFromName
     return dbConfig
   }
 
@@ -136,8 +164,12 @@ export async function sendEmail(config: EmailConfig, options: EmailOptions) {
       }
     })
 
-    const fromAddress = config.from || config.user
-    const fromName = config.fromName || 'Kashi Kweyu'
+    const fromAddress = config.from || (isEmailLike(config.user) ? config.user : null)
+    if (!fromAddress) {
+      throw new Error('Missing FROM address')
+    }
+
+    const fromName = config.fromName?.trim() || 'Kashi Kweyu'
 
     const info = await transporter.sendMail({
       from: `"${fromName}" <${fromAddress}>`,
