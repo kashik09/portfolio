@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { getCountries, getCountryCallingCode, type CountryCode } from 'libphonenumber-js'
+import {
+  getCountries,
+  getCountryCallingCode,
+  parsePhoneNumberFromString,
+  type CountryCode,
+} from 'libphonenumber-js'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
@@ -138,12 +143,10 @@ export default function SupportPage() {
     })
   }, [countries, countrySearch])
 
-  const countriesToShow = useMemo(() => {
-    if (countrySearch.trim()) return filteredCountries
+  const otherCountries = useMemo(() => {
     const topCodes = new Set(topCountries.map((item) => item.code))
-    const rest = countries.filter((country) => !topCodes.has(country.code))
-    return [...topCountries, ...rest]
-  }, [countries, countrySearch, filteredCountries, topCountries])
+    return countries.filter((country) => !topCodes.has(country.code))
+  }, [countries, topCountries])
 
   const handleSelectCountry = (country: CountryOption) => {
     setSelectedCountry(country)
@@ -195,6 +198,11 @@ export default function SupportPage() {
     }
 
     const phone = `+${selectedCountry.dialCode}${digitsOnly}`
+    const parsedPhone = parsePhoneNumberFromString(phone)
+    if (!parsedPhone || !parsedPhone.isPossible()) {
+      setError('Please provide a valid WhatsApp number.')
+      return
+    }
     const messageBody = [
       `Category: ${bucket.label}`,
       `Reason: ${reason}`,
@@ -245,7 +253,7 @@ export default function SupportPage() {
         <div className="space-y-2">
           <h1 className="text-h1 font-bold text-foreground">Complaints</h1>
           <p className="text-body text-muted-foreground/90">
-            WhatsApp-first support. We’ll follow up via WhatsApp — no email needed.
+            Get help fast. WhatsApp first.
           </p>
         </div>
 
@@ -344,74 +352,117 @@ export default function SupportPage() {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-foreground">
-                country
+                whatsapp number
               </label>
-              <button
-                type="button"
-                onClick={() => setCountryOpen((prev) => !prev)}
-                className="w-full h-10 px-4 surface-app border border-app rounded-lg text-sm text-app focus:outline-none focus:ring-2 focus:ring-primary/35 transition text-left flex items-center justify-between"
-              >
-                <span className="flex items-center gap-2">
-                  {selectedCountry ? (
-                    <>
-                      <span>{flagForCountry(selectedCountry.code)}</span>
-                      <span>{selectedCountry.name}</span>
-                    </>
-                  ) : (
-                    <span className="text-muted-foreground">Select country</span>
-                  )}
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  {selectedCountry ? `+${selectedCountry.dialCode}` : ''}
-                </span>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="sm:max-w-[180px]">
+                  <button
+                    type="button"
+                    onClick={() => setCountryOpen((prev) => !prev)}
+                    className="w-full h-10 px-4 surface-app border border-app rounded-lg text-sm text-app focus:outline-none focus:ring-2 focus:ring-primary/35 transition text-left flex items-center justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      {selectedCountry ? (
+                        <>
+                          <span>{flagForCountry(selectedCountry.code)}</span>
+                          <span>+{selectedCountry.dialCode}</span>
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">Select country</span>
+                      )}
+                    </span>
+                  </button>
+                </div>
+                <div className="flex-1">
+                  <Input
+                    value={whatsAppNumber}
+                    onChange={(event) => setWhatsAppNumber(event.target.value)}
+                    placeholder="WhatsApp number"
+                    required
+                    aria-label="whatsapp number"
+                  />
+                </div>
+              </div>
+              <div className="text-xs text-muted-foreground">WhatsApp only.</div>
               {countryOpen && (
                 <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
                   <Input
                     value={countrySearch}
                     onChange={(event) => setCountrySearch(event.target.value)}
-                    placeholder="Search country"
+                    placeholder="Search all countries"
                   />
-                  <div className="mt-2 max-h-60 overflow-y-auto">
-                    {countriesToShow.map((country) => (
-                      <button
-                        key={country.code}
-                        type="button"
-                        onClick={() => handleSelectCountry(country)}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm text-foreground hover:bg-muted/50"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span>{flagForCountry(country.code)}</span>
-                          <span>{country.name}</span>
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          +{country.dialCode}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                  {countrySearch.trim() ? (
+                    <>
+                      <div className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        All countries
+                      </div>
+                      <div className="mt-2 max-h-60 overflow-y-auto">
+                        {filteredCountries.map((country) => (
+                          <button
+                            key={country.code}
+                            type="button"
+                            onClick={() => handleSelectCountry(country)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm text-foreground hover:bg-muted/50"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span>{flagForCountry(country.code)}</span>
+                              <span>{country.name}</span>
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              +{country.dialCode}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        Top countries
+                      </div>
+                      <div className="mt-2 max-h-40 overflow-y-auto">
+                        {topCountries.map((country) => (
+                          <button
+                            key={country.code}
+                            type="button"
+                            onClick={() => handleSelectCountry(country)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm text-foreground hover:bg-muted/50"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span>{flagForCountry(country.code)}</span>
+                              <span>{country.name}</span>
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              +{country.dialCode}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        All countries
+                      </div>
+                      <div className="mt-2 max-h-60 overflow-y-auto">
+                        {otherCountries.map((country) => (
+                          <button
+                            key={country.code}
+                            type="button"
+                            onClick={() => handleSelectCountry(country)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm text-foreground hover:bg-muted/50"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span>{flagForCountry(country.code)}</span>
+                              <span>{country.name}</span>
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              +{country.dialCode}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="sm:max-w-[140px]">
-                <Input
-                  label="code"
-                  value={selectedCountry ? `+${selectedCountry.dialCode}` : ''}
-                  readOnly
-                  placeholder="+000"
-                />
-              </div>
-              <div className="flex-1">
-                <Input
-                  label="whatsapp number"
-                  value={whatsAppNumber}
-                  onChange={(event) => setWhatsAppNumber(event.target.value)}
-                  placeholder="WhatsApp number"
-                  required
-                />
-              </div>
             </div>
 
             <Input
