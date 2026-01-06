@@ -4,19 +4,32 @@ export const dynamic = 'force-dynamic'
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTriangle, Palette } from 'lucide-react'
+import {
+  Home,
+  Download,
+  FileText,
+  Settings,
+  ArrowLeft,
+  Menu,
+  X,
+  User,
+  AlertTriangle,
+  Palette,
+  LayoutDashboard,
+} from 'lucide-react'
 import { useState, useEffect } from 'react'
 import DashboardShell from '@/components/features/dashboard/DashboardShell'
 import { Spinner } from '@/components/ui/Spinner'
 import { usePreferences } from '@/lib/preferences/PreferencesContext'
 import { getPossessive } from '@/lib/strings'
+import { DASHBOARD_ICON_MAP } from '@/components/features/dashboard/dashboard-icons'
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const { data: session, status } = useSession()
-  const { openModal } = usePreferences()
+  const { openModal, preferences } = usePreferences()
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -34,8 +47,10 @@ export default function DashboardLayout({
   const dashboardTitle = displayName
     ? `${getPossessive(displayName)} Dashboard`
     : 'Dashboard'
+  const DashboardIcon = DASHBOARD_ICON_MAP[preferences.dashboardIcon] || LayoutDashboard
+  const sparkleEnabled = preferences.dashboardSparkle
   const navItems = [
-    { href: '/dashboard', icon: Home, label: 'Dashboard' },
+    { href: '/dashboard', icon: DashboardIcon, label: 'Dashboard' },
     { href: '/dashboard/downloads', icon: Download, label: 'My Downloads' },
     { href: '/dashboard/requests', icon: FileText, label: 'My Requests' },
     { href: '/support', icon: AlertTriangle, label: 'Complaints' },
@@ -82,8 +97,20 @@ export default function DashboardLayout({
           {/* Logo/Title */}
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <span className="text-xl font-bold text-primary">D</span>
+              <div className="relative">
+                {sparkleEnabled && (
+                  <span
+                    className="absolute -inset-1 rounded-xl bg-primary/20 blur-md opacity-70 motion-safe:animate-pulse"
+                    aria-hidden="true"
+                  />
+                )}
+                <div
+                  className={`relative p-2 rounded-lg bg-primary/10 ${
+                    sparkleEnabled ? 'ring-1 ring-primary/30' : ''
+                  }`}
+                >
+                  <DashboardIcon size={20} className="text-primary" aria-hidden="true" />
+                </div>
               </div>
               <div className="hidden md:block">
                 <h1 className="text-lg font-bold text-foreground">{dashboardTitle}</h1>
@@ -126,22 +153,30 @@ export default function DashboardLayout({
     <div className="p-6">
               <nav className="space-y-1.5">
                 {navItems.map((item) => {
-                  const isActive = pathname === item.href
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-w-0 ${
+          const isActive = pathname === item.href
+          const showSparkle =
+            sparkleEnabled && isActive && item.href === '/dashboard'
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-w-0 ${
                         isActive
                           ? 'bg-primary/10 text-primary'
                           : 'text-foreground/80 hover:text-foreground hover:bg-muted/60'
                       }`}
-                    >
-                      <item.icon size={18} className="shrink-0" />
-                      <span className="truncate">{item.label}</span>
-                    </Link>
-                  )
-                })}
+            >
+              <item.icon size={18} className="shrink-0" />
+              <span className="truncate">{item.label}</span>
+              {showSparkle && (
+                <span
+                  className="ml-auto h-1.5 w-1.5 rounded-full bg-primary/60 motion-safe:animate-pulse"
+                  aria-hidden="true"
+                />
+              )}
+            </Link>
+          )
+        })}
               </nav>
               <div className="mt-8 pt-8 border-t border-border">
                 <Link
@@ -166,6 +201,8 @@ export default function DashboardLayout({
         <nav className="space-y-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href
+            const showSparkle =
+              sparkleEnabled && isActive && item.href === '/dashboard'
             return (
               <Link
                 key={item.href}
@@ -179,6 +216,12 @@ export default function DashboardLayout({
               >
                 <item.icon size={18} className="shrink-0" />
                 <span className="truncate">{item.label}</span>
+                {showSparkle && (
+                  <span
+                    className="ml-auto h-1.5 w-1.5 rounded-full bg-primary/60 motion-safe:animate-pulse"
+                    aria-hidden="true"
+                  />
+                )}
               </Link>
             )
           })}
