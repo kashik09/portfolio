@@ -2,6 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Save, AlertTriangle, Mail, Shield, Settings as SettingsIcon, Megaphone, Calendar } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import ConfirmModal from '@/components/ui/ConfirmModal'
@@ -87,6 +88,7 @@ const detectProvider = (email: string): EmailProvider => {
   return 'custom'
 }
 export default function AdminSettingsPage() {
+  const { data: session } = useSession()
   const { showToast } = useToast()
   const [saving, setSaving] = useState(false)
   const [activeModal, setActiveModal] = useState<'reset' | 'clear' | null>(null)
@@ -119,6 +121,17 @@ export default function AdminSettingsPage() {
     sessionTimeout: '30',
     twoFactorEnabled: false
   })
+  useEffect(() => {
+    const isTwoFactorConfigured = Boolean(
+      (session?.user as any)?.twoFactorEnabled &&
+      (session?.user as any)?.twoFactorVerified
+    )
+    setSecuritySettings(prev =>
+      prev.twoFactorEnabled === isTwoFactorConfigured
+        ? prev
+        : { ...prev, twoFactorEnabled: isTwoFactorConfigured }
+    )
+  }, [session?.user])
   useEffect(() => {
     let cancelled = false
     async function loadSiteSettings() {
@@ -913,12 +926,13 @@ export default function AdminSettingsPage() {
           <label className="flex items-center justify-between p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/70 transition">
             <div>
               <p className="font-medium text-foreground">Two-Factor Authentication</p>
-              <p className="text-sm text-muted-foreground">Require 2FA for all admin users</p>
+              <p className="text-sm text-muted-foreground">Auto-updates once 2FA setup is verified</p>
             </div>
             <input
               type="checkbox"
               checked={securitySettings.twoFactorEnabled}
-              onChange={(e) => setSecuritySettings({ ...securitySettings, twoFactorEnabled: e.target.checked })}
+              readOnly
+              disabled
               className="w-5 h-5 rounded border-border"
             />
           </label>

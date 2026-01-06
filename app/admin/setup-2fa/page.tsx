@@ -60,6 +60,11 @@ export default function Setup2FAPage() {
       })
       const data = await response.json()
       if (data.success) {
+        await fetch('/api/auth/2fa/verify-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: verificationCode, rememberDevice: true }),
+        })
         // Update session to refresh 2FA status
         await update()
         router.push('/admin')

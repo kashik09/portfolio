@@ -7,8 +7,22 @@ import { Shield, Check, AlertCircle, Download } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Spinner } from '@/components/ui/Spinner'
+
+type TrustedDevice = {
+  id: string
+  deviceFingerprint: string
+  userAgent: string | null
+  ipHash: string
+  trustedUntil: string | null
+  lastTwoFactorAt: string | null
+  firstSeen: string
+  lastSeen: string
+  blocked: boolean
+  blockedReason: string | null
+  isCurrent: boolean
+}
 export default function SecurityPage() {
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
   const [loading, setLoading] = useState(true)
   const [setupStep, setSetupStep] = useState<'initial' | 'qr' | 'verify' | 'complete'>('initial')
   const [qrCode, setQrCode] = useState<string | null>(null)
@@ -17,6 +31,8 @@ export default function SecurityPage() {
   const [verificationCode, setVerificationCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+  const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>([])
+  const [devicesLoading, setDevicesLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const checkTwoFactorStatus = useCallback(async () => {
     try {
@@ -31,9 +47,25 @@ export default function SecurityPage() {
       setLoading(false)
     }
   }, [session?.user])
+  const fetchTrustedDevices = useCallback(async () => {
+    try {
+      setDevicesLoading(true)
+      const response = await fetch('/api/auth/trusted-devices')
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load trusted devices')
+      }
+      setTrustedDevices(data.data || [])
+    } catch (error) {
+      console.error('Error loading trusted devices:', error)
+    } finally {
+      setDevicesLoading(false)
+    }
+  }, [])
   useEffect(() => {
     checkTwoFactorStatus()
-  }, [checkTwoFactorStatus])
+    fetchTrustedDevices()
+  }, [checkTwoFactorStatus, fetchTrustedDevices])
   const handleSetup2FA = async () => {
     try {
       setSubmitting(true)
@@ -68,8 +100,16 @@ export default function SecurityPage() {
       })
       const data = await response.json()
       if (data.success) {
+        await fetch('/api/auth/2fa/verify-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: verificationCode, rememberDevice: true }),
+        })
+        // Refresh session so middleware sees updated 2FA flags.
+        await update()
         setSetupStep('complete')
         setTwoFactorEnabled(true)
+        fetchTrustedDevices()
       } else {
         setError(data.error || 'Invalid verification code')
       }
@@ -89,6 +129,20 @@ export default function SecurityPage() {
     a.download = '2fa-backup-codes.txt'
     a.click()
     URL.revokeObjectURL(url)
+  }
+  const handleRevokeDevice = async (deviceId: string) => {
+    try {
+      const response = await fetch(`/api/auth/trusted-devices/${deviceId}`, {
+        method: 'DELETE'
+      })
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to revoke device')
+      }
+      fetchTrustedDevices()
+    } catch (error) {
+      console.error('Error revoking device:', error)
+    }
   }
   if (loading) {
     return (
@@ -229,6 +283,60 @@ export default function SecurityPage() {
             <p className="text-muted-foreground">
               Your account is secured with two-factor authentication. You'll be prompted for a code each time you log in.
             </p>
+          </div>
+        )}
+      </div>
+      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">Trusted Devices</h2>
+          <p className="text-sm text-muted-foreground">
+            Devices remembered for admin access. Revoke any you no longer trust.
+          </p>
+        </div>
+        {devicesLoading ? (
+          <div className="flex justify-center py-6">
+            <Spinner size="md" />
+          </div>
+        ) : trustedDevices.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No trusted devices yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {trustedDevices.map(device => {
+              const trustedUntil = device.trustedUntil
+                ? new Date(device.trustedUntil).toLocaleString()
+                : 'Session only'
+              const lastSeen = new Date(device.lastSeen).toLocaleString()
+              return (
+                <div
+                  key={device.id}
+                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 border border-border rounded-lg"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {device.isCurrent ? 'This device' : 'Trusted device'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Last active: {lastSeen}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Trusted until: {trustedUntil}
+                    </p>
+                    {device.userAgent && (
+                      <p className="text-xs text-muted-foreground">
+                        {device.userAgent}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleRevokeDevice(device.id)}
+                    disabled={device.blocked}
+                  >
+                    {device.blocked ? 'Revoked' : 'Revoke'}
+                  </Button>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
