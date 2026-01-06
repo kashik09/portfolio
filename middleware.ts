@@ -1,5 +1,16 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse, type NextRequest } from "next/server"
+import {
+  ADMIN_DEVICE_ID_COOKIE,
+  ADMIN_TRUST_DEVICE_COOKIE,
+  ADMIN_STEPUP_COOKIE,
+  ADMIN_LAST_ACTIVE_COOKIE,
+  ADMIN_IDLE_TIMEOUT_SECONDS,
+  verifySignedToken,
+  hashValue,
+  getRequestCountry,
+  getRequestIp,
+} from "@/lib/admin-security"
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"])
 const allowedOrigins = new Set(
@@ -8,6 +19,91 @@ const allowedOrigins = new Set(
     .map(origin => origin.trim())
     .filter(Boolean)
 )
+
+const ADMIN_ROLES = new Set(["ADMIN", "OWNER", "MODERATOR", "EDITOR"])
+
+type TrustedDevicePayload = {
+  u: string
+  d: string
+  exp: number
+  ip?: string
+  c?: string
+  ua?: string
+}
+
+type StepUpPayload = {
+  u: string
+  exp: number
+}
+
+async function isTrustedAdminDevice(req: NextRequest, userId: string): Promise<boolean> {
+  const trustToken = req.cookies.get(ADMIN_TRUST_DEVICE_COOKIE)?.value
+  const deviceId = req.cookies.get(ADMIN_DEVICE_ID_COOKIE)?.value
+  if (!trustToken || !deviceId) return false
+
+  try {
+    const payload = await verifySignedToken<TrustedDevicePayload>(trustToken)
+    if (!payload || payload.u !== userId || payload.d !== deviceId) return false
+
+    const ip = getRequestIp(req.headers)
+    if (payload.ip && ip) {
+      const ipHash = await hashValue(ip)
+      if (payload.ip !== ipHash) return false
+    }
+
+    const userAgent = req.headers.get("user-agent")
+    if (payload.ua && userAgent) {
+      const uaHash = await hashValue(userAgent)
+      if (payload.ua !== uaHash) return false
+    }
+
+    const country = req.geo?.country || getRequestCountry(req.headers)
+    if (payload.c && country && payload.c !== country) return false
+
+    const validationUrl = new URL("/api/auth/trusted-devices/validate", req.url)
+    const validationResponse = await fetch(validationUrl, {
+      headers: {
+        cookie: req.headers.get("cookie") || "",
+      },
+    })
+    if (!validationResponse.ok) return false
+    const validationData = await validationResponse.json()
+    if (!validationData?.ok) return false
+  } catch {
+    return false
+  }
+
+  return true
+}
+
+async function hasRecentStepUp(req: NextRequest, userId: string): Promise<boolean> {
+  const stepUpToken = req.cookies.get(ADMIN_STEPUP_COOKIE)?.value
+  if (!stepUpToken) return false
+  try {
+    const payload = await verifySignedToken<StepUpPayload>(stepUpToken)
+    return !!payload && payload.u === userId
+  } catch {
+    return false
+  }
+}
+
+function isIdleExpired(req: NextRequest): boolean {
+  const lastActive = req.cookies.get(ADMIN_LAST_ACTIVE_COOKIE)?.value
+  if (!lastActive) return true
+  const lastActiveSeconds = Number(lastActive)
+  if (!Number.isFinite(lastActiveSeconds)) return true
+  const nowSeconds = Math.floor(Date.now() / 1000)
+  return nowSeconds - lastActiveSeconds > ADMIN_IDLE_TIMEOUT_SECONDS
+}
+
+function shouldRequireStepUp(path: string): boolean {
+  return (
+    path.startsWith("/admin/users") ||
+    path.startsWith("/admin/settings") ||
+    path.startsWith("/admin/security") ||
+    path.startsWith("/admin/orders")
+  )
+}
 
 function isAllowedOrigin(origin: string, requestOrigin: string): boolean {
   return origin === requestOrigin || allowedOrigins.has(origin)
@@ -34,7 +130,7 @@ function addNoStoreHeaders(response: NextResponse, path: string): NextResponse {
 }
 
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req) {
     const token = req.nextauth.token
     const path = req.nextUrl.pathname
 
@@ -71,24 +167,39 @@ export default withAuth(
         return NextResponse.redirect(loginUrl)
       }
 
-      const isAllowedRole =
-        token.role === "ADMIN" ||
-        token.role === "OWNER" ||
-        token.role === "MODERATOR" ||
-        token.role === "EDITOR"
+      const isAllowedRole = ADMIN_ROLES.has(token.role as string)
       if (!isAllowedRole) {
         return NextResponse.redirect(new URL("/", req.url))
       }
 
-      // Enforce 2FA for admin users
+      const userId = (token.id as string) || (token.sub as string) || ""
       const has2FA = token.twoFactorEnabled === true && token.twoFactorVerified === true
+
       if (!has2FA && !path.startsWith("/admin/setup-2fa")) {
         return NextResponse.redirect(new URL("/admin/setup-2fa", req.url))
       }
 
-      // Redirect away from setup if already configured
       if (has2FA && path.startsWith("/admin/setup-2fa")) {
         return NextResponse.redirect(new URL("/admin", req.url))
+      }
+
+      if (has2FA && !path.startsWith("/admin/verify-2fa")) {
+        const trusted = await isTrustedAdminDevice(req, userId)
+        const idleExpired = isIdleExpired(req)
+        if (!trusted || idleExpired) {
+          const verifyUrl = new URL("/admin/verify-2fa", req.url)
+          verifyUrl.searchParams.set("callbackUrl", req.nextUrl.pathname + req.nextUrl.search)
+          return NextResponse.redirect(verifyUrl)
+        }
+      }
+
+      if (has2FA && shouldRequireStepUp(path)) {
+        const stepUpOk = await hasRecentStepUp(req, userId)
+        if (!stepUpOk && !path.startsWith("/admin/verify-2fa")) {
+          const verifyUrl = new URL("/admin/verify-2fa", req.url)
+          verifyUrl.searchParams.set("callbackUrl", req.nextUrl.pathname + req.nextUrl.search)
+          return NextResponse.redirect(verifyUrl)
+        }
       }
 
       if (path.startsWith("/admin/users") || path.startsWith("/admin/settings")) {
@@ -97,7 +208,26 @@ export default withAuth(
         }
       }
 
-      return NextResponse.next()
+      const response = NextResponse.next()
+      if (!req.cookies.get(ADMIN_DEVICE_ID_COOKIE)?.value) {
+        response.cookies.set(ADMIN_DEVICE_ID_COOKIE, globalThis.crypto.randomUUID(), {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30,
+        })
+      }
+      if (has2FA && !path.startsWith("/admin/verify-2fa")) {
+        response.cookies.set(ADMIN_LAST_ACTIVE_COOKIE, Math.floor(Date.now() / 1000).toString(), {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7,
+        })
+      }
+      return response
     }
 
     // Protect Dashboard

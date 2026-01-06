@@ -8,9 +8,11 @@ import { prisma } from "@/lib/prisma"
 import { isValidEmail, normalizeEmail } from "@/lib/auth-utils"
 import { validateAuthEnv } from "@/lib/auth-env"
 import { verifyPassword } from "@/lib/password"
+import { ADMIN_SESSION_MAX_AGE_SECONDS } from "@/lib/admin-security"
 
 const ONE_DAY_SECONDS = 60 * 60 * 24
 const THIRTY_DAYS_SECONDS = 60 * 60 * 24 * 30
+const ADMIN_ROLES = new Set(["ADMIN", "OWNER", "MODERATOR", "EDITOR"])
 const DUMMY_PASSWORD_HASH =
   "$2b$12$trWG92Qki.b.ii8VzyUn8.Cg0ke1/Xd7GIvNs7zTg9hxWbBmJPKeC"
 
@@ -175,6 +177,9 @@ export const authOptions: NextAuthOptions = {
         // Set JWT exp ourselves so "remember me" changes session validity
         const now = Math.floor(Date.now() / 1000)
         token.exp = now + (rememberMe ? THIRTY_DAYS_SECONDS : ONE_DAY_SECONDS)
+        if (ADMIN_ROLES.has((user as any).role)) {
+          token.exp = Math.min(token.exp, now + ADMIN_SESSION_MAX_AGE_SECONDS)
+        }
 
         // Fetch 2FA status from database
         const dbUser = await prisma.user.findUnique({
@@ -224,6 +229,14 @@ export const authOptions: NextAuthOptions = {
 
       if (!token.role) {
         token.role = "USER"
+      }
+
+      if (token.role && ADMIN_ROLES.has(token.role as string)) {
+        const now = Math.floor(Date.now() / 1000)
+        const maxExp = now + ADMIN_SESSION_MAX_AGE_SECONDS
+        if (typeof token.exp !== "number" || token.exp > maxExp) {
+          token.exp = maxExp
+        }
       }
 
       return token
