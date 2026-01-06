@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Download, FileText, ArrowRight, Package, Clock } from 'lucide-react'
+import DashboardCard from '@/components/features/dashboard/DashboardCard'
 import { useToast } from '@/components/ui/Toast'
 import { Spinner } from '@/components/ui/Spinner'
 import { ProgressBar } from '@/components/ui/ProgressBar'
@@ -172,7 +173,7 @@ export default function DashboardPage() {
       </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-card rounded-2xl border border-border p-6">
+        <DashboardCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-lg">
               <Download className="text-primary" size={24} />
@@ -182,8 +183,8 @@ export default function DashboardPage() {
               <p className="text-3xl font-bold text-foreground">{stats.totalDownloads}</p>
             </div>
           </div>
-        </div>
-        <div className="bg-card rounded-2xl border border-border p-6">
+        </DashboardCard>
+        <DashboardCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-info/10 rounded-lg">
               <FileText className="text-info" size={24} />
@@ -193,8 +194,8 @@ export default function DashboardPage() {
               <p className="text-3xl font-bold text-foreground">{stats.totalRequests}</p>
             </div>
           </div>
-        </div>
-        <div className="bg-card rounded-2xl border border-border p-6">
+        </DashboardCard>
+        <DashboardCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-warning/10 rounded-lg">
               <Clock className="text-warning" size={24} />
@@ -204,26 +205,23 @@ export default function DashboardPage() {
               <p className="text-3xl font-bold text-foreground">{stats.pendingRequests}</p>
             </div>
           </div>
-        </div>
+        </DashboardCard>
       </div>
       {/* Usage Limits */}
-      <div className="bg-card rounded-2xl border border-border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-base-content">Usage Limits</h2>
-            <p className="text-sm text-muted-foreground">
-              Current period credit usage for your membership
-            </p>
-          </div>
-          {membership && (
+      <DashboardCard
+        title="Usage Limits"
+        subtitle="Current period credit usage for your membership"
+        rightSlot={
+          membership ? (
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Membership</p>
               <p className="font-medium text-base-content">
                 {membership.tier} · {membership.status}
               </p>
             </div>
-          )}
-        </div>
+          ) : null
+        }
+      >
         {membership ? (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
@@ -281,51 +279,56 @@ export default function DashboardPage() {
             </Link>
           </div>
         )}
-      </div>
+      </DashboardCard>
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link
           href="/request"
-          className="bg-card border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/40 hover:shadow-lg transition-all group"
+          className="group"
         >
-          <FileText size={32} className="mb-4 text-primary" />
-          <h3 className="text-xl font-bold text-foreground mb-2">Request a Service</h3>
-          <p className="text-muted-foreground mb-4">
-            Need help with a project? Submit a service request and I'll get back to you.
-          </p>
-          <span className="inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-            Get Started <ArrowRight size={20} />
-          </span>
+          <DashboardCard className="p-8 border-2 border-primary/20 hover:border-primary/40 hover:shadow-lg transition-all">
+            <FileText size={32} className="mb-4 text-primary" />
+            <h3 className="text-xl font-bold text-foreground mb-2">Request a Service</h3>
+            <p className="text-muted-foreground mb-4">
+              Need help with a project? Submit a service request and I'll get back to you.
+            </p>
+            <span className="inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+              Get Started <ArrowRight size={20} />
+            </span>
+          </DashboardCard>
         </Link>
         <Link
           href="/services"
-          className="bg-card border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/40 hover:shadow-lg transition-all group"
+          className="group"
         >
-          <Package size={32} className="mb-4 text-primary" />
-          <h3 className="text-xl font-bold text-foreground mb-2">Browse Services</h3>
-          <p className="text-muted-foreground mb-4">
-            Explore the services I offer and find the right solution for your needs.
-          </p>
-          <span className="inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-            View Services <ArrowRight size={20} />
-          </span>
+          <DashboardCard className="p-8 border-2 border-primary/20 hover:border-primary/40 hover:shadow-lg transition-all">
+            <Package size={32} className="mb-4 text-primary" />
+            <h3 className="text-xl font-bold text-foreground mb-2">Browse Services</h3>
+            <p className="text-muted-foreground mb-4">
+              Explore the services I offer and find the right solution for your needs.
+            </p>
+            <span className="inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+              View Services <ArrowRight size={20} />
+            </span>
+          </DashboardCard>
         </Link>
       </div>
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Downloads */}
-        <div className="bg-card rounded-2xl border border-border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">Recent Downloads</h2>
-            {recentDownloads.length > 0 && (
+        <DashboardCard
+          title="Recent Downloads"
+          rightSlot={
+            recentDownloads.length > 0 ? (
               <Link
                 href="/dashboard/downloads"
                 className="text-sm text-primary hover:underline font-medium"
               >
                 View all
               </Link>
-            )}
-          </div>
+            ) : null
+          }
+        >
           {recentDownloads.length === 0 ? (
             <div className="text-center py-12">
               <Download className="mx-auto mb-4 text-muted-foreground" size={48} />
@@ -360,20 +363,21 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-        </div>
+        </DashboardCard>
         {/* Recent Requests */}
-        <div className="bg-card rounded-2xl border border-border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">Recent Requests</h2>
-            {recentRequests.length > 0 && (
+        <DashboardCard
+          title="Recent Requests"
+          rightSlot={
+            recentRequests.length > 0 ? (
               <Link
                 href="/dashboard/requests"
                 className="text-sm text-primary hover:underline font-medium"
               >
                 View all
               </Link>
-            )}
-          </div>
+            ) : null
+          }
+        >
           {recentRequests.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="mx-auto mb-4 text-muted-foreground" size={48} />
@@ -406,7 +410,7 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-        </div>
+        </DashboardCard>
       </div>
     </div>
   )

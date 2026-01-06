@@ -16,6 +16,7 @@ import {
   Package,
   AlertCircle,
 } from 'lucide-react'
+import DashboardCard from '@/components/features/dashboard/DashboardCard'
 import { Spinner } from '@/components/ui/Spinner'
 
 type DashboardStats = {
@@ -179,50 +180,50 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* System Health Widget */}
-      <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/20">
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">System Health</h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    stats.system.status === 'ok' ? 'bg-success' : 'bg-error'
-                  }`}
-                />
-                <span className="text-sm text-foreground">
-                  API Status: <strong>{stats.system.status.toUpperCase()}</strong>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    stats.system.availableForBusiness ? 'bg-success' : 'bg-warning'
-                  }`}
-                />
-                <span className="text-sm text-foreground">
-                  Availability:{' '}
-                  <strong>{stats.system.availableForBusiness ? 'Open' : 'Closed'}</strong>
-                </span>
-              </div>
-              {stats.system.maintenanceMode && (
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-error" />
-                  <span className="text-sm text-foreground">
-                    <strong>Maintenance Mode Active</strong>
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+      <DashboardCard
+        title="System Health"
+        rightSlot={
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Last checked</p>
             <p className="text-sm font-medium text-foreground">
               {new Date(stats.system.lastChecked).toLocaleTimeString()}
             </p>
           </div>
+        }
+        className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20"
+      >
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                stats.system.status === 'ok' ? 'bg-success' : 'bg-error'
+              }`}
+            />
+            <span className="text-sm text-foreground">
+              API Status: <strong>{stats.system.status.toUpperCase()}</strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                stats.system.availableForBusiness ? 'bg-success' : 'bg-warning'
+              }`}
+            />
+            <span className="text-sm text-foreground">
+              Availability:{' '}
+              <strong>{stats.system.availableForBusiness ? 'Open' : 'Closed'}</strong>
+            </span>
+          </div>
+          {stats.system.maintenanceMode && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-error" />
+              <span className="text-sm text-foreground">
+                <strong>Maintenance Mode Active</strong>
+              </span>
+            </div>
+          )}
         </div>
-      </div>
+      </DashboardCard>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -230,25 +231,26 @@ export default function AdminDashboardPage() {
           <Link
             key={kpi.label}
             href={kpi.href}
-            className="bg-card rounded-2xl p-6 border border-border hover:border-primary transition-all hover:shadow-lg"
+            className="block"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-3 rounded-xl ${kpi.bg}`}>
-                <kpi.icon className={kpi.color} size={24} />
+            <DashboardCard className="p-6 hover:border-primary transition-all hover:shadow-lg">
+              <div className="flex items-start justify-between mb-4">
+                <div className={`p-3 rounded-xl ${kpi.bg}`}>
+                  <kpi.icon className={kpi.color} size={24} />
+                </div>
               </div>
-            </div>
-            <p className="text-muted-foreground text-sm mb-1">{kpi.label}</p>
-            <p className="text-3xl font-bold text-foreground">{kpi.value}</p>
-            {kpi.sublabel && (
-              <p className="text-xs text-muted-foreground mt-1">{kpi.sublabel}</p>
-            )}
+              <p className="text-muted-foreground text-sm mb-1">{kpi.label}</p>
+              <p className="text-3xl font-bold text-foreground">{kpi.value}</p>
+              {kpi.sublabel && (
+                <p className="text-xs text-muted-foreground mt-1">{kpi.sublabel}</p>
+              )}
+            </DashboardCard>
           </Link>
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-card rounded-2xl p-6 border border-border">
-        <h2 className="text-xl font-bold text-foreground mb-4">Quick Actions</h2>
+      <DashboardCard title="Quick Actions">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/admin/digital-products/new"
@@ -272,12 +274,12 @@ export default function AdminDashboardPage() {
             Review Orders
           </Link>
         </div>
-      </div>
+      </DashboardCard>
 
       {/* Recent Activity */}
-      <div className="bg-card rounded-2xl p-6 border border-border">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-foreground">Recent Activity</h2>
+      <DashboardCard
+        title="Recent Activity"
+        rightSlot={
           <Link
             href="/admin/audit"
             className="text-sm text-primary hover:underline flex items-center gap-1"
@@ -285,8 +287,8 @@ export default function AdminDashboardPage() {
             View All
             <TrendingUp size={16} />
           </Link>
-        </div>
-
+        }
+      >
         {stats.recentActivity.length > 0 ? (
           <div className="space-y-3">
             {stats.recentActivity.map((activity) => (
@@ -319,7 +321,7 @@ export default function AdminDashboardPage() {
             <p className="text-sm">Activity will appear here once actions are logged.</p>
           </div>
         )}
-      </div>
+      </DashboardCard>
     </div>
   )
 }
