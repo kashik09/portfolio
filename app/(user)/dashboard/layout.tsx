@@ -124,35 +124,35 @@ export default function DashboardLayout({
   )
   const sidebar = (
     <div className="p-6">
-      <nav className="space-y-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive
-                  ? 'bg-primary text-primary-foreground font-medium'
-                  : 'text-foreground hover:bg-primary/10 hover:text-primary'
-              }`}
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </Link>
-          )
-        })}
-      </nav>
-      <div className="mt-8 pt-8 border-t border-border">
-        <Link
-          href="/"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-primary/10 hover:text-primary transition-colors"
-        >
-          <ArrowLeft size={20} />
-          <span>Back to Site</span>
-        </Link>
-      </div>
-    </div>
+              <nav className="space-y-1.5">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-w-0 ${
+                        isActive
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-foreground/80 hover:text-foreground hover:bg-muted/60'
+                      }`}
+                    >
+                      <item.icon size={18} className="shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  )
+                })}
+              </nav>
+              <div className="mt-8 pt-8 border-t border-border">
+                <Link
+                  href="/"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors"
+                >
+                  <ArrowLeft size={18} className="shrink-0" />
+                  <span className="truncate">Back to Site</span>
+                </Link>
+              </div>
+            </div>
   )
   const mobileNav = sidebarOpen ? (
     <div
@@ -160,10 +160,10 @@ export default function DashboardLayout({
       onClick={() => setSidebarOpen(false)}
     >
       <aside
-        className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border p-6"
+        className="absolute left-0 top-0 bottom-0 w-72 max-w-[80vw] bg-card border-r border-border p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <nav className="space-y-2">
+        <nav className="space-y-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -171,14 +171,14 @@ export default function DashboardLayout({
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-w-0 ${
                   isActive
-                    ? 'bg-primary text-primary-foreground font-medium'
-                    : 'text-foreground hover:bg-primary/10 hover:text-primary'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-foreground/80 hover:text-foreground hover:bg-muted/60'
                 }`}
               >
-                <item.icon size={20} />
-                <span>{item.label}</span>
+                <item.icon size={18} className="shrink-0" />
+                <span className="truncate">{item.label}</span>
               </Link>
             )
           })}
@@ -187,10 +187,10 @@ export default function DashboardLayout({
           <Link
             href="/"
             onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors"
           >
-            <ArrowLeft size={20} />
-            <span>Back to Site</span>
+            <ArrowLeft size={18} className="shrink-0" />
+            <span className="truncate">Back to Site</span>
           </Link>
         </div>
       </aside>

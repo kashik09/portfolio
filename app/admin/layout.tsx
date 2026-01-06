@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { LayoutDashboard, FolderKanban, FileText, Users, Settings, LogOut, Shield, Megaphone, ArrowUp, Package, ShoppingBag, Menu } from 'lucide-react'
 import AdminHeader from '@/components/features/admin/AdminHeader'
 import DashboardShell from '@/components/features/dashboard/DashboardShell'
@@ -14,6 +15,7 @@ export default function AdminLayout({
 }) {
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,26 +67,40 @@ export default function AdminLayout({
           <div className="p-5">
             <h2 className="text-xs font-bold text-muted-app uppercase tracking-wider mb-4 px-3">Navigation</h2>
 
-            <nav className="space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-app opacity-80 hover:opacity-100 hover:bg-app hover:text-primary transition-all group"
-                >
-                  <item.icon size={18} className="text-muted-app group-hover:text-primary transition-colors" />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+            <nav className="space-y-1.5">
+              {navItems.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== '/admin' && pathname.startsWith(`${item.href}/`))
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-w-0 group ${
+                      isActive
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-app/80 hover:text-app hover:bg-app'
+                    }`}
+                  >
+                    <item.icon
+                      size={18}
+                      className={`shrink-0 transition-colors ${
+                        isActive ? 'text-primary' : 'text-muted-app group-hover:text-primary'
+                      }`}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                )
+              })}
             </nav>
 
             <div className="mt-6 pt-6 border-t border-app">
               <Link
                 href="/"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-app opacity-80 hover:opacity-100 hover:bg-app hover:text-primary transition-all group"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-app/80 hover:text-app hover:bg-app transition-colors min-w-0 group"
               >
-                <LogOut size={18} className="text-muted-app group-hover:text-primary transition-colors" />
-                <span>Back to Site</span>
+                <LogOut size={18} className="shrink-0 text-muted-app group-hover:text-primary transition-colors" />
+                <span className="truncate">Back to Site</span>
               </Link>
             </div>
           </div>
