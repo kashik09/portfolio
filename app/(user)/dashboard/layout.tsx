@@ -8,6 +8,7 @@ import { Home, Download, FileText, Settings, ArrowLeft, Menu, X, User, AlertTria
 import { useState, useEffect } from 'react'
 import { Spinner } from '@/components/ui/Spinner'
 import { usePreferences } from '@/lib/preferences/PreferencesContext'
+import { getPossessive } from '@/lib/strings'
 export default function DashboardLayout({
   children,
 }: {
@@ -19,6 +20,19 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [maintenanceMode, setMaintenanceMode] = useState(false)
+  const displayName = (() => {
+    const name = session?.user?.name?.trim()
+    if (name) return name
+    const email = session?.user?.email?.trim()
+    if (email) {
+      const localPart = email.split('@')[0]
+      return localPart || email
+    }
+    return ''
+  })()
+  const dashboardTitle = displayName
+    ? `${getPossessive(displayName)} Dashboard`
+    : 'Your Dashboard'
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
     { href: '/dashboard/downloads', icon: Download, label: 'My Downloads' },
@@ -73,7 +87,7 @@ export default function DashboardLayout({
                     <span className="text-xl font-bold text-primary">D</span>
                   </div>
                   <div className="hidden md:block">
-                    <h1 className="text-lg font-bold text-foreground">My Dashboard</h1>
+                    <h1 className="text-lg font-bold text-foreground">{dashboardTitle}</h1>
                     <p className="text-xs text-muted-foreground">Personal Account</p>
                   </div>
                 </Link>

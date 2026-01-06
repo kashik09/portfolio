@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { usePreferences } from '@/lib/preferences/PreferencesContext'
 import { getThemeLabel, THEME_KEYS } from '@/lib/preferences/themes'
 import { useResolvedAppearance } from '@/lib/preferences/useResolvedAppearance'
+import { getPossessive } from '@/lib/strings'
 
 export default function AdminHeader() {
   const { data: session } = useSession()
@@ -26,6 +27,19 @@ export default function AdminHeader() {
   const activeIndex = THEME_KEYS.findIndex((key) => key === preferences.theme)
   const safeIndex = activeIndex < 0 ? 0 : activeIndex
   const pillWidth = 80
+  const adminName = (() => {
+    const name = session?.user?.name?.trim()
+    if (name) return name
+    const email = session?.user?.email?.trim()
+    if (email) {
+      const localPart = email.split('@')[0]
+      return localPart || email
+    }
+    return ''
+  })()
+  const adminTitle = adminName
+    ? `${getPossessive(adminName)} Dashboard`
+    : 'Admin Dashboard'
 
   return (
     <header className="sticky top-0 z-50 border-b border-app backdrop-blur-xl surface-app shadow-sm">
@@ -42,7 +56,7 @@ export default function AdminHeader() {
               </div>
             </div>
             <div className="flex flex-col">
-              <h1 className="text-base font-bold text-app tracking-tight">Admin Dashboard</h1>
+              <h1 className="text-base font-bold text-app tracking-tight">{adminTitle}</h1>
               <p className="text-[11px] text-muted font-medium">Portfolio Management</p>
             </div>
           </Link>
