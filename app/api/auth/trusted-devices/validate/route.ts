@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from '@/lib/auth'
 import { ADMIN_DEVICE_ID_COOKIE, getRequestIp, hashValue } from '@/lib/admin-security'
 
+export const dynamic = 'force-dynamic'
+
 const ADMIN_ROLES = new Set(['ADMIN', 'OWNER', 'MODERATOR', 'EDITOR'])
 
 export async function GET(request: NextRequest) {

@@ -3,6 +3,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  webpack: (config) => {
+    config.externals = config.externals || [];
+    config.externals.push({
+      'fastify': 'commonjs fastify',
+    });
+    return config;
+  },
 
   async headers() {
     const isDev = process.env.NODE_ENV === "development";
