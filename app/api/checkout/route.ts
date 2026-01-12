@@ -3,8 +3,6 @@ import { getServerSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getCartWithItems, clearCart, calculateCartTotal } from '@/lib/cart'
 import { generateOrderNumber } from '@/lib/order-number'
-import { hasAvailableCredits, deductCredits } from '@/lib/credits'
-import { fulfillOrder } from '@/lib/order-fulfillment'
 import { getProvider } from '@/lib/payment/providers'
 import { sendOrderConfirmationEmail, sendPaymentInstructionsEmail } from '@/lib/email/order-emails'
 import { OrderPurchaseType, PaymentStatus, OrderStatus, AuditAction } from '@prisma/client'
@@ -12,7 +10,7 @@ import { OrderPurchaseType, PaymentStatus, OrderStatus, AuditAction } from '@pri
 /**
  * POST /api/checkout
  * Create order from cart
- * Handles both one-time payment and credit purchases
+ * Handles one-time payment purchases
  * Requires authentication
  */
 export async function POST(request: NextRequest) {
@@ -64,41 +62,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Determine purchase type if not specified
-    let finalPurchaseType = purchaseType
-    let creditsRequired = 0
-    let membershipId: string | undefined
-
     if (purchaseType === 'CREDITS') {
-      creditsRequired = totals.creditsRequired || 0
-
-      if (creditsRequired === 0) {
-        return NextResponse.json(
-          { error: 'Products in cart cannot be purchased with credits' },
-          { status: 400 }
-        )
-      }
-
-      // Check if user has sufficient credits
-      const creditCheck = await hasAvailableCredits(session.user.id, creditsRequired)
-
-      if (!creditCheck.hasCredits) {
-        return NextResponse.json(
-          {
-            error: 'Insufficient credits',
-            details: {
-              required: creditsRequired,
-              available: creditCheck.availableCredits,
-            },
-          },
-          { status: 400 }
-        )
-      }
-
-      membershipId = creditCheck.membershipId
-    } else {
-      finalPurchaseType = 'ONE_TIME'
+      return NextResponse.json(
+        { error: 'Credits cannot be used to purchase digital products' },
+        { status: 400 }
+      )
     }
+
+    const finalPurchaseType: OrderPurchaseType = 'ONE_TIME'
 
     // Generate order number
     const orderNumber = await generateOrderNumber()
@@ -126,12 +97,12 @@ export async function POST(request: NextRequest) {
           tax: totals.tax,
           total: totals.total,
           currency,
-          paymentStatus: finalPurchaseType === 'CREDITS' ? PaymentStatus.COMPLETED : PaymentStatus.PENDING,
-          paymentMethod: finalPurchaseType === 'CREDITS' ? 'CREDITS' : paymentMethod,
-          paymentProvider: finalPurchaseType === 'CREDITS' ? null : paymentMethod,
-          purchaseType: finalPurchaseType as OrderPurchaseType,
-          creditsUsed: finalPurchaseType === 'CREDITS' ? creditsRequired : null,
-          membershipId: finalPurchaseType === 'CREDITS' ? membershipId : null,
+          paymentStatus: PaymentStatus.PENDING,
+          paymentMethod,
+          paymentProvider: paymentMethod,
+          purchaseType: finalPurchaseType,
+          creditsUsed: null,
+          membershipId: null,
           status: OrderStatus.PENDING,
           termsAccepted: true,
           termsVersion: '1.0', // TODO: Get from settings
@@ -158,17 +129,6 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      // If credit purchase, deduct credits
-      if (finalPurchaseType === 'CREDITS' && membershipId) {
-        await deductCredits({
-          userId: session.user.id,
-          membershipId,
-          amount: creditsRequired,
-          description: `Order ${orderNumber}`,
-          reference: newOrder.id,
-        })
-      }
-
       // Create audit log
       await tx.auditLog.create({
         data: {
@@ -192,59 +152,26 @@ export async function POST(request: NextRequest) {
     // Clear cart
     await clearCart(session.user.id)
 
-    // If credit purchase, auto-fulfill immediately
-    if (finalPurchaseType === 'CREDITS') {
-      const fulfillmentResult = await fulfillOrder(order.id)
-
-      if (fulfillmentResult.success) {
-        // Send order confirmation and license issued emails
-        await sendOrderConfirmationEmail(order.id)
-        await require('@/lib/email/order-emails').sendLicenseIssuedEmail(order.id)
-
-        // Get updated order with licenses
-        const fulfilledOrder = await prisma.order.findUnique({
-          where: { id: order.id },
-          include: {
-            items: {
-              include: {
-                license: true,
-                product: true,
-              },
-            },
-          },
-        })
-
-        return NextResponse.json({
-          success: true,
-          order: fulfilledOrder,
-          fulfilled: true,
-          message: 'Order placed successfully! Your licenses have been issued.',
-        })
-      }
-    }
-
     // For one-time purchases, get payment instructions
     let paymentInstructions = null
-    if (finalPurchaseType === 'ONE_TIME') {
-      const provider = getProvider(paymentMethod)
+    const provider = getProvider(paymentMethod)
 
-      if (provider) {
-        const paymentIntent = await provider.createPaymentIntent({
-          orderId: order.id,
-          orderNumber,
-          amount: totals.total,
-          currency,
-          customerEmail: user.email,
-          customerName: user.name || undefined,
-        })
+    if (provider) {
+      const paymentIntent = await provider.createPaymentIntent({
+        orderId: order.id,
+        orderNumber,
+        amount: totals.total,
+        currency,
+        customerEmail: user.email,
+        customerName: user.name || undefined,
+      })
 
-        paymentInstructions = paymentIntent.instructions
+      paymentInstructions = paymentIntent.instructions
 
-        // Send order confirmation and payment instructions emails
-        await sendOrderConfirmationEmail(order.id)
-        if (paymentInstructions) {
-          await sendPaymentInstructionsEmail(order.id, paymentInstructions)
-        }
+      // Send order confirmation and payment instructions emails
+      await sendOrderConfirmationEmail(order.id)
+      if (paymentInstructions) {
+        await sendPaymentInstructionsEmail(order.id, paymentInstructions)
       }
     }
 
@@ -264,9 +191,7 @@ export async function POST(request: NextRequest) {
       success: true,
       order: createdOrder,
       paymentInstructions,
-      message: finalPurchaseType === 'CREDITS'
-        ? 'Order placed successfully!'
-        : 'Order created! Please complete payment to receive your licenses.',
+      message: 'Order created! Please complete payment to receive your licenses.',
     })
   } catch (error: any) {
     console.error('Error processing checkout:', error)

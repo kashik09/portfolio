@@ -101,7 +101,6 @@ export async function GET(request: NextRequest) {
           currency: true,
           usdPrice: true,
           ugxPrice: true,
-          creditPrice: true,
           thumbnailUrl: true,
           previewImages: true,
           personalLicense: true,

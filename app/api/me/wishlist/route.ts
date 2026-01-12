@@ -27,7 +27,6 @@ export async function GET() {
         currency: item.product.currency,
         usdPrice: item.product.usdPrice,
         ugxPrice: item.product.ugxPrice,
-        creditPrice: item.product.creditPrice,
         thumbnailUrl: item.product.thumbnailUrl,
         category: item.product.category,
         published: item.product.published,

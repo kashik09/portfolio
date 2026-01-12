@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from '@/lib/rate-limit'
 
 type IncomingBody = {
   name?: string
@@ -14,6 +15,26 @@ type IncomingBody = {
 
 export async function POST(req: Request) {
   try {
+    const rateLimit = checkRateLimit(
+      getRateLimitKey(req, 'requests:create'),
+      5,
+      10 * 60 * 1000
+    )
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: getRateLimitHeaders(rateLimit) }
+      )
+    }
+
+    const contentType = req.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return NextResponse.json(
+        { error: 'Content-Type must be application/json' },
+        { status: 415 }
+      )
+    }
+
     // Check if accepting new requests
     const siteSettings = await prisma.siteSettings.findUnique({
       where: { id: 'site_settings_singleton' },

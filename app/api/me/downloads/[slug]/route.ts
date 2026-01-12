@@ -57,8 +57,8 @@ export async function GET(
       now.getTime() - DOWNLOAD_WINDOW_DAYS * 24 * 60 * 60 * 1000
     )
 
-    const successfulDownloads = license.downloads.filter(d => d.successful)
-    const windowDownloads = successfulDownloads.filter(download => {
+    const attemptDownloads = license.downloads
+    const windowDownloads = attemptDownloads.filter(download => {
       return download.downloadedAt >= windowStart
     }).length
 
@@ -98,7 +98,7 @@ export async function GET(
       licenseKey: license.licenseKey,
       licenseStatus,
       downloadWindowDays: DOWNLOAD_WINDOW_DAYS,
-      downloadHistory: successfulDownloads.map(download => ({
+      downloadHistory: attemptDownloads.map(download => ({
         id: download.id,
         downloadedAt: download.downloadedAt.toISOString(),
         successful: download.successful,
@@ -117,4 +117,3 @@ export async function GET(
     )
   }
 }
-

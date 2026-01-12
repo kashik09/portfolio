@@ -11,6 +11,7 @@ import {
   hashIp,
   logDownloadEvent,
 } from '@/lib/downloads'
+import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from '@/lib/rate-limit'
 
 function getClientIp(req: NextRequest): string | null {
   const headerList = headers()
@@ -55,6 +56,18 @@ export async function GET(
   const ip = getClientIp(request)
   const ipHash = hashIp(ip)
   const userAgent = headers().get('user-agent')
+
+  const rateLimit = checkRateLimit(
+    getRateLimitKey(request, 'downloads:file'),
+    5,
+    10 * 60 * 1000
+  )
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { success: false, error: 'Too many download attempts' },
+      { status: 429, headers: getRateLimitHeaders(rateLimit) }
+    )
+  }
 
   const payload = verifyDownloadToken(token)
   if (!payload) {
@@ -233,23 +246,22 @@ export async function GET(
     }
 
     const txResult = await prisma.$transaction(async tx => {
-      const successfulDownloadsCount = await tx.download.count({
+      const attemptDownloadsCount = await tx.download.count({
         where: {
           userId,
           productId: product.id,
           licenseId: license.id,
-          successful: true,
           downloadedAt: {
             gte: windowStart,
           },
         },
       })
 
-      if (successfulDownloadsCount >= DOWNLOAD_LIMIT) {
+      if (attemptDownloadsCount > DOWNLOAD_LIMIT) {
         return {
           allowed: false as const,
           reason: 'DOWNLOAD_LIMIT_REACHED' as const,
-          successfulDownloadsCount,
+          attemptDownloadsCount,
         }
       }
 
@@ -268,7 +280,7 @@ export async function GET(
         return {
           allowed: false as const,
           reason: 'TOKEN_ALREADY_USED' as const,
-          successfulDownloadsCount,
+          attemptDownloadsCount,
         }
       }
 
@@ -284,7 +296,7 @@ export async function GET(
       return {
         allowed: true as const,
         reason: null,
-        successfulDownloadsCount,
+        attemptDownloadsCount,
       }
     })
 
@@ -335,8 +347,10 @@ export async function GET(
       )
     }
 
-    const remainingDownloads =
-      DOWNLOAD_LIMIT - (txResult.successfulDownloadsCount + 1)
+    const remainingDownloads = Math.max(
+      DOWNLOAD_LIMIT - txResult.attemptDownloadsCount,
+      0
+    )
 
     await logDownloadEvent({
       userId,

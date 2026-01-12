@@ -26,9 +26,6 @@ export async function GET(request: NextRequest) {
       include: {
         product: true,
         downloads: {
-          where: {
-            successful: true,
-          },
           orderBy: {
             downloadedAt: 'desc',
           },
@@ -42,8 +39,7 @@ export async function GET(request: NextRequest) {
     const downloads = licenses
       .filter(license => license.product)
       .map(license => {
-        const successfulDownloads = license.downloads
-        const windowDownloads = successfulDownloads.filter(download => {
+        const windowDownloads = license.downloads.filter(download => {
           return download.downloadedAt >= windowStart
         }).length
 
@@ -92,4 +88,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-

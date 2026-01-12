@@ -5,12 +5,15 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from '@/lib/auth'
 import {
   DOWNLOAD_TOKEN_TTL_SECONDS,
+  DOWNLOAD_LIMIT,
+  DOWNLOAD_WINDOW_DAYS,
   hashIp,
   logDownloadEvent,
   createDownloadToken,
 } from '@/lib/downloads'
 import { detectDownloadAbuse, flagLicenseAbuse } from '@/lib/license'
 import { getEmailConfig, getEmailTemplate, sendEmail } from '@/lib/email'
+import { checkRateLimit, getRateLimitHeaders, getRateLimitKey } from '@/lib/rate-limit'
 
 function getClientIp(req: NextRequest): string | null {
   const headerList = headers()
@@ -45,6 +48,18 @@ export async function POST(
   const ip = getClientIp(request)
   const ipHash = hashIp(ip)
   const userAgent = headers().get('user-agent')
+
+  const rateLimit = checkRateLimit(
+    getRateLimitKey(request, 'downloads:initiate'),
+    5,
+    10 * 60 * 1000
+  )
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { success: false, error: 'Too many download attempts' },
+      { status: 429, headers: getRateLimitHeaders(rateLimit) }
+    )
+  }
 
   // Record attempted download early for security visibility
   await logDownloadEvent({
@@ -118,6 +133,45 @@ export async function POST(
       return NextResponse.json(
         { success: false, error: 'License is not in good standing' },
         { status: 403 }
+      )
+    }
+
+    const now = new Date()
+    const windowStart = new Date(
+      now.getTime() - DOWNLOAD_WINDOW_DAYS * 24 * 60 * 60 * 1000
+    )
+    const attemptCount = await prisma.download.count({
+      where: {
+        userId,
+        productId: product.id,
+        licenseId: license.id,
+        downloadedAt: {
+          gte: windowStart,
+        },
+      },
+    })
+
+    if (attemptCount >= DOWNLOAD_LIMIT) {
+      await logDownloadEvent({
+        userId,
+        action: AuditAction.DOWNLOAD_FAILED,
+        resourceId: product.id,
+        ipHash,
+        userAgent,
+        details: {
+          reason: 'DOWNLOAD_LIMIT_REACHED',
+          limit: DOWNLOAD_LIMIT,
+          windowDays: DOWNLOAD_WINDOW_DAYS,
+        },
+      })
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Download limit reached for this period',
+          code: 'DOWNLOAD_LIMIT_REACHED',
+        },
+        { status: 429 }
       )
     }
 

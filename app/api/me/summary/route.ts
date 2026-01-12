@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const [licensesCount, requestsCount, pendingRequestsCount, recentDownloads, recentRequests] =
+    const [licensesCount, requestsCount, pendingRequestsCount, recentDownloads, recentRequests, activeProject] =
       await Promise.all([
         prisma.license.count({
           where: { userId },
@@ -62,6 +62,26 @@ export async function GET(request: NextRequest) {
             createdAt: 'desc',
           },
           take: 3,
+        }),
+        prisma.serviceProject.findFirst({
+          where: {
+            userId,
+            status: 'ACTIVE',
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          select: {
+            id: true,
+            name: true,
+            currentPhase: true,
+            designRevisions: true,
+            designRevisionsMax: true,
+            buildRevisions: true,
+            buildRevisionsMax: true,
+            approvedFeatures: true,
+            scope: true,
+          },
         }),
       ])
 
@@ -108,6 +128,19 @@ export async function GET(request: NextRequest) {
           status: request.status,
           createdAt: request.createdAt.toISOString(),
         })),
+        activeProject: activeProject
+          ? {
+              id: activeProject.id,
+              name: activeProject.name,
+              currentPhase: activeProject.currentPhase,
+              designRevisions: activeProject.designRevisions,
+              designRevisionsMax: activeProject.designRevisionsMax,
+              buildRevisions: activeProject.buildRevisions,
+              buildRevisionsMax: activeProject.buildRevisionsMax,
+              approvedFeatures: activeProject.approvedFeatures,
+              scope: activeProject.scope,
+            }
+          : null,
       },
     })
   } catch (error) {
@@ -118,4 +151,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-

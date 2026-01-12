@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const cappedRolloverCap = Math.min(plan.rolloverCap, 250)
+
     // Calculate membership dates
     const startDate = new Date()
     const endDate = new Date()
@@ -79,7 +81,7 @@ export async function POST(request: NextRequest) {
           usedCredits: 0,
           remainingCredits: plan.credits,
           rolloverCredits: 0,
-          rolloverCap: plan.rolloverCap,
+          rolloverCap: cappedRolloverCap,
           startDate,
           endDate,
           autoRenew: false,
