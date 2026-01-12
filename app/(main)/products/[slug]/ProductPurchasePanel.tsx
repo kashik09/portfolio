@@ -201,6 +201,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           creditPrice={product.prices.credits}
           currency={displayCurrency}
           showCurrencyToggle={false}
+          showCredits={false}
         />
       </div>
 
@@ -210,6 +211,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             options={displayLicenseOptions}
             selected={selectedLicense}
             onChange={(type) => setSelectedLicense(type as 'PERSONAL' | 'COMMERCIAL' | 'TEAM')}
+            showCredits={false}
           />
         </div>
       )}

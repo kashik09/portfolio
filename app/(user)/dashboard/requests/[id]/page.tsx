@@ -275,7 +275,7 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
               </p>
               <p className="text-sm text-muted-foreground whitespace-pre-line">
                 {serviceProject.scope ||
-                  'Changes beyond the approved feature list may be treated as paid add-ons or out-of-scope work. We will always confirm scope and estimates with you before starting any paid additions.'}
+                  'Original scope is fixed at quote acceptance. Changes require additional credits or paid add-ons. Maintenance covers bug fixes only; new features, pages, or design changes are treated as new work. We will confirm scope and credits before starting any additions.'}
               </p>
             </div>
           </div>

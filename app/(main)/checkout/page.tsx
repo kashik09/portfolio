@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { formatPriceShort } from '@/lib/currency'
 import type { SupportedCurrency } from '@/lib/currency'
 import { usePendingAction } from '@/lib/usePendingAction'
-import { Check, CreditCard, Coins } from 'lucide-react'
+import { CreditCard } from 'lucide-react'
 
 export default function CheckoutPage() {
   const { data: _session, status } = useSession()
@@ -17,8 +17,7 @@ export default function CheckoutPage() {
 
   const [cart, setCart] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [paymentMethod, _setPaymentMethod] = useState('MANUAL')
-  const [purchaseType, setPurchaseType] = useState<'ONE_TIME' | 'CREDITS'>('ONE_TIME')
+  const paymentMethod = 'MANUAL'
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [currency, _setCurrency] = useState<SupportedCurrency>('USD')
   const { isPending: isSubmitting, run: runCheckout } = usePendingAction()
@@ -74,7 +73,6 @@ export default function CheckoutPage() {
           body: JSON.stringify({
             paymentMethod,
             termsAccepted,
-            purchaseType,
             currency,
           }),
         })
@@ -102,7 +100,6 @@ export default function CheckoutPage() {
   }
 
   const totals = cart?.totals || { subtotal: 0, tax: 0, total: 0 }
-  const hasCreditsOption = totals.creditsRequired && totals.creditsRequired > 0
 
   return (
     <div className="min-h-screen py-16">
@@ -115,61 +112,18 @@ export default function CheckoutPage() {
             {/* Payment Method */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-xl font-bold text-foreground mb-4">Payment Method</h2>
-
-              <div className="space-y-3">
-                {/* One-Time Payment */}
-                <button
-                  type="button"
-                  onClick={() => setPurchaseType('ONE_TIME')}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                    purchaseType === 'ONE_TIME' ? 'border-primary bg-primary/5' : 'border-border'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
-                      purchaseType === 'ONE_TIME' ? 'border-primary bg-primary' : 'border-border'
-                    }`}>
-                      {purchaseType === 'ONE_TIME' && <Check className="w-3 h-3 text-primary-foreground" />}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <CreditCard className="w-4 h-4 text-foreground" />
-                        <span className="font-semibold text-foreground">One-Time Payment</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Pay via bank transfer or WhatsApp. Manual confirmation required.
-                      </p>
-                    </div>
+              <div className="rounded-lg border border-border bg-muted/40 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center mt-0.5">
+                    <CreditCard className="w-4 h-4 text-foreground" />
                   </div>
-                </button>
-
-                {/* Credits Payment */}
-                {hasCreditsOption && (
-                  <button
-                    type="button"
-                    onClick={() => setPurchaseType('CREDITS')}
-                    className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                      purchaseType === 'CREDITS' ? 'border-primary bg-primary/5' : 'border-border'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
-                        purchaseType === 'CREDITS' ? 'border-primary bg-primary' : 'border-border'
-                      }`}>
-                        {purchaseType === 'CREDITS' && <Check className="w-3 h-3 text-primary-foreground" />}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Coins className="w-4 h-4 text-foreground" />
-                          <span className="font-semibold text-foreground">Pay with Credits</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Use {totals.creditsRequired} credits from your membership. Instant activation!
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                )}
+                  <div>
+                    <p className="font-semibold text-foreground">One-time payment</p>
+                    <p className="text-sm text-muted-foreground">
+                      Pay via bank transfer or WhatsApp. Access is granted after payment is confirmed.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -218,10 +172,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-3 flex justify-between">
                   <span className="font-bold text-foreground">Total</span>
                   <span className="font-bold text-foreground text-xl">
-                    {purchaseType === 'CREDITS' && totals.creditsRequired
-                      ? `${totals.creditsRequired} Credits`
-                      : formatPriceShort(totals.total, currency)
-                    }
+                    {formatPriceShort(totals.total, currency)}
                   </span>
                 </div>
               </div>

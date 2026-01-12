@@ -75,7 +75,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
   const handleDownload = async () => {
     if (!product) return
     if (product.downloadsUsed >= product.downloadLimit) {
-      showToast('Download limit reached for this period', 'error')
+      showToast('Download attempt limit reached for this period', 'error')
       return
     }
     setShowConfirmModal(false)
@@ -214,7 +214,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           <div className="flex items-center justify-between p-4 bg-muted rounded-lg mb-6">
             <div className="flex items-center gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">Downloads Remaining</p>
+                <p className="text-sm text-muted-foreground">Attempts Remaining</p>
                 <p className={`text-2xl font-bold ${
                   product.downloadsUsed >= product.downloadLimit
                     ? 'text-error'
@@ -238,7 +238,7 @@ export default function DownloadDetailPage({ params }: DownloadDetailPageProps) 
           {/* Download Progress */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-muted-foreground">Download Usage</span>
+              <span className="text-muted-foreground">Attempt Usage</span>
               <span className="font-medium text-foreground">
                 {Math.round((product.downloadsUsed / product.downloadLimit) * 100)}%
               </span>

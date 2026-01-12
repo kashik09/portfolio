@@ -24,7 +24,6 @@ const getProduct = cache(async (slug: string) =>
       currency: true,
       usdPrice: true,
       ugxPrice: true,
-      creditPrice: true,
       fileSize: true,
       fileType: true,
       thumbnailUrl: true,
@@ -95,7 +94,7 @@ export default async function ProductDetailPage({
   const prices = {
     usd: Number(product.usdPrice || product.price || 0),
     ugx: Number(product.ugxPrice || convertPrice(basePrice, 'USD', 'UGX')),
-    credits: product.creditPrice || null,
+    credits: null,
   }
 
   const licenseOptions = [] as Array<{
@@ -132,7 +131,7 @@ export default async function ProductDetailPage({
       prices: {
         usd: Number(prices.usd) * 1.5,
         ugx: Number(prices.ugx) * 1.5,
-        credits: prices.credits ? prices.credits * 1.5 : null,
+        credits: null,
       },
     })
   }
@@ -147,7 +146,7 @@ export default async function ProductDetailPage({
       prices: {
         usd: Number(prices.usd) * 3,
         ugx: Number(prices.ugx) * 3,
-        credits: prices.credits ? prices.credits * 3 : null,
+        credits: null,
       },
     })
   }
@@ -271,7 +270,7 @@ export default async function ProductDetailPage({
                 <Zap className="w-5 h-5 text-primary mt-0.5" />
                 <div>
                   <h3 className="text-sm font-semibold text-foreground">Instant delivery</h3>
-                  <p className="text-sm text-muted-foreground">Get immediate access after checkout.</p>
+                  <p className="text-sm text-muted-foreground">Get immediate access after payment confirmation.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">

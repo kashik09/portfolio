@@ -186,7 +186,7 @@ export default function DownloadsPage() {
                           ? 'text-error'
                           : 'text-success'
                       }`}>
-                        {download.downloadLimit - download.downloadsUsed} downloads left (3 per 14 days)
+                        {download.downloadLimit - download.downloadsUsed} attempts left (3 per 14 days)
                       </span>
                     </div>
                     {/* Progress Bar */}

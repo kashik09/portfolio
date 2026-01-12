@@ -121,11 +121,6 @@ export default function OrdersPage() {
                     <p className="text-2xl font-bold text-foreground">
                       {formatPriceShort(Number(order.total), order.currency as SupportedCurrency)}
                     </p>
-                    {order.purchaseType === 'CREDITS' && order.creditsUsed && (
-                      <p className="text-sm text-muted-foreground">
-                        {order.creditsUsed} credits used
-                      </p>
-                    )}
                   </div>
                 </div>
                 <div className="mb-4">

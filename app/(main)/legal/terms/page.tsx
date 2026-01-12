@@ -104,7 +104,7 @@ export default function TermsPage() {
 
           <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Digital Products</h3>
           <p className="text-foreground leading-relaxed mb-4">
-            All digital products are non-refundable once access or download has been provided, except where required by applicable law. This is standard for digital goods where immediate access is granted.
+            Digital products are licensed to the purchaser and may not be resold or redistributed. All digital products are non-refundable once access or download has been provided, except where required by applicable law.
           </p>
 
           <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Services</h3>
@@ -115,6 +115,11 @@ export default function TermsPage() {
           <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Service Requests</h3>
           <p className="text-foreground leading-relaxed mb-4">
             Submitting a service request through our platform does not constitute a binding agreement. A formal agreement must be accepted in writing before any work begins or fees are charged. No refund is necessary for service requests as no payment is collected at the request stage.
+          </p>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Memberships</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            Memberships are non-refundable. Credits are non-refundable and expire according to the membership terms.
           </p>
         </section>
 

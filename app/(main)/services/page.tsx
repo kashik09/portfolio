@@ -21,18 +21,15 @@ type AvailabilityData = {
 
 export default function ServicesPage() {
   const [isLoading, setIsLoading] = useState(true)
-  const [pricing, setPricing] = useState<any>(null)
   const [isAvailable, setIsAvailable] = useState(true)
   const [availability, setAvailability] = useState<AvailabilityData | null>(null)
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/content/pricing').then((r) => r.json()),
       fetch('/api/site/status').then((r) => r.json()),
       fetch('/api/site/availability').then((r) => r.json()),
     ])
-      .then(([pricingData, statusData, availabilityData]) => {
-        setPricing(pricingData)
+      .then(([statusData, availabilityData]) => {
         setIsAvailable(statusData.data?.availableForBusiness !== false)
         if (availabilityData.success && availabilityData.data) {
           setAvailability(availabilityData.data)
@@ -52,7 +49,7 @@ export default function ServicesPage() {
       name: 'Web Development',
       icon: Code,
       description: 'Full-stack web applications built with modern frameworks. From landing pages to complex web platforms.',
-      price: pricing?.items?.['web-dev']?.displayFormat || 'From $500',
+      price: 'Scope-based credits',
       features: [
         'Next.js, React, TypeScript',
         'Responsive & mobile-first',
@@ -66,7 +63,7 @@ export default function ServicesPage() {
       name: 'Mobile Development',
       icon: Smartphone,
       description: 'Native and cross-platform mobile applications for iOS and Android.',
-      price: pricing?.items?.['mobile-dev']?.displayFormat || 'From $1,500',
+      price: 'Scope-based credits',
       features: [
         'iOS & Android apps',
         'React Native or native development',
@@ -80,7 +77,7 @@ export default function ServicesPage() {
       name: 'UI/UX Design',
       icon: Palette,
       description: 'Beautiful, user-centered design systems and interfaces that users love.',
-      price: pricing?.items?.['ui-ux']?.displayFormat || 'From $300',
+      price: 'Scope-based credits',
       features: [
         'Figma design files',
         'Design system creation',
@@ -94,7 +91,7 @@ export default function ServicesPage() {
       name: 'Consulting',
       icon: MessageSquare,
       description: 'Technical consulting for architecture, code reviews, and strategic planning.',
-      price: pricing?.items?.consulting?.displayFormat || 'From $100/hr',
+      price: 'Scope-based credits',
       features: [
         'Architecture review',
         'Code audits',
@@ -120,7 +117,7 @@ export default function ServicesPage() {
         <div className="max-w-3xl mx-auto text-center mb-16">
           <h1 className="text-5xl font-bold text-foreground mb-6">Services</h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            From idea to launch, I help bring your digital products to life with clean code and thoughtful design.
+            From idea to launch, I help bring your digital products to life with clean code and thoughtful design. Scope and credit usage are confirmed before work begins.
           </p>
         </div>
 

@@ -43,16 +43,15 @@ export default function MembershipsPage() {
       tier: 'BASIC_ACCESS',
       price: pricing?.items?.['membership-basic']?.displayFormat || '$299',
       credits: pricing?.items?.['membership-basic']?.metadata?.credits || 750,
-      duration: '1 year',
+      duration: '12 months',
       icon: Star,
       description: 'Perfect for small projects and individual developers',
       features: [
         '750 credits included',
-        '1 year validity',
-        'Access to digital products',
-        'Basic support',
-        'Priority updates',
-        'Community access',
+        'Credits expire after 12 months',
+        'No rollover credits',
+        'Standard response time',
+        'Access to essential services',
       ],
     },
     {
@@ -61,18 +60,17 @@ export default function MembershipsPage() {
       tier: 'PRO',
       price: pricing?.items?.['membership-pro']?.displayFormat || '$1,499',
       credits: pricing?.items?.['membership-pro']?.metadata?.credits || 1500,
-      duration: '2 years',
+      duration: '12 months',
       icon: Zap,
       popular: true,
       description: 'Best value for growing teams and serious projects',
       features: [
         '1,500 credits included',
-        '2 year validity',
-        'All digital products',
+        'Credits expire after 12 months',
+        'Up to 250 credits rollover',
         'Priority support',
-        'Early access to new products',
-        'Quarterly strategy sessions',
-        '20% rollover credits',
+        'Faster response time',
+        'Expanded service access',
       ],
     },
     {
@@ -86,12 +84,10 @@ export default function MembershipsPage() {
       description: 'Ongoing partnership with monthly credits and dedicated support',
       features: [
         '500 credits monthly',
-        'Month-to-month flexibility',
-        'All products included',
+        'Credits expire monthly (no rollover)',
         'Dedicated support',
-        'Monthly consulting call',
-        'Custom development hours',
-        'Cancel anytime',
+        'Monthly planning call',
+        'Priority delivery slots',
       ],
     },
   ]
@@ -141,7 +137,7 @@ export default function MembershipsPage() {
         <div className="max-w-3xl mx-auto text-center mb-16">
           <h1 className="text-5xl font-bold text-foreground mb-6">Memberships</h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Get access to premium digital products, priority support, and credits for custom work. Choose the plan that fits your needs.
+            Memberships grant service credits and access levels for custom work. Digital products are purchased separately.
           </p>
         </div>
 
@@ -229,18 +225,18 @@ export default function MembershipsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
               <div>
                 <p className="mb-3">
-                  <strong className="text-foreground">Credits are your currency</strong> for custom work, services, and premium products. Each membership tier comes with a credit balance you can use throughout your term.
+                  <strong className="text-foreground">Credits are prepaid service units</strong> used only for services and service add-ons. They are not currency, not hours, and not refundable.
                 </p>
                 <p>
-                  For example, a typical web page design costs 50-100 credits, while a full landing page might cost 200-300 credits.
+                  Scope determines how many credits are used. We confirm scope and credit usage before work begins.
                 </p>
               </div>
               <div>
                 <p className="mb-3">
-                  <strong className="text-foreground">Credits never expire</strong> during your membership period. Pro members get 20% rollover if you renew before expiration.
+                  <strong className="text-foreground">Credits expire after 12 months</strong>. Managed credits expire monthly and do not roll over.
                 </p>
                 <p>
-                  Managed members receive a fresh 500 credits each month, perfect for ongoing projects and continuous development needs.
+                  Rollover is capped at 250 credits where available.
                 </p>
               </div>
             </div>
@@ -258,7 +254,7 @@ export default function MembershipsPage() {
                 Can I upgrade or downgrade my membership?
               </h3>
               <p className="text-sm text-muted-foreground">
-                Yes! You can upgrade anytime and we'll prorate your current membership. Downgrades take effect at the end of your current billing period.
+                Contact support to review membership changes or renewal options.
               </p>
             </div>
 
@@ -267,7 +263,7 @@ export default function MembershipsPage() {
                 What happens to unused credits?
               </h3>
               <p className="text-sm text-muted-foreground">
-                Basic and Pro credits remain valid for your membership duration. Pro members get 20% rollover on renewal. Managed subscription credits refresh monthly.
+                Credits expire after 12 months, with up to 250 credits rolling over on eligible plans. Managed credits refresh monthly and do not roll over.
               </p>
             </div>
 
@@ -276,7 +272,7 @@ export default function MembershipsPage() {
                 Do you offer refunds?
               </h3>
               <p className="text-sm text-muted-foreground">
-                We offer a 14-day money-back guarantee for first-time members. If you've used credits, we'll refund the unused portion.
+                Memberships are non-refundable.
               </p>
             </div>
           </div>

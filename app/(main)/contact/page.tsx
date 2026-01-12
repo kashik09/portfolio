@@ -246,6 +246,15 @@ export default function ContactPage() {
             />
           </div>
 
+          <div className="rounded-lg border border-border/60 bg-muted/40 p-4 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground mb-2">Scope boundaries</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Scope is fixed at quote acceptance; services use credits based on scope.</li>
+              <li>Changes require additional credits or paid add-ons.</li>
+              <li>Maintenance covers bug fixes only; new features, pages, or design changes are new work.</li>
+            </ul>
+          </div>
+
           <Button
             type="submit"
             variant="primary"

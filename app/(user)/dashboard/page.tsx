@@ -36,6 +36,17 @@ interface MembershipSummary {
   endDate: string
   renewalDate?: string | null
 }
+interface ActiveProjectSummary {
+  id: string
+  name: string
+  currentPhase: string
+  designRevisions: number
+  designRevisionsMax: number
+  buildRevisions: number
+  buildRevisionsMax: number
+  approvedFeatures: string[]
+  scope?: string | null
+}
 interface MeSummaryResponse {
   success: boolean
   data?: {
@@ -52,6 +63,7 @@ interface MeSummaryResponse {
     membership: MembershipSummary | null
     recentDownloads: RecentDownload[]
     recentRequests: RecentRequest[]
+    activeProject: ActiveProjectSummary | null
   }
 }
 export default function DashboardPage() {
@@ -67,6 +79,7 @@ export default function DashboardPage() {
   const [recentDownloads, setRecentDownloads] = useState<RecentDownload[]>([])
   const [recentRequests, setRecentRequests] = useState<RecentRequest[]>([])
   const [membership, setMembership] = useState<MembershipSummary | null>(null)
+  const [activeProject, setActiveProject] = useState<ActiveProjectSummary | null>(null)
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true)
@@ -87,6 +100,7 @@ export default function DashboardPage() {
         pendingRequests: json.data.stats.pendingRequestsCount,
       })
       setMembership(json.data.membership)
+      setActiveProject(json.data.activeProject || null)
       setRecentDownloads(json.data.recentDownloads || [])
       setRecentRequests(json.data.recentRequests || [])
     } catch (error) {
@@ -148,6 +162,18 @@ export default function DashboardPage() {
     }
     return 'there'
   })()
+  const designRevisionsRemaining =
+    activeProject &&
+    Math.max(
+      0,
+      activeProject.designRevisionsMax - activeProject.designRevisions
+    )
+  const buildRevisionsRemaining =
+    activeProject &&
+    Math.max(
+      0,
+      activeProject.buildRevisionsMax - activeProject.buildRevisions
+    )
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -278,6 +304,63 @@ export default function DashboardPage() {
               <ArrowRight size={18} className="animate-arrow-bounce" />
             </Link>
           </div>
+        )}
+      </DashboardCard>
+      <DashboardCard
+        title="Scope & Revisions"
+        subtitle="Approved scope and revision limits for active work"
+      >
+        {activeProject ? (
+          <div className="space-y-4 text-sm">
+            <div className="text-sm text-muted-foreground">
+              Active project:{' '}
+              <span className="font-medium text-foreground">
+                {activeProject.name}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-muted-foreground mb-1">Design revisions</p>
+                <p className="font-medium text-foreground">
+                  {activeProject.designRevisions} used
+                  {typeof designRevisionsRemaining === 'number' &&
+                    ` · ${designRevisionsRemaining} remaining`}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground mb-1">Build revisions</p>
+                <p className="font-medium text-foreground">
+                  {activeProject.buildRevisions} used
+                  {typeof buildRevisionsRemaining === 'number' &&
+                    ` · ${buildRevisionsRemaining} remaining`}
+                </p>
+              </div>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Scope summary</p>
+              {activeProject.approvedFeatures.length > 0 ? (
+                <ul className="list-disc list-inside text-foreground space-y-1">
+                  {activeProject.approvedFeatures.map(feature => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground">
+                  Scope is being finalized.
+                </p>
+              )}
+              {activeProject.scope && (
+                <p className="mt-3 text-muted-foreground whitespace-pre-line">
+                  {activeProject.scope}
+                </p>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No active service project yet. Once a quote is accepted, your scope
+            summary and revision limits will appear here.
+          </p>
         )}
       </DashboardCard>
       {/* Quick Actions */}

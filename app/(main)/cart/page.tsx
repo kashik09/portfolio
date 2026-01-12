@@ -136,14 +136,6 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {totals.creditsRequired && totals.creditsRequired > 0 && (
-                  <div className="mb-6 p-3 bg-primary/10 border border-primary/20 rounded-lg">
-                    <p className="text-sm text-foreground">
-                      <span className="font-semibold">With Credits:</span> {totals.creditsRequired} credits
-                    </p>
-                  </div>
-                )}
-
                 <Link
                   href="/checkout"
                   className="w-full py-3 px-6 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold flex items-center justify-center gap-2"

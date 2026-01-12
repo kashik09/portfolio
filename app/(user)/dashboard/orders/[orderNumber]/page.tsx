@@ -77,11 +77,6 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
               <p className="text-3xl font-bold text-foreground">
                 {formatPriceShort(Number(order.total), order.currency as SupportedCurrency)}
               </p>
-              {order.purchaseType === 'CREDITS' && (
-                <p className="text-sm text-muted-foreground">
-                  Paid with {order.creditsUsed} credits
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -136,7 +131,7 @@ export default function OrderDetailPage({ params }: { params: { orderNumber: str
             <div>
               <p className="text-muted-foreground mb-1">Payment Method</p>
               <p className="text-foreground font-medium">
-                {order.purchaseType === 'CREDITS' ? 'Membership Credits' : order.paymentMethod || 'Manual'}
+                {order.paymentMethod || 'Manual'}
               </p>
             </div>
             <div>
