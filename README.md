@@ -1,65 +1,132 @@
 # Kashi Kweyu Portfolio
 
-A modern, full-stack portfolio website built with Next.js 14, featuring a JSON-based CMS for content management, preference-driven theming, and a complete admin dashboard.
+A modern, full-stack portfolio and business platform built with Next.js 14, featuring membership tiers, digital product marketplace, credit system, and comprehensive admin dashboard.
+
+## Project Status
+
+**Current Version:** 1.1.0-dev
+**Status:** ⚠️ **NOT Production Ready**
+**Last Updated:** 2026-01-07
+
+### Production Blockers
+
+**Critical blockers preventing production launch:**
+
+1. **Payment Integration** - NOT IMPLEMENTED
+   - Currently operating in demo mode only
+   - No real payment processing (Stripe/Flutterwave integration required)
+   - Manual payment confirmation via admin API only
+   - Location: `app/api/memberships/purchase/route.ts:38`
+
+2. **Credit System Pricing** - UNDEFINED
+   - Credit allocation implemented ✅
+   - Credit tracking implemented ✅
+   - Credit deduction implemented ✅
+   - **Credit pricing NOT defined** ❌
+   - Decision required: What does 1 credit equal in USD?
+
+3. **Email Notifications** - PARTIALLY IMPLEMENTED
+   - Infrastructure exists but many TODOs remain
+   - Order fulfillment emails missing
+   - Membership expiration warnings missing
+   - Credit usage alerts missing
+
+**See:** [`docs/audits/comprehensive-audit-summary.md`](docs/audits/comprehensive-audit-summary.md) for full analysis.
+
+---
 
 ## Features
 
-### Core Features
-- **Preferences Theming**: Formal or vibey modes with system, light, and dark theme support
-- **Automated Screenshot Capture**: Capture project screenshots automatically using Playwright
-  - Auto-capture screenshots from live URLs at 1920x1080 @2x resolution
-  - Full page screenshot option for entire scrollable content
-  - Smart filename generation with project context
-  - Toggle between manual upload and auto-capture in admin forms
-- **JSON-based CMS**: Simple file-based content management without database overhead
-- **Admin Content Editor**: Edit About, Services, and Request Form content via intuitive UI
-- **Responsive Design**: Fully responsive across all devices with mobile-first approach
-- **Preference Persistence**: Automatic saving with localStorage
-- **Modern UI**: Clean, accessible interface with Lucide icons
-- **Type-Safe**: Full TypeScript implementation with strict mode
+### Membership System ✅
+- **Basic Access** - $299/year, 750 credits, digital products only
+- **Pro** - $1,499/2 years, 1,500 credits, includes 1 service request
+- **Managed** - $499/month, 500 credits/month, ongoing support
+- Credit tracking and usage limits
+- Membership expiration handling
+- Rollover credit calculations
 
-### Pages
-- **Home**: Hero section with call-to-action and feature highlights
-- **Projects**: Portfolio showcase with project details
-- **Services**: Service offerings with descriptions
-- **About**: Personal bio, skills, timeline, and social links (CMS-managed)
-- **Request Service**: Contact form for project inquiries (CMS-managed)
-- **Admin Content Editors**:
-  - `/admin/content/about` - Edit About page content
-  - Content management for Services and Request forms
+### Digital Product Marketplace ✅
+- Product catalog with categories
+- License tiers (Personal, Team, Enterprise)
+- Instant digital delivery via license keys
+- Shopping cart with credit/USD pricing
+- Order management and fulfillment
+- Admin product management
 
-### UI Components
-- **Button**: Enhanced with icon support, loading states, and 4 variants (primary, secondary, outline, ghost)
-- **Input**: Form input with label support and theme integration
-- **Card**: Flexible card component with hover effects
-- **Header**: Navigation with a responsive mobile menu
-- **Footer**: Site footer with social links (GitHub, LinkedIn, Instagram, WhatsApp)
+### Credit System ✅ (Infrastructure Complete)
+- Virtual currency allocated through memberships
+- Credit deduction tracking
+- Credit transaction logs
+- Rollover calculations for renewals
+- **Pricing definitions:** ⚠️ TBD (see blocker #2)
+
+### Authentication & Authorization ✅
+- NextAuth.js with multiple providers (Google, GitHub, Credentials)
+- Two-factor authentication (2FA) with TOTP
+- Role-based access control (USER, ADMIN, OWNER)
+- Trusted device management
+- Session management
+
+### Admin Dashboard ✅
+- Complete CMS for content management
+- Project, service, and product management
+- Order and membership administration
+- User management and role assignment
+- Service request review and processing
+- Complaint/feedback management
+
+### Service Request System ✅
+- Custom service request forms
+- Admin review and acceptance workflow
+- Credit-based service quotas
+- Request status tracking
+
+### UI/UX Features ✅
+- Preference-driven theming (formal/vibey modes)
+- System, light, and dark theme support
+- Multi-currency display (USD/UGX)
+- Responsive design across all devices
+- Wishlist functionality
+- Automated screenshot capture with Playwright
+
+---
 
 ## Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript (Strict mode)
-- **Styling**: Tailwind CSS with CSS custom properties
-- **Icons**: Lucide React
-- **Fonts**: Inter (Google Fonts)
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript (Strict mode)
+- **Styling:** Tailwind CSS + DaisyUI
+- **Icons:** Lucide React
+- **Fonts:** Inter (Google Fonts)
 
-### Content Management
-- **CMS Type**: JSON-based file system
-- **Storage**: `public/content/` directory
-- **API**: Custom Next.js API routes for file operations
-- **Format**: Structured JSON with TypeScript interfaces
+### Backend
+- **Database:** PostgreSQL (Supabase)
+- **ORM:** Prisma
+- **Authentication:** NextAuth.js v5
+- **2FA:** OTP (Time-based One-Time Password)
+- **File Upload:** Custom upload handlers
+
+### Security & Validation
+- **Password Hashing:** bcrypt (10 rounds - ⚠️ should be 12+)
+- **Schema Validation:** Zod
+- **Rate Limiting:** ⚠️ NOT IMPLEMENTED (critical gap)
+- **CSRF Protection:** ⚠️ NOT IMPLEMENTED (critical gap)
 
 ### Development
-- **Package Manager**: npm/yarn/pnpm
-- **Linting**: ESLint
-- **Type Checking**: TypeScript compiler
-- **Version Control**: Git
+- **Package Manager:** npm/yarn/pnpm
+- **Linting:** ESLint
+- **Type Checking:** TypeScript compiler
+- **Version Control:** Git
+- **Testing:** ⚠️ Zero test coverage (0%)
+
+---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ installed
+- Node.js 18+
+- PostgreSQL database (or Supabase account)
 - Git
 
 ### Installation
@@ -73,337 +140,303 @@ cd my-portfolio
 2. **Install dependencies**
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
 ```
 
-3. **Set up Playwright (for screenshot capture feature)**
+3. **Set up environment variables**
+
+Create a `.env` file in the root directory:
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/myportfolio"
+POSTGRES_PRISMA_URL="postgresql://user:password@localhost:5432/myportfolio?schema=public"
+POSTGRES_URL_NON_POOLING="postgresql://user:password@localhost:5432/myportfolio"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key-here"
+
+# OAuth Providers (optional)
+GITHUB_ID="your-github-oauth-id"
+GITHUB_SECRET="your-github-oauth-secret"
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+
+# Email (for notifications - optional)
+SMTP_HOST="smtp.example.com"
+SMTP_PORT="587"
+SMTP_USER="your-email@example.com"
+SMTP_PASSWORD="your-smtp-password"
+EMAIL_FROM="noreply@example.com"
+```
+
+4. **Set up the database**
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma db push
+
+# Seed initial data
+npm run db:seed
+```
+
+5. **Set up Playwright (for screenshot capture)**
 ```bash
 npx playwright install chromium
 ```
 
-This installs the Chromium browser required for automated screenshot capture. If you skip this step, you can still use manual upload but the auto-capture feature won't work.
-
-4. **Run the development server**
+6. **Run the development server**
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-5. **Open your browser**
+7. **Open your browser**
 
 Navigate to [http://localhost:3000](http://localhost:3000)
+
+### First-Time Setup
+
+After installation, you'll need to:
+
+1. Create an admin account (first user is automatically OWNER)
+2. Configure site settings in admin dashboard
+3. Add projects, services, and products via CMS
+4. Set up payment integration (see blocker #1)
+5. Define credit pricing (see blocker #2)
+
+---
 
 ## Project Structure
 
 ```
 my-portfolio/
 ├── app/                          # Next.js 14 App Router
-│   ├── (main)/                   # Main pages group
-│   │   ├── about/                # About page
-│   │   ├── projects/             # Projects page
-│   │   ├── request/              # Request service page
-│   │   └── services/             # Services page
-│   ├── admin/                    # Admin section
-│   │   └── content/              # Content editors
-│   │       └── about/            # About page editor
+│   ├── (main)/                   # Public pages (home, about, projects, services)
+│   ├── (admin)/                  # Admin dashboard and CMS
 │   ├── api/                      # API routes
-│   │   └── content/              # Content API
-│   │       └── about/            # About content endpoint
-│   ├── layout.tsx                # Root layout with Providers
-│   ├── page.tsx                  # Home page
-│   ├── icon.tsx                  # Custom favicon generator
+│   │   ├── auth/                 # NextAuth configuration
+│   │   ├── memberships/          # Membership purchase/management
+│   │   ├── products/             # Product catalog
+│   │   ├── cart/                 # Shopping cart
+│   │   └── admin/                # Admin-only APIs
 │   └── globals.css               # Global styles & theme definitions
 ├── components/                   # React components
-│   ├── ui/                       # UI components
-│   │   ├── Button.tsx            # Button component
-│   │   └── Input.tsx             # Input component
-│   ├── Header.tsx                # Site header with navigation
-│   ├── Footer.tsx                # Site footer with social links
-├── lib/                          # Utilities & helpers
-├── public/                       # Static assets
-│   └── content/                  # JSON CMS files
-│       ├── about.json            # About page content
-│       ├── services.json         # Services content
-│       └── requestForm.json      # Request form configuration
-├── tailwind.config.ts            # Tailwind with theme support
-├── tsconfig.json                 # TypeScript configuration
-└── package.json                  # Dependencies
+│   ├── ui/                       # UI primitives (Button, Input, Card, etc.)
+│   ├── features/                 # Feature-specific components
+│   └── layouts/                  # Layout components
+├── lib/                          # Utilities, helpers, and business logic
+│   ├── auth.ts                   # NextAuth configuration
+│   ├── credits.ts                # Credit system logic
+│   ├── membership-plans.ts       # Membership tier definitions
+│   ├── cart.ts                   # Shopping cart logic
+│   └── license.ts                # License generation and validation
+├── prisma/
+│   ├── schema.prisma             # Database schema
+│   └── seed.ts                   # Database seeding script
+├── public/
+│   ├── uploads/                  # User-uploaded files
+│   └── content/                  # JSON CMS content
+├── docs/                         # Comprehensive documentation
+│   ├── audits/                   # Security, performance, code quality audits
+│   ├── pricing/                  # Pricing strategy and product catalog
+│   └── reference/                # Technical reference documents
+└── scripts/                      # Utility scripts (screenshot capture, etc.)
 ```
 
-## Preferences and Theming
+---
 
-The UI uses a preference-driven theming model with formal or vibey modes and a system, light, or dark theme. See `docs/preferences.md` for the data attributes and token variables used by the theme system.
+## Documentation
 
-## JSON-Based CMS
+### Key Documentation Files
 
-### Content Files
+- **[MASTER_PRICING_GUIDE.md](docs/pricing/MASTER_PRICING_GUIDE.md)** - Complete pricing strategy, membership tiers, and product catalog
+- **[comprehensive-audit-summary.md](docs/audits/comprehensive-audit-summary.md)** - Full codebase audit with scores and recommendations
+- **[FINDINGS.md](docs/audits/FINDINGS.md)** - Comprehensive feature inventory and implementation status
+- **[security-audit.md](docs/audits/security-audit.md)** - OWASP Top 10 analysis and security roadmap
+- **[performance-audit.md](docs/audits/performance-audit.md)** - Bundle size, Core Web Vitals, optimization plan
 
-Content is stored in `public/content/` as JSON files:
+### Audit Scores (as of 2026-01-07)
 
-**`about.json`** - About page content:
-```json
-{
-  "hero": {
-    "name": "Kashi Kweyu",
-    "nickname": "Kashi",
-    "title": "Junior Developer",
-    "tagline": "Building digital experiences...",
-    "avatarUrl": "/avatar.jpg"
-  },
-  "story": [
-    { "id": "story-1", "content": "Paragraph text..." }
-  ],
-  "skills": [
-    {
-      "category": "Frontend",
-      "icon": "Code2",
-      "items": ["React", "Next.js", "TypeScript"]
-    }
-  ],
-  "timeline": [
-    {
-      "id": "timeline-1",
-      "title": "Role",
-      "organization": "Company",
-      "period": "2024 - Present",
-      "description": "Description...",
-      "type": "work"
-    }
-  ],
-  "social": {
-    "github": "https://github.com/kashik09",
-    "linkedin": "https://linkedin.com/in/kashi-kweyu",
-    "email": "contact@example.com"
-  },
-  "metadata": {
-    "lastUpdated": "2024-01-15T10:30:00Z",
-    "version": "1.0"
-  }
-}
-```
+| Area | Score | Status |
+|------|-------|--------|
+| **Security** | 68/100 | ⚠️ Medium-High Risk |
+| **Performance** | 62/100 | ⚠️ Needs Improvement |
+| **Code Quality** | 72/100 | ✅ Good (Room for Improvement) |
+| **Business Logic** | 85/100 | ✅ Well-Designed |
+| **Overall** | 67/100 | ⚠️ Not Production-Ready |
 
-### API Endpoints
+**Critical Security Issues:**
+- No CSRF protection (CVSS 8.8)
+- No rate limiting (CVSS 8.2)
+- Missing security headers (CVSS 7.4)
+- Path traversal in file upload (CVSS 8.6)
+- Weak bcrypt rounds (CVSS 7.8)
 
-**GET /api/content/about**
-- Fetch About page content
-- Returns: JSON content from `public/content/about.json`
+**Performance Issues:**
+- 5.8MB main bundle
+- Force-dynamic on homepage
+- No image optimization
+- 977-line HomeCanvas component
 
-**PUT /api/content/about**
-- Update About page content
-- Body: Complete AboutData object
-- Updates: `lastUpdated` timestamp automatically
-- Returns: Success/error response
+**Code Quality Issues:**
+- 153 `any` type usages
+- Zero test coverage (0%)
+- 200+ lines of duplicated fetch logic
 
-### Admin Editors
+---
 
-**`/admin/content/about`** - Full WYSIWYG editor:
-- Hero section (name, title, tagline, avatar)
-- Story paragraphs (add/remove/edit)
-- Skills by category (manage items)
-- Timeline entries (work/education)
-- Social links (GitHub, LinkedIn, email)
-- Real-time save with success/error feedback
+## Database Schema
+
+The application uses a comprehensive Prisma schema with 20+ models:
+
+### Core Models
+- **User** - User accounts with roles and authentication
+- **Account** - OAuth account linking
+- **Session** - NextAuth session management
+- **TwoFactorSecret** - 2FA TOTP secrets
+- **TrustedDevice** - Trusted device tracking
+
+### Business Models
+- **Membership** - Membership subscriptions
+- **Credit** - Credit allocation and tracking
+- **CreditTransaction** - Credit usage logs
+- **Product** - Digital product catalog
+- **License** - Product licenses
+- **Order** - Purchase orders
+- **Cart** / **CartItem** - Shopping cart
+
+### Content Models
+- **Project** - Portfolio projects
+- **Service** - Service offerings
+- **ServiceRequest** - Client service requests
+- **Feedback** / **Complaint** - User feedback
+
+See `prisma/schema.prisma` for full schema.
+
+---
 
 ## API Reference
 
-### Content API
+### Public APIs
+- `GET /api/projects` - List portfolio projects
+- `GET /api/services` - List services
+- `GET /api/products` - List digital products
+- `POST /api/cart` - Manage shopping cart
+- `POST /api/memberships/purchase` - Purchase membership (⚠️ demo mode)
 
-All content endpoints follow REST conventions:
+### Admin APIs (Authentication Required)
+- `/api/admin/projects` - CRUD operations for projects
+- `/api/admin/products` - CRUD operations for products
+- `/api/admin/orders` - Order management
+- `/api/admin/memberships` - Membership administration
+- `/api/admin/users` - User management
 
-```typescript
-// GET - Fetch content
-GET /api/content/{page}
-Response: JSON content object
+### Authentication APIs
+- `/api/auth/*` - NextAuth endpoints
+- `POST /api/auth/2fa/setup` - Enable 2FA
+- `POST /api/auth/2fa/verify` - Verify 2FA token
+- `POST /api/auth/devices/trust` - Trust current device
 
-// PUT - Update content
-PUT /api/content/{page}
-Body: Updated JSON content
-Response: { success: boolean, error?: string }
-```
-
-### Content Types
-
-**AboutData** interface:
-```typescript
-interface AboutData {
-  hero: {
-    name: string
-    nickname: string
-    title: string
-    tagline: string
-    avatarUrl: string
-  }
-  story: Array<{ id: string; content: string }>
-  skills: Array<{
-    category: string
-    icon: string
-    items: string[]
-  }>
-  timeline: Array<{
-    id: string
-    title: string
-    organization: string
-    period: string
-    description: string
-    type: 'work' | 'education'
-  }>
-  social: {
-    github: string
-    linkedin: string
-    email: string
-  }
-  metadata: {
-    lastUpdated: string
-    version: string
-  }
-}
-```
-
-## Screenshot Capture
-
-### Features
-
-The portfolio includes an automated screenshot capture system for project thumbnails:
-
-- **Automated Capture**: Capture screenshots from live URLs using Playwright
-- **High Resolution**: Screenshots captured at 1920x1080 @2x resolution
-- **Full Page Support**: Option to capture entire scrollable page
-- **Smart Naming**: Context-aware filenames using project slug/title
-- **CLI Support**: Command-line interface for manual captures
-- **Admin Integration**: Toggle between manual upload and auto-capture in project forms
-
-### Usage
-
-#### In Admin Dashboard
-
-1. Navigate to `/admin/projects/new` or edit an existing project
-2. In the "Thumbnail Image" section, click the "Auto-Capture" tab
-3. Enter the live project URL
-4. Check "Full page" if you want to capture the entire scrollable content
-5. Click "Capture Screenshot"
-6. The screenshot will be automatically saved and set as the project thumbnail
-
-#### Via CLI
-
-Capture screenshots directly from the command line:
-
-```bash
-# Basic usage
-npx tsx scripts/capture-screenshot.ts https://example.com
-
-# With custom filename
-npx tsx scripts/capture-screenshot.ts https://example.com my-project.png
-```
-
-### Configuration
-
-The screenshot capture system can be configured in `scripts/capture-screenshot.ts`:
-
-- **Viewport**: Default 1920x1080 (configurable)
-- **Device Scale**: 2x for retina displays
-- **Delay**: 2000ms wait after page load (configurable)
-- **Output Directory**: `public/uploads/projects/`
-- **Format**: PNG with context-aware naming
-
-### Requirements
-
-- **Playwright**: Must be installed with `npx playwright install chromium`
-- **Admin Access**: ADMIN or OWNER role required for API access
-- **Public URLs**: Works best with publicly accessible project URLs
-
-### API Endpoint
-
-**POST /api/admin/screenshot**
-```typescript
-// Request
-{
-  url: string
-  projectSlug?: string
-  projectTitle?: string
-  fullPage?: boolean
-}
-
-// Response
-{
-  success: boolean
-  data: {
-    url: string        // Public path: /uploads/projects/filename.png
-    filename: string   // Generated filename
-  }
-}
-```
-
-**GET /api/admin/screenshot**
-- Check if Playwright is installed and available
-- Returns availability status
+---
 
 ## Scripts
 
 ```bash
 # Development
-npm run dev          # Start dev server on localhost:3000
+npm run dev              # Start dev server on localhost:3000
 
 # Building
-npm run build        # Build for production
-npm run start        # Start production server
+npm run build            # Build for production
+npm run start            # Start production server
+
+# Database
+npm run db:generate      # Generate Prisma client
+npm run db:push          # Push schema changes to database
+npm run db:seed          # Seed database with initial data
 
 # Code Quality
-npm run lint         # Run ESLint
+npm run lint             # Run ESLint
 
 # Screenshot Capture
-npx tsx scripts/capture-screenshot.ts <url> [filename]  # Capture project screenshot
+npx tsx scripts/capture-screenshot.ts <url> [filename]
 ```
 
-## Deployment
+---
 
-### Vercel (Recommended)
+## Roadmap to Production
 
-1. **Push code to GitHub**
-```bash
-git add .
-git commit -m "Ready for deployment"
-git push origin main
-```
+### Phase 0: Critical Blockers (20-40 hours)
+- [ ] Integrate Stripe or Flutterwave payment processing
+- [ ] Define credit system pricing (decision required)
+- [ ] Implement payment webhooks
+- [ ] Complete email notification system
 
-2. **Import to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Click "New Project"
-   - Import your GitHub repository
-   - Vercel auto-detects Next.js configuration
+### Phase 1: Security Hardening (40-60 hours)
+- [ ] Add CSRF protection
+- [ ] Implement rate limiting (Upstash)
+- [ ] Add security headers
+- [ ] Fix path traversal vulnerability
+- [ ] Increase bcrypt rounds to 12+
+- [ ] Input validation and sanitization
 
-3. **Deploy**
-   - Click "Deploy"
-   - Vercel builds and deploys automatically
-   - Get your live URL
+### Phase 2: Performance Optimization (20-30 hours)
+- [ ] Reduce bundle size (code splitting)
+- [ ] Enable ISR on homepage
+- [ ] Convert images to WebP
+- [ ] Add API response caching
+- [ ] Split HomeCanvas into smaller components
 
-4. **Custom Domain** (Optional)
-   - Add domain in Vercel dashboard
-   - Update DNS records
-   - SSL certificate auto-provisioned
+### Phase 3: Code Quality (80+ hours)
+- [ ] Replace 153 `any` types with proper types
+- [ ] Extract API client (DRY up fetch logic)
+- [ ] Add test coverage (target: 80%)
+- [ ] Set up CI/CD pipeline
 
-### Other Platforms
+**Estimated Time to Production:** 160-210 hours
 
-The app can be deployed to any platform supporting Next.js:
-- **Netlify**: Use Next.js plugin
-- **Railway**: Connect GitHub repo
-- **Render**: Docker or native Next.js
-- **AWS Amplify**: Import from GitHub
-- **Digital Ocean App Platform**: Deploy directly
+---
 
-### Build Configuration
+## Known Issues
 
-No special configuration needed:
-- Framework: Next.js (auto-detected)
-- Build command: `npm run build`
-- Output directory: `.next`
-- Install command: `npm install`
-- Node version: 18+
+### Critical
+- ❌ No payment integration (demo mode only)
+- ❌ Credit pricing undefined
+- ❌ No CSRF protection
+- ❌ No rate limiting
+
+### High Priority
+- ⚠️ Missing email notifications for key events
+- ⚠️ 5.8MB bundle size (performance impact)
+- ⚠️ Zero test coverage
+- ⚠️ 153 `any` type usages
+
+### Medium Priority
+- Theme-aware favicon not implemented
+- OAuth provider display in login form missing
+- Error page randomization not implemented
+- Wishlist not linked in header
+
+See [`docs/audits/FINDINGS.md`](docs/audits/FINDINGS.md) for complete list.
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (follow `.claude-preferences` guidelines)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+**Commit Guidelines:**
+- Follow existing commit history patterns
+- Write clean, accurate commit messages
+- No AI attribution in commits
+- See `.claude-preferences` for full standards
+
+---
 
 ## Browser Support
 
@@ -413,40 +446,34 @@ No special configuration needed:
 - Edge (latest)
 - Mobile browsers (iOS Safari, Chrome Mobile)
 
-## Performance
-
-- **Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices, SEO)
-- **First Contentful Paint**: < 1.5s
-- **Time to Interactive**: < 3s
-- **Bundle Size**: Optimized with Next.js automatic code splitting
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+---
 
 ## License
 
-This project is open source and available under the MIT License.
+This project is proprietary software. All rights reserved.
+
+---
 
 ## Contact
 
-- **GitHub**: [@kashik09](https://github.com/kashik09)
-- **LinkedIn**: [Kashi Kweyu](https://linkedin.com/in/kashi-kweyu)
-- **Instagram**: [@kashi_kweyu](https://instagram.com/kashi_kweyu)
-- **WhatsApp**: [+256 760 637783](https://wa.me/256760637783)
+- **GitHub:** [@kashik09](https://github.com/kashik09)
+- **LinkedIn:** [Kashi Kweyu](https://linkedin.com/in/kashi-kweyu)
+- **Instagram:** [@kashi_kweyu](https://instagram.com/kashi_kweyu)
+- **WhatsApp:** [+256 760 637783](https://wa.me/256760637783)
+
+---
 
 ## Acknowledgments
 
 - Next.js team for the amazing framework
-- Vercel for hosting platform
-- Tailwind CSS for utility-first styling
+- Prisma for the excellent ORM
+- NextAuth.js for authentication
+- Supabase for PostgreSQL hosting
+- Tailwind CSS + DaisyUI for styling
 - Lucide for beautiful icons
-- VS Code theme creators for color inspiration
 
 ---
 
-Built with ❤️ by [Kashi Kweyu](https://github.com/kashik09)
+**Built by [Kashi Kweyu](https://github.com/kashik09)**
+
+**Note:** This is a complex business application currently in active development. See production blockers above before attempting deployment.
