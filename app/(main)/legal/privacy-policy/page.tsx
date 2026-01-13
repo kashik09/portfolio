@@ -70,7 +70,28 @@ export default function PrivacyPage() {
             <li>Approximate location data</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">2.3 Cookies and Tracking</h3>
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">2.3 Student & Youth Verification Data</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            For student/youth verification, we collect:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>Institution name and country</li>
+            <li>School email address (if email verification method)</li>
+            <li>Student ID or enrollment documentation (if upload method)</li>
+            <li>Guardian email and consent (for youth ages 13-18)</li>
+            <li>Verification status, review notes, and expiration date</li>
+          </ul>
+          <p className="text-foreground leading-relaxed mb-4 mt-4">
+            <strong>Data Retention:</strong> Active verifications are retained while status is APPROVED. Expired verifications are retained for 24 months after expiration. Rejected verifications are retained for 12 months to enforce cooldown periods. Uploaded documents are retained for the verification period plus 12 months.
+          </p>
+          <p className="text-foreground leading-relaxed mb-4">
+            <strong>Data Access:</strong> Limited to ADMIN and OWNER roles. Users can view their own verification status. Verification data is never shared with third parties. Guardian information is kept confidential.
+          </p>
+          <p className="text-foreground leading-relaxed mb-4">
+            <strong>Security:</strong> Uploaded documents are stored securely with encryption at rest. All access is logged in audit trails. No public exposure of verification data.
+          </p>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">2.4 Cookies and Tracking</h3>
           <p className="text-foreground leading-relaxed mb-4">
             We use cookies for essential functionality, preferences, and optional analytics. We do not use ad tracking cookies.
           </p>

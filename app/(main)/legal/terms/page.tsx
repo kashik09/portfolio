@@ -74,9 +74,40 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">4. Downloads, Abuse, and Audit Logs</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">4. Downloads, Abuse Detection, and Anti-Resale</h2>
           <p className="text-foreground leading-relaxed mb-4">
-            Download limits and device limits are enforced to prevent abuse. We maintain audit logs of license actions and download activity. Abuse or license sharing may result in suspension or termination.
+            Download limits and device limits are enforced to prevent abuse. We maintain audit logs of license actions and download activity. Abuse or license sharing may result in automatic suspension or termination.
+          </p>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Prohibited Activities</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            The following are strictly prohibited and will result in immediate account suspension:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>Reselling products or licenses to others</li>
+            <li>Sharing download links publicly or with unauthorized users</li>
+            <li>Posting license keys publicly on forums or social media</li>
+            <li>Creating multiple accounts to bypass license restrictions</li>
+            <li>Excessive downloads from multiple IPs or devices</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Automated Abuse Detection</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            Our systems automatically detect suspicious behavior including:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>Excessive downloads (more than 10 in 24 hours)</li>
+            <li>Downloads from multiple IP addresses (more than 5 in 24 hours)</li>
+            <li>Multiple devices for personal licenses (more than 3 devices)</li>
+            <li>Download patterns consistent with resale or redistribution</li>
+          </ul>
+          <p className="text-foreground leading-relaxed mb-4 mt-4">
+            High-confidence abuse (suspicion score of 70 or above) triggers automatic account suspension and license revocation. Medium-confidence abuse is flagged for manual admin review.
+          </p>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Account Suspension</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            Suspended accounts cannot make purchases or download products. All active licenses are revoked upon suspension. You may appeal suspensions by contacting support with evidence. No refunds are provided for violations.
           </p>
         </section>
 
@@ -116,9 +147,50 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">8. Minors and Student Discounts (Ages 13-17)</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">8. Student & Youth Discount Program</h2>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3">Eligibility</h3>
           <p className="text-foreground leading-relaxed mb-4">
-            Users under 13 may not use the service. Users ages 13-17 may access limited features with verification and guardian consent where required by law. Student discounts for ages 13-18 require manual verification and stricter scope limits.
+            We offer a 50% discount for verified students (ages 18+) and youth (ages 13-18):
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>Student Discount (18+): Must be enrolled in an accredited educational institution with valid student email or ID</li>
+            <li>Youth Discount (13-18): Requires guardian email and explicit guardian consent</li>
+            <li>Verification expires after 12 months and can be renewed</li>
+            <li>Users under 13 may not use the service</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Verification Process</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            All applications are manually reviewed by administrators within 1-2 business days. You must provide:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>Institution name and country</li>
+            <li>School email (.edu or institutional domain) OR student ID upload</li>
+            <li>For youth (13-18): Guardian email and consent</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Discount Terms</h3>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>50% off personal-tier products and services only</li>
+            <li>Not valid for team or commercial licenses</li>
+            <li>Cannot be combined with other promotions</li>
+            <li>Stricter scope boundaries than regular personal tier</li>
+            <li>No refunds on discounted purchases</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">Fraud Prevention</h3>
+          <p className="text-foreground leading-relaxed mb-4">
+            Zero-tolerance policy for fraudulent information. Fake IDs, falsified enrollment letters, or misrepresentation of age/guardian consent will result in:
+          </p>
+          <ul className="list-disc list-inside space-y-2 text-foreground ml-4">
+            <li>Immediate account suspension</li>
+            <li>Permanent ban from student program</li>
+            <li>Revocation of all licenses</li>
+            <li>No refunds issued</li>
+          </ul>
+          <p className="text-foreground leading-relaxed mb-4 mt-4">
+            We reserve the right to request additional verification at any time and report fraudulent activities to authorities.
           </p>
         </section>
 
