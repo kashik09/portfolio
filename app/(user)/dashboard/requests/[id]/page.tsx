@@ -58,6 +58,23 @@ function formatDate(dateString: string) {
 function formatPhase(phase: string) {
   return phase.replace('_', ' ')
 }
+function formatBudget(budget: string) {
+  const budgetMap: Record<string, string> = {
+    SMALL: 'small ($500-$2k)',
+    MEDIUM: 'medium ($2k-$10k)',
+    LARGE: 'large ($10k+)',
+  }
+  return budgetMap[budget] || budget
+}
+function formatTimeline(timeline: string) {
+  const timelineMap: Record<string, string> = {
+    ASAP: 'asap',
+    '1_2_WEEKS': '1-2 weeks',
+    '1_MONTH': '1 month',
+    FLEXIBLE: 'flexible',
+  }
+  return timelineMap[timeline] || timeline.replace('_', ' ')
+}
 export default function RequestDetailPage({ params }: RequestDetailPageProps) {
   const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
@@ -175,13 +192,13 @@ export default function RequestDetailPage({ params }: RequestDetailPageProps) {
           <span>
             Budget:{' '}
             <span className="font-medium text-foreground">
-              {request.budget}
+              {request.budget ? formatBudget(request.budget) : 'not specified'}
             </span>
           </span>
           <span>
             Timeline:{' '}
             <span className="font-medium text-foreground">
-              {request.timeline}
+              {request.timeline ? formatTimeline(request.timeline) : 'not specified'}
             </span>
           </span>
           <span className="inline-flex items-center gap-2">
