@@ -759,10 +759,11 @@ model UserAdConsent {
 
 enum Role {
   USER
-  ADMIN
   MODERATOR
   VIEWER
   EDITOR
+  ADMIN
+  DEVELOPER
   OWNER
 }
 

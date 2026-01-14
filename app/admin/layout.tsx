@@ -14,12 +14,20 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const [showScrollButton, setShowScrollButton] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollButton(window.scrollY > 300)
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      const scrollTop = window.scrollY
+      const scrollableHeight = documentHeight - windowHeight
+      const progress = scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0
+
+      setShowScrollButton(scrollTop > 300)
+      setScrollProgress(progress)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -116,10 +124,15 @@ export default function AdminLayout({
       {showScrollButton && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 w-11 h-11 bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 z-50 flex items-center justify-center"
+          className="fixed bottom-6 right-6 w-12 h-12 bg-primary/80 backdrop-blur-sm text-primary-foreground rounded-full shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 z-40 flex items-center justify-center"
           aria-label="Scroll to top"
+          style={{
+            background: `conic-gradient(from -90deg, oklch(var(--p)) ${scrollProgress}%, transparent ${scrollProgress}%)`,
+          }}
         >
-          <ArrowUp size={20} />
+          <div className="absolute inset-0.5 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center">
+            <ArrowUp size={20} />
+          </div>
         </button>
       )}
     </>

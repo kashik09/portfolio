@@ -4,8 +4,9 @@
 
 export enum Role {
   USER = 'USER',
-  ADMIN = 'ADMIN',
   MODERATOR = 'MODERATOR',
+  ADMIN = 'ADMIN',
+  DEVELOPER = 'DEVELOPER',
 }
 
 export enum Theme {
