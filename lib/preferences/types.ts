@@ -8,7 +8,6 @@ export const DASHBOARD_ICON_KEYS = [
   'sparkles',
   'heart',
   'shopping-bag',
-  'zap',
   'crown',
 ] as const
 export type DashboardIcon = (typeof DASHBOARD_ICON_KEYS)[number]

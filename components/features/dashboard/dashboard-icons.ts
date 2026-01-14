@@ -6,7 +6,6 @@ import {
   ShoppingBag,
   Sparkles,
   Star,
-  Zap,
   type LucideIcon,
 } from 'lucide-react'
 import type { DashboardIcon } from '@/lib/preferences/types'
@@ -22,7 +21,6 @@ export const DASHBOARD_ICON_OPTIONS: Array<{
   { id: 'sparkles', label: 'Sparkles', icon: Sparkles },
   { id: 'heart', label: 'Heart', icon: Heart },
   { id: 'shopping-bag', label: 'Shopping', icon: ShoppingBag },
-  { id: 'zap', label: 'Zap', icon: Zap },
   { id: 'crown', label: 'Crown', icon: Crown },
 ]
 
@@ -33,6 +31,5 @@ export const DASHBOARD_ICON_MAP: Record<DashboardIcon, LucideIcon> = {
   sparkles: Sparkles,
   heart: Heart,
   'shopping-bag': ShoppingBag,
-  zap: Zap,
   crown: Crown,
 }
