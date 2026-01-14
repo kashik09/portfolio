@@ -99,7 +99,7 @@ export default function MobileNav({ isOpen, onClose, navItems }: MobileNavProps)
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300"
+        className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
