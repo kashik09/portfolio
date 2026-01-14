@@ -178,7 +178,7 @@ export function StickerField({ projects, notes, isVisible, reduceMotion }: Stick
             }}
           >
             <div
-              className={`pointer-events-auto rounded-3xl border border-base-100/10 bg-base-content/35 p-3 text-base-100 shadow-lg shadow-base-content/30 backdrop-blur-lg ${
+              className={`pointer-events-auto rounded-3xl border border-primary/20 bg-primary/80 p-3 text-primary-content shadow-lg shadow-primary/30 backdrop-blur-lg hover:scale-105 hover:shadow-xl transition-all duration-300 ${
                 shouldAnimate ? 'animate-float' : ''
               }`}
               style={{
@@ -189,7 +189,7 @@ export function StickerField({ projects, notes, isVisible, reduceMotion }: Stick
             >
               {item.kind === 'project' ? (
                 <div className="space-y-2">
-                  <div className="h-20 w-full overflow-hidden rounded-2xl bg-base-100/10">
+                  <div className="h-20 w-full overflow-hidden rounded-2xl bg-primary-content/10">
                     {item.imageUrl ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -200,26 +200,26 @@ export function StickerField({ projects, notes, isVisible, reduceMotion }: Stick
                         />
                       </>
                     ) : (
-                      <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-base-100/60">
+                      <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-primary-content/60">
                         {item.title.slice(0, 1)}
                       </div>
                     )}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-base-100">
+                    <p className="text-sm font-semibold text-primary-content">
                       {item.title}
                     </p>
-                    <p className="text-xs text-base-100/70">{item.note}</p>
+                    <p className="text-xs text-primary-content/80">{item.note}</p>
                     <Link
                       href={item.href}
-                      className="text-xs font-semibold uppercase tracking-[0.2em] text-base-100/80 hover:text-base-100"
+                      className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-content/90 hover:text-primary-content"
                     >
                       open →
                     </Link>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-base-100/80">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-content/90">
                   {item.title}
                 </p>
               )}

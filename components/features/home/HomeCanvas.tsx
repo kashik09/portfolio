@@ -337,7 +337,7 @@ export function HomeCanvas({
           ref={menuButtonRef}
           type="button"
           onClick={() => setMenuOpen(true)}
-          className="fixed bottom-6 right-6 z-[80] flex items-center gap-2 rounded-full border border-base-300 bg-base-200/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-base-content backdrop-blur-md transition pointer-events-auto"
+          className="fixed bottom-6 right-6 z-[80] flex items-center gap-2 rounded-full border border-base-300 bg-base-200/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-base-content backdrop-blur-[4px] transition pointer-events-auto"
           aria-haspopup="dialog"
           aria-expanded={menuOpen}
           aria-controls="cinema-menu"
@@ -372,7 +372,7 @@ export function HomeCanvas({
               rotate(var(--rotate))
               scale(calc(var(--scale) * var(--hover-scale)));
             opacity: calc(var(--opacity) * var(--variant-opacity, 1) * var(--dim, 1));
-            transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1), opacity 700ms ease, filter 400ms ease;
+            transition: transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 500ms ease-out, filter 300ms ease-out;
             will-change: transform, opacity, filter;
           }
 
@@ -406,7 +406,7 @@ export function HomeCanvas({
 
           .canvas-anchor {
             transform: translate3d(0, 0, 0);
-            transition: transform 800ms ease;
+            transition: transform 550ms ease-out;
           }
 
           .canvas-root[data-reduced='true'] .canvas-item,
