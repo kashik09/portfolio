@@ -1,7 +1,7 @@
 {
   "header": {
     "title": "Request a Service",
-    "subtitle": "Tell me about your project and I'll get back to you within 24 hours"
+    "subtitle": "Tell me about your project and I'll get back to you as soon as possible"
   },
   "fields": {
     "serviceTypes": [
@@ -47,7 +47,7 @@
     "text": "Submit Request",
     "loadingText": "Submitting..."
   },
-  "successMessage": "Request submitted successfully! I'll get back to you within 24 hours.",
+  "successMessage": "Request submitted successfully! I'll get back to you as soon as possible.",
   "disclaimer": {
     "text": "By submitting this form, you agree to our",
     "termsText": "Terms of Service",

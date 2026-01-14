@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useSession } from 'next-auth/react'
+import { useToast } from '@/components/ui/Toast'
 
 type AvailabilityData = {
   status: string
@@ -14,6 +15,7 @@ type AvailabilityData = {
 export default function ContactPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
+  const { showToast } = useToast()
   const isAuthed = status === 'authenticated'
 
   const [loading, setLoading] = useState(false)
@@ -93,10 +95,11 @@ export default function ContactPage() {
         return
       }
 
-      alert(
+      showToast(
         isAvailable
           ? "got it. i'll get back to you soon."
-          : "thanks for reaching out. i'll contact you when availability opens up."
+          : "thanks for reaching out. i'll contact you when availability opens up.",
+        'success'
       )
       router.push('/')
     } catch {
@@ -266,7 +269,7 @@ export default function ContactPage() {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground/80">
-            i'll get back to you within 24 hours
+            i'll get back to you as soon as possible
           </p>
         </form>
       </div>
