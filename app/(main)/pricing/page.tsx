@@ -167,6 +167,50 @@ export default function PricingPage() {
           </section>
         ))}
 
+        <section className="max-w-3xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold text-foreground">How credits work with scope</h2>
+            <p className="text-muted-foreground">Common questions about the credit system</p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-card border border-border rounded-xl p-6 space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">What are credits?</h3>
+              <p className="text-sm text-muted-foreground">
+                Credits are prepaid service units that represent agreed-upon work. They are not money, not hours, and not open-ended. Each credit covers a specific scope that is confirmed before work starts.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-6 space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">How is scope determined?</h3>
+              <p className="text-sm text-muted-foreground">
+                When you submit a request, I review it and estimate the credit cost based on complexity and deliverables. You see the credit estimate and scope boundaries before accepting. No work starts until you approve.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-6 space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">What happens if scope changes?</h3>
+              <p className="text-sm text-muted-foreground">
+                Scope is fixed at acceptance. If you request changes or additions beyond the original scope, those require additional credits. This protects both of us from creep and unclear boundaries.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-6 space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">How many credits does X cost?</h3>
+              <p className="text-sm text-muted-foreground">
+                Examples: A small bug fix might be 2-3 credits. Adding a new page could be 4-8 credits. A scoped feature might be 10-20 credits. Complex builds use more credits. Every request gets a specific estimate.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-6 space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">What if I run out of credits?</h3>
+              <p className="text-sm text-muted-foreground">
+                You can upgrade your plan, purchase additional credit packs, or wait for your next billing cycle when credits reset. Credits do not roll over unless specified in your plan terms.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
             <h3 className="text-xl font-semibold text-foreground">Credits reality</h3>
