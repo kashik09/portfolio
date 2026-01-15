@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { ExternalLink, Github } from 'lucide-react'
 import { isLocalImageUrl, normalizePublicPath } from '@/lib/utils'
 
@@ -27,8 +28,8 @@ export function ProjectCard({ project, variant = 'public', onEdit }: ProjectCard
   const imageSrc = normalizePublicPath(project.image)
   const isLocalImage = isLocalImageUrl(imageSrc)
 
-  return (
-    <div className="group ambient-card bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-accent-2 transition-all">
+  const cardContent = (
+    <>
       {/* Image */}
       <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 relative overflow-hidden">
         {imageSrc ? (
@@ -138,6 +139,23 @@ export function ProjectCard({ project, variant = 'public', onEdit }: ProjectCard
           )}
         </div>
       </div>
+    </>
+  )
+
+  if (isPublic) {
+    return (
+      <Link
+        href={`/projects/${project.slug}`}
+        className="group ambient-card bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-accent-2 transition-all block"
+      >
+        {cardContent}
+      </Link>
+    )
+  }
+
+  return (
+    <div className="group ambient-card bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-accent-2 transition-all">
+      {cardContent}
     </div>
   )
 }

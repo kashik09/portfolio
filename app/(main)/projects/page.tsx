@@ -197,8 +197,23 @@ export default function ProjectsPage() {
 
         {/* Empty State */}
         {!loading && !error && projects.length === 0 && (
-          <div className="container-md text-center py-12">
-            <p className="text-body text-muted-foreground/70">no projects found</p>
+          <div className="container-md text-center py-12 space-y-4">
+            <p className="text-body text-muted-foreground/70">
+              {searchQuery || filter !== 'ALL'
+                ? 'no projects match your search or filter'
+                : 'no projects found'}
+            </p>
+            {(searchQuery || filter !== 'ALL') && (
+              <Button
+                onClick={() => {
+                  setSearchQuery('')
+                  setFilter('ALL')
+                }}
+                variant="outline"
+              >
+                Clear filters
+              </Button>
+            )}
           </div>
         )}
       </div>
