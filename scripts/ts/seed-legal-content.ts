@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma'
+import { prisma } from '../../lib/prisma'
 
 const termsContent = `<section>
 <h2>1. Agreement to Terms</h2>

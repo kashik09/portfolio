@@ -5,8 +5,8 @@
  * Based on docs/digital-products-catalog.md
  *
  * Usage:
- *   npx tsx scripts/import-products.ts
- *   npx tsx scripts/import-products.ts --dry-run  # Preview without importing
+ *   npx tsx scripts/ts/import-products.ts
+ *   npx tsx scripts/ts/import-products.ts --dry-run  # Preview without importing
  */
 
 import { Prisma, PrismaClient, ProductCategory } from '@prisma/client'

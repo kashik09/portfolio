@@ -8,13 +8,13 @@
  * - Legal content → ContentPage (terms, privacy-policy)
  *
  * Usage:
- *   npx tsx scripts/migrate-content-to-db.ts
- *   npx tsx scripts/migrate-content-to-db.ts --dry-run
+ *   npx tsx scripts/ts/migrate-content-to-db.ts
+ *   npx tsx scripts/ts/migrate-content-to-db.ts --dry-run
  */
 
 import fs from 'fs/promises'
 import path from 'path'
-import { prisma } from '../lib/prisma'
+import { prisma } from '../../lib/prisma'
 
 interface MigrationResult {
   success: boolean

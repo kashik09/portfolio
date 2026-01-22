@@ -5,8 +5,8 @@
  * Applies bulk pricing updates from a JSON pricing map file.
  *
  * Usage:
- *   npx tsx scripts/update-prices.ts <pricing-map.json>
- *   npx tsx scripts/update-prices.ts --dry-run <pricing-map.json>
+ *   npx tsx scripts/ts/update-prices.ts <pricing-map.json>
+ *   npx tsx scripts/ts/update-prices.ts --dry-run <pricing-map.json>
  *
  * Pricing Map Format:
  * {
@@ -191,8 +191,8 @@ async function main() {
 ❌ Error: Missing pricing map file
 
 Usage:
-  npx tsx scripts/update-prices.ts <pricing-map.json>
-  npx tsx scripts/update-prices.ts --dry-run <pricing-map.json>
+  npx tsx scripts/ts/update-prices.ts <pricing-map.json>
+  npx tsx scripts/ts/update-prices.ts --dry-run <pricing-map.json>
 
 Example pricing map format:
   {
@@ -257,7 +257,7 @@ Example pricing map format:
     } else if (result.updated > 0) {
       console.log(`\n✨ Pricing updated successfully!\n`)
       console.log(`📝 Next steps:`)
-      console.log(`   1. Regenerate pricing review: npx tsx scripts/generate-pricing-review.ts`)
+      console.log(`   1. Regenerate pricing review: npx tsx scripts/ts/generate-pricing-review.ts`)
       console.log(`   2. Review changes in: public/content/pricing.json`)
       console.log(`   3. Verify changes in admin: /admin/content/pricing\n`)
     } else {

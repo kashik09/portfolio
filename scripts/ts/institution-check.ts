@@ -1,6 +1,6 @@
 /**
  * Institution Verification Helper Script
- * Usage: npx ts-node scripts/institution-check.ts "University Name" "Country"
+ * Usage: npx ts-node scripts/ts/institution-check.ts "University Name" "Country"
  *
  * This script helps with manual student verification by checking
  * if an institution name appears to be legitimate.
@@ -180,9 +180,9 @@ function main() {
   const args = process.argv.slice(2)
 
   if (args.length < 2) {
-    console.log('Usage: npx ts-node scripts/institution-check.ts "Institution Name" "Country"')
+    console.log('Usage: npx ts-node scripts/ts/institution-check.ts "Institution Name" "Country"')
     console.log('\nExample:')
-    console.log('  npx ts-node scripts/institution-check.ts "University of California" "United States"')
+    console.log('  npx ts-node scripts/ts/institution-check.ts "University of California" "United States"')
     process.exit(1)
   }
 

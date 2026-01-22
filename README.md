@@ -360,7 +360,7 @@ npm run db:seed          # Seed database with initial data
 npm run lint             # Run ESLint
 
 # Screenshot Capture
-npx tsx scripts/capture-screenshot.ts <url> [filename]
+npx tsx scripts/ts/capture-screenshot.ts <url> [filename]
 ```
 
 ---

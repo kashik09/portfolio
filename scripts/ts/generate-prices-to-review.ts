@@ -14,7 +14,7 @@
 
 import fs from 'fs/promises'
 import path from 'path'
-import { prisma } from '../lib/prisma'
+import { prisma } from '../../lib/prisma'
 
 interface PricingItem {
   item: string

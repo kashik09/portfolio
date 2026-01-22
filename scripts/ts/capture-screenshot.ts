@@ -1,7 +1,7 @@
 import { chromium } from 'playwright'
 import { mkdir } from 'fs/promises'
 import { join } from 'path'
-import { generateSmartFilename } from '../lib/upload-utils'
+import { generateSmartFilename } from '../../lib/upload-utils'
 
 export interface ScreenshotOptions {
   url: string
@@ -100,14 +100,14 @@ async function main() {
   const args = process.argv.slice(2)
 
   if (args.length === 0) {
-    console.log('Usage: npx tsx scripts/capture-screenshot.ts <url> [filename]')
+    console.log('Usage: npx tsx scripts/ts/capture-screenshot.ts <url> [filename]')
     console.log('')
     console.log('Examples:')
     console.log(
-      '  npx tsx scripts/capture-screenshot.ts https://example.com'
+      '  npx tsx scripts/ts/capture-screenshot.ts https://example.com'
     )
     console.log(
-      '  npx tsx scripts/capture-screenshot.ts https://example.com my-project.png'
+      '  npx tsx scripts/ts/capture-screenshot.ts https://example.com my-project.png'
     )
     process.exit(1)
   }
