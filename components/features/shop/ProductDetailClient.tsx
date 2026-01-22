@@ -16,7 +16,6 @@ interface LicenseOption {
   prices: {
     usd: number | string
     ugx: number | string
-    credits: number | null
   }
 }
 
@@ -80,7 +79,6 @@ export function ProductDetailClient({
         options={licenseOptions}
         selected={selectedLicense}
         onChange={(value) => setSelectedLicense(value as LicenseOption['type'])}
-        showCredits={false}
       />
 
       <div className="grid grid-cols-1 gap-3">

@@ -7,9 +7,7 @@ import type { SupportedCurrency } from '@/lib/currency'
 interface PriceDisplayProps {
   usdPrice: number
   ugxPrice?: number
-  creditPrice?: number | null
   showCurrencyToggle?: boolean
-  showCredits?: boolean
   className?: string
   currency?: SupportedCurrency
   onCurrencyChange?: (currency: SupportedCurrency) => void
@@ -18,9 +16,7 @@ interface PriceDisplayProps {
 export function PriceDisplay({
   usdPrice,
   ugxPrice,
-  creditPrice,
   showCurrencyToggle = true,
-  showCredits = true,
   className = '',
   currency,
   onCurrencyChange,
@@ -61,14 +57,6 @@ export function PriceDisplay({
           </button>
         )}
       </div>
-
-      {showCredits && creditPrice && creditPrice > 0 && (
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">or</span>
-          <span className="font-semibold text-primary">{creditPrice} Credits</span>
-          <span className="text-muted-foreground text-xs">(with membership)</span>
-        </div>
-      )}
 
       {activeCurrency !== 'USD' && (
         <p className="text-xs text-muted-foreground">

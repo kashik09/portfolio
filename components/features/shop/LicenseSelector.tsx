@@ -13,7 +13,6 @@ interface LicenseOption {
   prices: {
     usd: number | string
     ugx: number | string
-    credits: number | null
   }
 }
 
@@ -21,14 +20,12 @@ interface LicenseSelectorProps {
   options: LicenseOption[]
   selected: string
   onChange: (type: string) => void
-  showCredits?: boolean
 }
 
 export function LicenseSelector({
   options,
   selected,
   onChange,
-  showCredits = true,
 }: LicenseSelectorProps) {
   return (
     <div className="space-y-3">
@@ -69,11 +66,6 @@ export function LicenseSelector({
                     <p className="font-bold text-foreground whitespace-nowrap">
                       {formatPriceShort(option.price, option.currency as SupportedCurrency)}
                     </p>
-                    {showCredits && option.prices.credits && (
-                      <p className="text-xs text-muted-foreground whitespace-nowrap">
-                        or {option.prices.credits} credits
-                      </p>
-                    )}
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">{option.description}</p>

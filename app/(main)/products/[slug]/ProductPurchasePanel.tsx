@@ -24,7 +24,6 @@ interface LicenseOption {
   prices: {
     usd: number | string
     ugx: number | string
-    credits: number | null
   }
 }
 
@@ -35,7 +34,6 @@ interface ProductPurchasePanelProps {
     prices: {
       usd: number | string
       ugx: number | string
-      credits: number | null
     }
     licenseOptions: LicenseOption[]
   }
@@ -198,10 +196,8 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         <PriceDisplay
           usdPrice={Number(product.prices.usd)}
           ugxPrice={Number(product.prices.ugx)}
-          creditPrice={product.prices.credits}
           currency={displayCurrency}
           showCurrencyToggle={false}
-          showCredits={false}
         />
       </div>
 
@@ -211,7 +207,6 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             options={displayLicenseOptions}
             selected={selectedLicense}
             onChange={(type) => setSelectedLicense(type as 'PERSONAL' | 'COMMERCIAL' | 'TEAM')}
-            showCredits={false}
           />
         </div>
       )}

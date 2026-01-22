@@ -61,7 +61,6 @@ export default async function ProductDetailPage({
       prices: {
         usd: usdPrice,
         ugx: ugxPrice,
-        credits: null,
       },
     },
     product.commercialLicense && {
@@ -73,7 +72,6 @@ export default async function ProductDetailPage({
       prices: {
         usd: usdPrice,
         ugx: ugxPrice,
-        credits: null,
       },
     },
     product.teamLicense && {
@@ -85,7 +83,6 @@ export default async function ProductDetailPage({
       prices: {
         usd: usdPrice,
         ugx: ugxPrice,
-        credits: null,
       },
     },
   ].filter(Boolean) as Array<{
@@ -94,7 +91,7 @@ export default async function ProductDetailPage({
     description: string
     price: number
     currency: string
-    prices: { usd: number; ugx: number; credits: number | null }
+    prices: { usd: number; ugx: number }
   }>
 
   const defaultLicense = licenseOptions[0]?.type ?? 'PERSONAL'
@@ -150,10 +147,10 @@ export default async function ProductDetailPage({
                 <li>Non-transferable, no resale or redistribution.</li>
                 <li>One person or one team per license tier.</li>
                 <li>Download limits and device limits are enforced.</li>
-                <li>Enterprise use requires a custom agreement.</li>
+                <li>Custom terms require a written agreement.</li>
                 <li>No refunds after purchase, except where required by law.</li>
               </ul>
-              <Link href="/legal/terms" className="text-sm text-primary hover:underline">
+              <Link href="/legal/terms-of-service" className="text-sm text-primary hover:underline">
                 Read full terms
               </Link>
             </div>
@@ -199,9 +196,34 @@ export default async function ProductDetailPage({
                 <li>Licenses are tied to your account and tracked in audit logs.</li>
                 <li>Abuse or chargebacks can trigger suspension.</li>
               </ul>
-              <Link href="/contact" className="text-sm text-primary hover:underline">
-                Questions? Contact support.
+              <Link href="/complaints" className="text-sm text-primary hover:underline">
+                Questions or issues? Submit a complaint.
               </Link>
+            </div>
+
+            <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Need something beyond this product?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  For custom scope, larger teams, or special terms, send a short note through the
+                  complaints form and we&apos;ll review.
+                </p>
+                <Link href="/complaints" className="text-sm text-primary hover:underline">
+                  Submit a complaint
+                </Link>
+              </div>
+              <div className="space-y-2 border-t border-border/70 pt-4">
+                <h3 className="text-lg font-semibold text-foreground">Youth/teen use</h3>
+                <p className="text-sm text-muted-foreground">
+                  Guardian consent and stricter review are required for ages 13-17. Use the
+                  complaints form if you need guidance.
+                </p>
+                <Link href="/complaints" className="text-sm text-primary hover:underline">
+                  View complaints form
+                </Link>
+              </div>
             </div>
           </div>
         </div>
