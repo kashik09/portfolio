@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
     const {
       paymentMethod = 'MANUAL',
       termsAccepted,
-      purchaseType, // 'ONE_TIME' or 'CREDITS'
       currency = 'USD',
     } = body
 
@@ -62,13 +61,6 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-    }
-
-    if (purchaseType === 'CREDITS') {
-      return NextResponse.json(
-        { error: 'Credits cannot be used to purchase digital products' },
-        { status: 400 }
-      )
     }
 
     const finalPurchaseType: OrderPurchaseType = 'ONE_TIME'
@@ -138,8 +130,6 @@ export async function POST(request: NextRequest) {
           paymentMethod,
           paymentProvider: paymentMethod,
           purchaseType: finalPurchaseType,
-          creditsUsed: null,
-          membershipId: null,
           status: OrderStatus.PENDING,
           termsAccepted: true,
           termsVersion: '1.0', // TODO: Get from settings

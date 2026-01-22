@@ -34,7 +34,6 @@ export async function GET(
         currency: true,
         usdPrice: true,
         ugxPrice: true,
-        creditPrice: true,
         fileSize: true,
         fileType: true,
         thumbnailUrl: true,
@@ -75,7 +74,6 @@ export async function GET(
     const prices = {
       usd: product.usdPrice || product.price,
       ugx: product.ugxPrice || convertPrice(basePrice, 'USD', 'UGX'),
-      credits: product.creditPrice || null,
     }
 
     // Calculate display price in requested currency
@@ -103,7 +101,6 @@ export async function GET(
         prices: {
           usd: Number(prices.usd) * 1.5,
           ugx: Number(prices.ugx) * 1.5,
-          credits: prices.credits ? prices.credits * 1.5 : null,
         },
       })
     }
@@ -117,7 +114,6 @@ export async function GET(
         prices: {
           usd: Number(prices.usd) * 3,
           ugx: Number(prices.ugx) * 3,
-          credits: prices.credits ? prices.credits * 3 : null,
         },
       })
     }

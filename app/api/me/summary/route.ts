@@ -17,9 +17,6 @@ export async function GET(request: NextRequest) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        membership: true,
-      },
     })
 
     if (!user) {
@@ -85,21 +82,6 @@ export async function GET(request: NextRequest) {
         }),
       ])
 
-    const membership = user.membership
-      ? {
-          tier: user.membership.tier,
-          status: user.membership.status,
-          totalCredits: user.membership.totalCredits,
-          usedCredits: user.membership.usedCredits,
-          remainingCredits: user.membership.remainingCredits,
-          startDate: user.membership.startDate.toISOString(),
-          endDate: user.membership.endDate.toISOString(),
-          renewalDate: user.membership.renewalDate
-            ? user.membership.renewalDate.toISOString()
-            : null,
-        }
-      : null
-
     return NextResponse.json({
       success: true,
       data: {
@@ -113,7 +95,6 @@ export async function GET(request: NextRequest) {
           requestsCount,
           pendingRequestsCount,
         },
-        membership,
         recentDownloads: recentDownloads
           .filter(download => download.product)
           .map(download => ({
