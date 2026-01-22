@@ -46,14 +46,9 @@ export default function Footer({ pathname }: { pathname?: string }) {
             </h4>
             <ul className="space-y-2">
               {[
-                { href: '/projects', label: 'Projects' },
-                { href: '/products', label: 'Products' },
-                { href: '/services', label: 'Services' },
-                { href: '/pricing', label: 'Pricing' },
-                { href: '/students', label: 'Students' },
-                { href: '/enterprise', label: 'Enterprise' },
-                { href: '/about', label: 'About' },
-                { href: '/contact', label: 'Contact' },
+                { href: '/projects', label: 'Portfolio' },
+                { href: '/products', label: 'Shop' },
+                { href: '/complaints', label: 'Complaints' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className={linkClass(link.href)}>

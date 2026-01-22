@@ -101,7 +101,7 @@ export function HomeCanvasMenu({
                   rel="noreferrer"
                   className="block text-2xl font-semibold tracking-tight text-base-content/90 hover:text-base-content"
                 >
-                  Contact
+                  Complaints
                 </a>
               ) : (
                 <Link
@@ -109,7 +109,7 @@ export function HomeCanvasMenu({
                   className="block text-2xl font-semibold tracking-tight text-base-content/90 hover:text-base-content"
                   onClick={onClose}
                 >
-                  Contact
+                  Complaints
                 </Link>
               )}
               <button

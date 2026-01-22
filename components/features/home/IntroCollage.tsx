@@ -32,9 +32,9 @@ const noteStickers = [
 ]
 
 const overlayLinks = [
-  { href: '/about', label: 'About' },
-  { href: '/projects', label: 'Archive' },
-  { href: '/login', label: 'Login' },
+  { href: '/projects', label: 'Portfolio' },
+  { href: '/products', label: 'Shop' },
+  { href: '/complaints', label: 'Complaints' },
 ]
 
 export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
@@ -47,15 +47,12 @@ export function IntroCollage({ projects, avatarUrl }: IntroCollageProps) {
   const menuButtonRef = useRef<HTMLButtonElement | null>(null)
   const overlayRef = useRef<HTMLDivElement | null>(null)
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
-  const contactHref = whatsappNumber
-    ? `https://wa.me/${whatsappNumber}`
-    : '/contact'
+  const contactHref = '/complaints'
 
   const navPills = [
-    { href: '/projects', label: 'Projects', external: false },
-    { href: '/products', label: 'Products', external: false },
-    { href: contactHref, label: 'Contact', external: contactHref.startsWith('http') },
+    { href: '/projects', label: 'Portfolio', external: false },
+    { href: '/products', label: 'Shop', external: false },
+    { href: contactHref, label: 'Complaints', external: contactHref.startsWith('http') },
   ]
 
   useEffect(() => {

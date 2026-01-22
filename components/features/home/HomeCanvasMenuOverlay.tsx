@@ -15,9 +15,8 @@ const PreferencesModal = dynamic(
 )
 
 const overlayLinks = [
-  { href: '/projects', label: 'Projects' },
-  { href: '/products', label: 'Products' },
-  { href: '/about', label: 'About' },
+  { href: '/projects', label: 'Portfolio' },
+  { href: '/products', label: 'Shop' },
 ]
 
 interface HomeCanvasMenuOverlayProps {
@@ -134,7 +133,7 @@ export function HomeCanvasMenuOverlay({
               rel="noreferrer"
               className="block rounded-md px-4 py-2 text-2xl font-semibold tracking-tight text-base-content/90 transition-all duration-150 hover:translate-x-1 hover:bg-primary/10 hover:text-primary"
             >
-              Contact
+              Complaints
             </a>
           ) : (
             <Link
@@ -142,7 +141,7 @@ export function HomeCanvasMenuOverlay({
               className="block rounded-md px-4 py-2 text-2xl font-semibold tracking-tight text-base-content/90 transition-all duration-150 hover:translate-x-1 hover:bg-primary/10 hover:text-primary"
               onClick={onClose}
             >
-              Contact
+              Complaints
             </Link>
           )}
           <button

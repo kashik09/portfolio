@@ -48,10 +48,7 @@ export function HomeCanvas({
   const [hasAvatar, setHasAvatar] = useState(true)
   const menuButtonRef = useRef<HTMLButtonElement | null>(null)
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
-  const contactHref = whatsappNumber
-    ? `https://wa.me/${whatsappNumber}`
-    : '/contact'
+  const contactHref = '/complaints'
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -300,14 +297,14 @@ export function HomeCanvas({
         >
           <div className="rounded-3xl border border-base-300 bg-base-200/60 p-6 text-base-content shadow-2xl shadow-base-300/40 backdrop-blur-xl">
             <p className="text-xs uppercase tracking-[0.3em] text-base-content/75">
-              contact
+              complaints
             </p>
             <h2 className="mt-3 text-2xl font-semibold">
-              let&apos;s build the calm version.
+              let&apos;s resolve it cleanly.
             </h2>
             <p className="mt-2 text-sm text-base-content/85">
-              share the scope, timeline, and what feels broken. i&apos;ll reply
-              with the cleanest next step.
+              share what went wrong with access, licensing, or policy concerns.
+              i&apos;ll reply with the next step.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               {contactHref.startsWith('http') ? (
@@ -317,7 +314,7 @@ export function HomeCanvas({
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-content"
                 >
-                  whatsapp
+                  complaints
                   <ArrowRight size={14} />
                 </a>
               ) : (
@@ -325,7 +322,7 @@ export function HomeCanvas({
                   href={contactHref}
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-content"
                 >
-                  contact
+                  complaints
                   <ArrowRight size={14} />
                 </Link>
               )}

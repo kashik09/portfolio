@@ -17,26 +17,15 @@ export default function Header() {
   const isAuthed = status === 'authenticated'
 
   const publicLinks = [
-    { href: '/projects', label: 'projects' },
-    { href: '/products', label: 'products' },
-    { href: '/services', label: 'services' },
-    { href: '/pricing', label: 'pricing' },
-    { href: '/students', label: 'students' },
-    { href: '/enterprise', label: 'enterprise' },
-    { href: '/about', label: 'about' },
-    { href: '/contact', label: 'contact' },
+    { href: '/projects', label: 'Portfolio' },
+    { href: '/products', label: 'Shop' },
+    { href: '/complaints', label: 'Complaints' },
   ]
 
   const authedLinks = [
-    { href: '/dashboard', label: 'dashboard' },
-    { href: '/projects', label: 'projects' },
-    { href: '/products', label: 'products' },
-    { href: '/services', label: 'services' },
-    { href: '/pricing', label: 'pricing' },
-    { href: '/students', label: 'students' },
-    { href: '/enterprise', label: 'enterprise' },
-    { href: '/about', label: 'about' },
-    { href: '/contact', label: 'contact' },
+    { href: '/projects', label: 'Portfolio' },
+    { href: '/products', label: 'Shop' },
+    { href: '/complaints', label: 'Complaints' },
   ]
 
   const navLinks = isAuthed ? authedLinks : publicLinks
